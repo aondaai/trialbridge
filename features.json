@@ -1,0 +1,110 @@
+[
+  {
+    "id": "F001",
+    "description": "Criterion schema + tri-state + composite parent grouping types",
+    "file": "src/lib/matcher/types.ts",
+    "passes": true
+  },
+  {
+    "id": "F002",
+    "description": "Unit canonicalization (D5) at seed/eval time",
+    "file": "src/lib/matcher/units.ts",
+    "passes": true
+  },
+  {
+    "id": "F003",
+    "description": "Pure deterministic matcher: per-criterion pass/fail/unknown + tri-state (D1, D3)",
+    "file": "src/lib/matcher/engine.ts",
+    "passes": true
+  },
+  {
+    "id": "F004",
+    "description": "Softening simulator with newly-definite / newly-possible split (D2)",
+    "file": "src/lib/matcher/soften.ts",
+    "passes": true
+  },
+  {
+    "id": "F005",
+    "description": "Aggregation: counts-only + min-cell (<5) suppression",
+    "file": "src/lib/matcher/aggregate.ts",
+    "passes": true
+  },
+  {
+    "id": "F006",
+    "description": "Funnel discount (R1) + monthly incidence rate (R2) helpers",
+    "file": "src/lib/feasibility.ts",
+    "passes": true
+  },
+  {
+    "id": "F007",
+    "description": "Hero protocol (real HER2+ mBC archetype) + verified Criterion[] fixture",
+    "file": "src/data/hero-protocol.ts",
+    "passes": true
+  },
+  {
+    "id": "F008",
+    "description": "Hybrid seeded synthetic-data generator: prevalences+correlations, 30-40% biomarker missingness (R3)",
+    "file": "scripts/generate-data.ts",
+    "passes": false
+  },
+  {
+    "id": "F009",
+    "description": "Generated 3-site datasets committed to data/",
+    "file": "data/site-a.json",
+    "passes": false
+  },
+  {
+    "id": "F010",
+    "description": "Matcher/soften/aggregate unit tests incl. unknown, exclusion-unknown, softening split, suppression",
+    "file": "tests/matcher.test.ts",
+    "passes": true
+  },
+  {
+    "id": "F011",
+    "description": "npm run demo: per-site tri-state counts + hero softening split + funnel-discounted estimate",
+    "file": "scripts/demo.ts",
+    "passes": false
+  },
+  {
+    "id": "F012",
+    "description": "Prisma schema (Site/Patient/Consultation/ParsedCriteria/Response) + SQLite",
+    "file": "prisma/schema.prisma",
+    "passes": false
+  },
+  {
+    "id": "F013",
+    "description": "Seed script: 3 sites, hero consultation, sites B&C already-responded",
+    "file": "prisma/seed.ts",
+    "passes": false
+  },
+  {
+    "id": "F014",
+    "description": "Next.js app shell + shared UI (privacy banner, tri-state chips)",
+    "file": "src/app/layout.tsx",
+    "passes": false
+  },
+  {
+    "id": "F015",
+    "description": "Site view: discover consultation, run matcher, submit capacity (Camila live)",
+    "file": "src/app/site/page.tsx",
+    "passes": false
+  },
+  {
+    "id": "F016",
+    "description": "Sponsor view: post + aggregated counts + softening toggle",
+    "file": "src/app/sponsor/page.tsx",
+    "passes": false
+  },
+  {
+    "id": "F017",
+    "description": "Feasibility scorecard print-CSS view (P1)",
+    "file": "src/app/scorecard/page.tsx",
+    "passes": false
+  },
+  {
+    "id": "F018",
+    "description": "README: run-from-scratch, data-provenance note, scoped privacy claim",
+    "file": "README.md",
+    "passes": false
+  }
+]
