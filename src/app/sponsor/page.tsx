@@ -35,7 +35,7 @@ export default async function SponsorPage({
     <>
       <TopBar active="sponsor" />
       <main className="wrap">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
           <div>
             <h1 style={{ marginBottom: 2 }}>{consultation.title}</h1>
             <p className="muted" style={{ marginTop: 0 }}>

@@ -260,6 +260,19 @@ table.data td.num {
   border-color: var(--brand);
 }
 
+/* subtle interaction polish */
+.btn,
+.navlinks a,
+.card {
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.stat {
+  transition: color 0.2s ease;
+}
+a.card:hover {
+  border-color: var(--brand);
+}
+
 /* ---------- criterion list ---------- */
 .crit {
   display: flex;
