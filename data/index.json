@@ -1,0 +1,34 @@
+{
+  "sites": [
+    {
+      "id": "site-a",
+      "name": "Hospital Bandeirantes Oncology Network",
+      "country": "BR",
+      "city": "São Paulo",
+      "persona": "Dra. Camila Rocha — large academic network (submits live)",
+      "monthlyIncidence": 9,
+      "count": 220,
+      "file": "site-a.json"
+    },
+    {
+      "id": "site-b",
+      "name": "Instituto Sul de Oncologia",
+      "country": "BR",
+      "city": "Porto Alegre",
+      "persona": "Regional network (pre-seeded response)",
+      "monthlyIncidence": 5,
+      "count": 185,
+      "file": "site-b.json"
+    },
+    {
+      "id": "site-c",
+      "name": "Clínica Norte Câncer",
+      "country": "BR",
+      "city": "Recife",
+      "persona": "Community clinic (pre-seeded response)",
+      "monthlyIncidence": 3,
+      "count": 150,
+      "file": "site-c.json"
+    }
+  ]
+}

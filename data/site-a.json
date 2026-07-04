@@ -1,0 +1,7885 @@
+{
+  "site": {
+    "id": "site-a",
+    "name": "Hospital Bandeirantes Oncology Network",
+    "country": "BR",
+    "city": "São Paulo",
+    "persona": "Dra. Camila Rocha — large academic network (submits live)",
+    "monthlyIncidence": 9
+  },
+  "generatedWith": {
+    "seed": 1010,
+    "generator": "programmatic-mulberry32",
+    "note": "population calibrated to breast-oncology epidemiology; NOT fit to protocol criteria"
+  },
+  "patients": [
+    {
+      "id": "site-a-p001",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.05,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 134,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.78,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 42
+    },
+    {
+      "id": "site-a-p002",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.37,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 257,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.66,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p003",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.09,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 222,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.86,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p004",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 0.57,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 118,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 68
+    },
+    {
+      "id": "site-a-p005",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.34,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 142,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.77,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 65
+    },
+    {
+      "id": "site-a-p006",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "present"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 281,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 39,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p007",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 12.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 248,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.46,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p008",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.24,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 178,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.14,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 72
+    },
+    {
+      "id": "site-a-p009",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.27,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 234,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.39,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 55,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 83
+    },
+    {
+      "id": "site-a-p010",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 1.02,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 168,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 44
+    },
+    {
+      "id": "site-a-p011",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 14.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 167,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p012",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "present"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.79,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 231,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 56,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 49
+    },
+    {
+      "id": "site-a-p013",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.95,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 16,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 285,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.67,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 65,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 76
+    },
+    {
+      "id": "site-a-p014",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "present"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 209,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p015",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 332,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.51,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p016",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "equivocal",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.85,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 221,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.63,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 55
+    },
+    {
+      "id": "site-a-p017",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.13,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 144,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 40
+    },
+    {
+      "id": "site-a-p018",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 258,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.71,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 56,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p019",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.81,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 246,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.71,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 62,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p020",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.99,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 16,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 150,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.32,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p021",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 10.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 240,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.51,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 64,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 51
+    },
+    {
+      "id": "site-a-p022",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.94,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 129,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.24,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 68
+    },
+    {
+      "id": "site-a-p023",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.04,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 320,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.48,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 43
+    },
+    {
+      "id": "site-a-p024",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": null,
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 67
+    },
+    {
+      "id": "site-a-p025",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.84,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 207,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.47,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 55
+    },
+    {
+      "id": "site-a-p026",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "present"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.83,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 344,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p027",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 245,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.49,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p028",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.88,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 270,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.23,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 69,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p029",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 7.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 170,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 47
+    },
+    {
+      "id": "site-a-p030",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.88,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 287,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.39,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 55,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 73
+    },
+    {
+      "id": "site-a-p031",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 0.98,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 365,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 48
+    },
+    {
+      "id": "site-a-p032",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 4,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 329,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 44,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p033",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 11.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 196,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.67,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p034",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.96,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 157,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.75,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 49
+    },
+    {
+      "id": "site-a-p035",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.9,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 226,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 65
+    },
+    {
+      "id": "site-a-p036",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.41,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 389,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.67,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 76
+    },
+    {
+      "id": "site-a-p037",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.75,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 8.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 214,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 55
+    },
+    {
+      "id": "site-a-p038",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 11,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 224,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.25,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 76
+    },
+    {
+      "id": "site-a-p039",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.05,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 7.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 60,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.81,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p040",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": null,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.63,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 204,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 66,
+          "unit": "%"
+        }
+      },
+      "sex": "M",
+      "age": 78
+    },
+    {
+      "id": "site-a-p041",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.95,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 118,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.39,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 69,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 47
+    },
+    {
+      "id": "site-a-p042",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 191,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.28,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p043",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.74,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 185,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.26,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 64,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p044",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.79,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 280,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.57,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 62
+    },
+    {
+      "id": "site-a-p045",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 336,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.74,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 64
+    },
+    {
+      "id": "site-a-p046",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "equivocal",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 4,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.61,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 120,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.22,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 62,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 47
+    },
+    {
+      "id": "site-a-p047",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.71,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 234,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.09,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 65,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 76
+    },
+    {
+      "id": "site-a-p048",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 1.29,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 166,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 68,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p049",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 208,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.69,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p050",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.02,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 160,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 64
+    },
+    {
+      "id": "site-a-p051",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.18,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 229,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.89,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 65
+    },
+    {
+      "id": "site-a-p052",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.52,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 222,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 64,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 76
+    },
+    {
+      "id": "site-a-p053",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.17,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.4,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 66,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p054",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 227,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.97,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 68,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p055",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 8.6,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 55,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 52
+    },
+    {
+      "id": "site-a-p056",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.48,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 199,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.46,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 48,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 40
+    },
+    {
+      "id": "site-a-p057",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 1.35,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 8.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 195,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.82,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 68,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 50
+    },
+    {
+      "id": "site-a-p058",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 253,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 52
+    },
+    {
+      "id": "site-a-p059",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "equivocal",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 0.85,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 352,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.52,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 73
+    },
+    {
+      "id": "site-a-p060",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.19,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 209,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.06,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p061",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.91,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 169,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.76,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 69
+    },
+    {
+      "id": "site-a-p062",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 9.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 268,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.48,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 77
+    },
+    {
+      "id": "site-a-p063",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.19,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 193,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.72,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 48,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 44
+    },
+    {
+      "id": "site-a-p064",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.25,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 8.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 189,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 47
+    },
+    {
+      "id": "site-a-p065",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.59,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 206,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.69,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 82
+    },
+    {
+      "id": "site-a-p066",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.42,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 117,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.39,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 68,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 43
+    },
+    {
+      "id": "site-a-p067",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.59,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 256,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 75
+    },
+    {
+      "id": "site-a-p068",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.02,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 223,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.46,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p069",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "present"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.52,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 248,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.57,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p070",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.5,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 73
+    },
+    {
+      "id": "site-a-p071",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.43,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 16,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.71,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 81
+    },
+    {
+      "id": "site-a-p072",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 10.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 320,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.05,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 30
+    },
+    {
+      "id": "site-a-p073",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "present"
+      },
+      "priorLines": 4,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.04,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 263,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.8,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 55,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 69
+    },
+    {
+      "id": "site-a-p074",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.8,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 266,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.88,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 50,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 51
+    },
+    {
+      "id": "site-a-p075",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 324,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.91,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 47,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p076",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.48,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 246,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 66,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p077",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.66,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 330,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.92,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 62
+    },
+    {
+      "id": "site-a-p078",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 284,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 62,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 64
+    },
+    {
+      "id": "site-a-p079",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.06,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 315,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.51,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 56,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 48
+    },
+    {
+      "id": "site-a-p080",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.93,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 210,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.03,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 52,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 54
+    },
+    {
+      "id": "site-a-p081",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.76,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 1.08,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 53,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 54
+    },
+    {
+      "id": "site-a-p082",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.79,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 195,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.46,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 68,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p083",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 11.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 257,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p084",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 4,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.93,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 242,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 62
+    },
+    {
+      "id": "site-a-p085",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.35,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.9,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.34,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 68,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p086",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.89,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 190,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.69,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 50
+    },
+    {
+      "id": "site-a-p087",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.69,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 138,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.42,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p088",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.1,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 250,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 77
+    },
+    {
+      "id": "site-a-p089",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "equivocal",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.08,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.1,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.88,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 42
+    },
+    {
+      "id": "site-a-p090",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.05,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.3,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.41,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 45,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 38
+    },
+    {
+      "id": "site-a-p091",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.88,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 360,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.62,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 48
+    },
+    {
+      "id": "site-a-p092",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.94,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 163,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.77,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 44
+    },
+    {
+      "id": "site-a-p093",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.56,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.8,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.22,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p094",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.18,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 275,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.38,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p095",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.09,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 205,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.31,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 71
+    },
+    {
+      "id": "site-a-p096",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.31,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 252,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p097",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 209,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.51,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 45
+    },
+    {
+      "id": "site-a-p098",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.79,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 369,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "M",
+      "age": 67
+    },
+    {
+      "id": "site-a-p099",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.6,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 363,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.6,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 62,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p100",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.69,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 117,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.3,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 66,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 46
+    },
+    {
+      "id": "site-a-p101",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.8,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 285,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p102",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.79,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 213,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.38,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 55,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p103",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.91,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 108,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.93,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 67
+    },
+    {
+      "id": "site-a-p104",
+      "siteId": "site-a",
+      "diagnosis": "gastric cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.62,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 16,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.71,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p105",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "equivocal",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 14.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 282,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.75,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 69,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 32
+    },
+    {
+      "id": "site-a-p106",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.14,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 77,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 53,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 71
+    },
+    {
+      "id": "site-a-p107",
+      "siteId": "site-a",
+      "diagnosis": "gastric cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.82,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 227,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 69
+    },
+    {
+      "id": "site-a-p108",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.81,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.6,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.5,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 55,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 40
+    },
+    {
+      "id": "site-a-p109",
+      "siteId": "site-a",
+      "diagnosis": "gastric cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.96,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 192,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.36,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 48,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 69
+    },
+    {
+      "id": "site-a-p110",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.93,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 268,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.34,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 68,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p111",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 353,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 53,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 67
+    },
+    {
+      "id": "site-a-p112",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "equivocal",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 4,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.85,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 211,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.06,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 79
+    },
+    {
+      "id": "site-a-p113",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 9.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 274,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.45,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p114",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 4,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": null,
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.32,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 57
+    },
+    {
+      "id": "site-a-p115",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 2,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 12.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 281,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.29,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 46
+    },
+    {
+      "id": "site-a-p116",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 16,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 301,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.44,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 66,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 82
+    },
+    {
+      "id": "site-a-p117",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 1.34,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 169,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.58,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 54
+    },
+    {
+      "id": "site-a-p118",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 4,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.26,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 314,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.05,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 47
+    },
+    {
+      "id": "site-a-p119",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.06,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.2,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.54,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 56,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 41
+    },
+    {
+      "id": "site-a-p120",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.7,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 302,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 64,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 41
+    },
+    {
+      "id": "site-a-p121",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.09,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 223,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 62
+    },
+    {
+      "id": "site-a-p122",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.85,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 278,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.63,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 69
+    },
+    {
+      "id": "site-a-p123",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.47,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 279,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.44,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 66,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 51
+    },
+    {
+      "id": "site-a-p124",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 3,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 14.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 229,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.61,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 45
+    },
+    {
+      "id": "site-a-p125",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": null,
+        "platelets": {
+          "value": 195,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.69,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p126",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.77,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 166,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p127",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.86,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 192,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 75
+    },
+    {
+      "id": "site-a-p128",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.8,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 257,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.11,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 67
+    },
+    {
+      "id": "site-a-p129",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 352,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 65,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 36
+    },
+    {
+      "id": "site-a-p130",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.89,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 283,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.39,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p131",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 0.42,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 221,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.58,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p132",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.92,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 185,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.75,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 71,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 45
+    },
+    {
+      "id": "site-a-p133",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 12.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 328,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.72,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 43,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 57
+    },
+    {
+      "id": "site-a-p134",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 163,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.92,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p135",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 12.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 114,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.89,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 47,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p136",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 1.26,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.2,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.61,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 71,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 67
+    },
+    {
+      "id": "site-a-p137",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 10.8,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.43,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 49
+    },
+    {
+      "id": "site-a-p138",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.51,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 288,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 1.16,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 55
+    },
+    {
+      "id": "site-a-p139",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 70,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p140",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.22,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 288,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.74,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p141",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 270,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 80
+    },
+    {
+      "id": "site-a-p142",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.03,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 231,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.93,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 45
+    },
+    {
+      "id": "site-a-p143",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.7,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.34,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 57
+    },
+    {
+      "id": "site-a-p144",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.68,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 180,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p145",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.67,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 7.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 181,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 68
+    },
+    {
+      "id": "site-a-p146",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.53,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 100,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 53,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p147",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 13.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 279,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.42,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 66,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 71
+    },
+    {
+      "id": "site-a-p148",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.05,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 290,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 48
+    },
+    {
+      "id": "site-a-p149",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.62,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 288,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.33,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p150",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.67,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": null,
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 51,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p151",
+      "siteId": "site-a",
+      "diagnosis": "gastric cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.08,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 161,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 55
+    },
+    {
+      "id": "site-a-p152",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 240,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p153",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.72,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.1,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 62
+    },
+    {
+      "id": "site-a-p154",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.97,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 266,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 54
+    },
+    {
+      "id": "site-a-p155",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.28,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 107,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 71
+    },
+    {
+      "id": "site-a-p156",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 12.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 296,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.55,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 61
+    },
+    {
+      "id": "site-a-p157",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.92,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 245,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.54,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p158",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.5,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 274,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.72,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p159",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.42,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.7,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p160",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.01,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 304,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.86,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 50
+    },
+    {
+      "id": "site-a-p161",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.63,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 228,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.33,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 57
+    },
+    {
+      "id": "site-a-p162",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.62,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 188,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 75
+    },
+    {
+      "id": "site-a-p163",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 212,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 51,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p164",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 9.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 102,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.87,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 64
+    },
+    {
+      "id": "site-a-p165",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.06,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 369,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.82,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 55
+    },
+    {
+      "id": "site-a-p166",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.25,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 255,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 50,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p167",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.93,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 288,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.33,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 40
+    },
+    {
+      "id": "site-a-p168",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 9.5,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 70,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 60
+    },
+    {
+      "id": "site-a-p169",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.33,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 7.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 164,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.82,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 50
+    },
+    {
+      "id": "site-a-p170",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 228,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.88,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 35
+    },
+    {
+      "id": "site-a-p171",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.43,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 223,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 65
+    },
+    {
+      "id": "site-a-p172",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.74,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 223,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.41,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 53,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 54
+    },
+    {
+      "id": "site-a-p173",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 10.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 186,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.84,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 43
+    },
+    {
+      "id": "site-a-p174",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 12,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 223,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.5,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 50
+    },
+    {
+      "id": "site-a-p175",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 7.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 325,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.89,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 39
+    },
+    {
+      "id": "site-a-p176",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.27,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 290,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.39,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 48,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p177",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 16,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 171,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p178",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.79,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 135,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 71
+    },
+    {
+      "id": "site-a-p179",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.6,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 270,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 65
+    },
+    {
+      "id": "site-a-p180",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 3,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.88,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 162,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.84,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 86
+    },
+    {
+      "id": "site-a-p181",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.44,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 121,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.8,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 42
+    },
+    {
+      "id": "site-a-p182",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.15,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.1,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.9,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 52
+    },
+    {
+      "id": "site-a-p183",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 324,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 86
+    },
+    {
+      "id": "site-a-p184",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.09,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 280,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.65,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 55,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p185",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.61,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.7,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 167,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.66,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 57
+    },
+    {
+      "id": "site-a-p186",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 0.56,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": null,
+        "bilirubin": {
+          "value": 1.14,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 57,
+          "unit": "%"
+        }
+      },
+      "sex": "M",
+      "age": 58
+    },
+    {
+      "id": "site-a-p187",
+      "siteId": "site-a",
+      "diagnosis": "gastric cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": null,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.8,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 9.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 310,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.89,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 51,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 58
+    },
+    {
+      "id": "site-a-p188",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 3,
+      "labs": {
+        "creatinine": {
+          "value": 1.22,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 13.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 278,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.64,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 55
+    },
+    {
+      "id": "site-a-p189",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.86,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 119,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.45,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 62,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 28
+    },
+    {
+      "id": "site-a-p190",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 268,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.63,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 51
+    },
+    {
+      "id": "site-a-p191",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.53,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 246,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.41,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 50
+    },
+    {
+      "id": "site-a-p192",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.3,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 240,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.69,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 48
+    },
+    {
+      "id": "site-a-p193",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 2,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": null,
+        "platelets": {
+          "value": 276,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.6,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 56,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 52
+    },
+    {
+      "id": "site-a-p194",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.28,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.9,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 309,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.25,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p195",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 7.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 244,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.89,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 54
+    },
+    {
+      "id": "site-a-p196",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": null,
+        "platelets": {
+          "value": 343,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.52,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 65
+    },
+    {
+      "id": "site-a-p197",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.74,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": null,
+        "platelets": {
+          "value": 212,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.47,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 39
+    },
+    {
+      "id": "site-a-p198",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 4,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.01,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 242,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 56,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 67
+    },
+    {
+      "id": "site-a-p199",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.07,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 405,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.21,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 59
+    },
+    {
+      "id": "site-a-p200",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.44,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 170,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.36,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 76
+    },
+    {
+      "id": "site-a-p201",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.94,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 212,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.31,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 60,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 47
+    },
+    {
+      "id": "site-a-p202",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.08,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 15.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 254,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.45,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 53,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 70
+    },
+    {
+      "id": "site-a-p203",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.49,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 252,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.66,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 52,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p204",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.71,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 16,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 185,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.5,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 67
+    },
+    {
+      "id": "site-a-p205",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "positive",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "present"
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 1.11,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 226,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 52,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 53
+    },
+    {
+      "id": "site-a-p206",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "present"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 13,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 190,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.39,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 59,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 83
+    },
+    {
+      "id": "site-a-p207",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": null,
+        "hemoglobin": {
+          "value": 10.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 239,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.54,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p208",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.6,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 254,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.97,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 67,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 66
+    },
+    {
+      "id": "site-a-p209",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.42,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 8.8,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 274,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.9,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 64,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 52
+    },
+    {
+      "id": "site-a-p210",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "equivocal",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.48,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 12.4,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.31,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 56
+    },
+    {
+      "id": "site-a-p211",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 2,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.4,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.1,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 164,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.2,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 57
+    },
+    {
+      "id": "site-a-p212",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 2,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.39,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 230,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.95,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 72,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 86
+    },
+    {
+      "id": "site-a-p213",
+      "siteId": "site-a",
+      "diagnosis": "lung cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.79,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.4,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 256,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.75,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 54,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 54
+    },
+    {
+      "id": "site-a-p214",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.26,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 7.6,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.53,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 47,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 68
+    },
+    {
+      "id": "site-a-p215",
+      "siteId": "site-a",
+      "diagnosis": "ovarian cancer",
+      "stage": "IV",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 1,
+      "ecog": 0,
+      "labs": {
+        "creatinine": {
+          "value": 0.96,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.5,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 255,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.62,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 56,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 63
+    },
+    {
+      "id": "site-a-p216",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "II",
+      "biomarkers": {
+        "her2_status": "low",
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.47,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.3,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 83,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.52,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": null
+      },
+      "sex": "F",
+      "age": 48
+    },
+    {
+      "id": "site-a-p217",
+      "siteId": "site-a",
+      "diagnosis": "colorectal cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.67,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 213,
+          "unit": "10^9/L"
+        },
+        "bilirubin": {
+          "value": 0.47,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 63,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 78
+    },
+    {
+      "id": "site-a-p218",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "I",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "negative",
+        "brain_metastases": null
+      },
+      "priorLines": 0,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 0.86,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 14.7,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.7,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 49,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 64
+    },
+    {
+      "id": "site-a-p219",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": "negative",
+        "er_status": "positive",
+        "pr_status": "positive",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 0,
+      "ecog": 2,
+      "labs": {
+        "creatinine": {
+          "value": 1.02,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 11.5,
+          "unit": "g/dL"
+        },
+        "platelets": null,
+        "bilirubin": {
+          "value": 0.46,
+          "unit": "mg/dL"
+        },
+        "ejection_fraction": {
+          "value": 58,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 39
+    },
+    {
+      "id": "site-a-p220",
+      "siteId": "site-a",
+      "diagnosis": "breast cancer",
+      "stage": "III",
+      "biomarkers": {
+        "her2_status": null,
+        "er_status": "negative",
+        "pr_status": "negative",
+        "brain_metastases": "absent"
+      },
+      "priorLines": 1,
+      "ecog": 1,
+      "labs": {
+        "creatinine": {
+          "value": 1.02,
+          "unit": "mg/dL"
+        },
+        "hemoglobin": {
+          "value": 10.2,
+          "unit": "g/dL"
+        },
+        "platelets": {
+          "value": 177,
+          "unit": "10^9/L"
+        },
+        "bilirubin": null,
+        "ejection_fraction": {
+          "value": 61,
+          "unit": "%"
+        }
+      },
+      "sex": "F",
+      "age": 62
+    }
+  ]
+}

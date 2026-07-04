@@ -45,13 +45,13 @@
     "id": "F008",
     "description": "Hybrid seeded synthetic-data generator: prevalences+correlations, 30-40% biomarker missingness (R3)",
     "file": "scripts/generate-data.ts",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F009",
     "description": "Generated 3-site datasets committed to data/",
     "file": "data/site-a.json",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F010",
@@ -63,7 +63,7 @@
     "id": "F011",
     "description": "npm run demo: per-site tri-state counts + hero softening split + funnel-discounted estimate",
     "file": "scripts/demo.ts",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F012",
