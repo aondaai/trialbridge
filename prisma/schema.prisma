@@ -1,0 +1,62 @@
+// TrialBridge relational schema — the DOCUMENTED post-hackathon swap target.
+//
+// The hackathon build runs off a committed JSON snapshot (src/lib/store.ts) for
+// reliability: no query engine, no file-URL edge cases, and the frozen demo
+// snapshot is a plain committed file. This schema captures the same model so a
+// continuation can `prisma db push` and switch the store implementation with the
+// query code unchanged (ADR-001, Decision 2 — datasource is swappable).
+//
+// Note the privacy model is enforced at the schema level: a Response carries
+// COUNTS and a bottleneck reference, never patient rows. Patients live per-site
+// and never enter this shared store.
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Site {
+  id               String     @id
+  name             String
+  country          String
+  city             String
+  persona          String
+  monthlyIncidence Int
+  responses        Response[]
+}
+
+model Consultation {
+  id           String     @id
+  sponsorName  String
+  title        String
+  nct          String?
+  sourceNote   String?
+  protocolText String
+  criteria     String // JSON-serialized Criterion[]
+  createdAt    DateTime   @default(now())
+  responses    Response[]
+}
+
+model Response {
+  id                String       @id @default(cuid())
+  consultationId    String
+  siteId            String
+  // counts-not-rows: no patient list is representable here.
+  definite          Int
+  possible          Int
+  excluded          Int
+  total             Int
+  bottleneckHandle  String?
+  bottleneckLabel   String?
+  monthlyIncidence  Int
+  live              Boolean      @default(false)
+  submittedAt       DateTime     @default(now())
+  consultation      Consultation @relation(fields: [consultationId], references: [id])
+  site              Site         @relation(fields: [siteId], references: [id])
+
+  @@unique([consultationId, siteId])
+}

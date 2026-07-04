@@ -1,0 +1,32 @@
+[
+  {
+    "id": "resp-hero-her2-mbc-site-b",
+    "consultationId": "hero-her2-mbc",
+    "siteId": "site-b",
+    "siteName": "Instituto Sul de Oncologia",
+    "definite": 3,
+    "possible": 18,
+    "excluded": 164,
+    "total": 185,
+    "bottleneckHandle": "her2_status",
+    "bottleneckLabel": "HER2 status = positive",
+    "monthlyIncidence": 5,
+    "live": false,
+    "submittedAt": "2026-07-06T14:30:00.000Z"
+  },
+  {
+    "id": "resp-hero-her2-mbc-site-c",
+    "consultationId": "hero-her2-mbc",
+    "siteId": "site-c",
+    "siteName": "Clínica Norte Câncer",
+    "definite": 0,
+    "possible": 16,
+    "excluded": 134,
+    "total": 150,
+    "bottleneckHandle": "c_dx",
+    "bottleneckLabel": "Histologically confirmed breast cancer.",
+    "monthlyIncidence": 3,
+    "live": false,
+    "submittedAt": "2026-07-06T14:30:00.000Z"
+  }
+]

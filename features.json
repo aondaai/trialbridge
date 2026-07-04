@@ -69,42 +69,42 @@
     "id": "F012",
     "description": "Prisma schema (Site/Patient/Consultation/ParsedCriteria/Response) + SQLite",
     "file": "prisma/schema.prisma",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F013",
     "description": "Seed script: 3 sites, hero consultation, sites B&C already-responded",
     "file": "prisma/seed.ts",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F014",
     "description": "Next.js app shell + shared UI (privacy banner, tri-state chips)",
     "file": "src/app/layout.tsx",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F015",
     "description": "Site view: discover consultation, run matcher, submit capacity (Camila live)",
     "file": "src/app/site/page.tsx",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F016",
     "description": "Sponsor view: post + aggregated counts + softening toggle",
     "file": "src/app/sponsor/page.tsx",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F017",
     "description": "Feasibility scorecard print-CSS view (P1)",
     "file": "src/app/scorecard/page.tsx",
-    "passes": false
+    "passes": true
   },
   {
     "id": "F018",
     "description": "README: run-from-scratch, data-provenance note, scoped privacy claim",
     "file": "README.md",
-    "passes": false
+    "passes": true
   }
 ]
