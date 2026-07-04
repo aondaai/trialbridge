@@ -23,7 +23,7 @@ export const HERO_META = {
   sponsorName: "Marcus / Meridian Oncology (composite persona)",
   nct: "NCT03529110",
   sourceNote:
-    "Modeled on the HER2+ mBC second-line setting (DESTINY-Breast program). Criteria simplified & hand-transcribed for the demo; verify against ClinicalTrials.gov before the pitch.",
+    "NCT03529110 = DESTINY-Breast03 (T-DXd vs T-DM1, HER2+ unresectable/metastatic breast cancer) — VERIFIED; HER2-positive, ECOG and LVEF<50% are genuine eligibility gates. Criteria simplified for the demo (organ-function cutoffs illustrative). See docs/citations.md.",
   /** The softening handle that is the intended hero bottleneck. */
   heroBottleneckHandle: "her2_status",
 } as const;
@@ -74,7 +74,7 @@ export const HERO_CRITERIA: Criterion[] = [
     field: "stage",
     operator: "in",
     value: ["IV"],
-    rawText: "Metastatic (stage IV) disease.",
+    rawText: "Unresectable and/or metastatic (stage IV) disease.",
     confidence: 0.9,
   },
   {

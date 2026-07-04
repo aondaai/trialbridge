@@ -106,5 +106,29 @@
     "description": "README: run-from-scratch, data-provenance note, scoped privacy claim",
     "file": "README.md",
     "passes": true
+  },
+  {
+    "id": "F019",
+    "description": "Parse service: Claude (Opus 4.8) free-text->Criterion[] via structured outputs, cached fallback (ADR 3B)",
+    "file": "src/lib/parse.ts",
+    "passes": true
+  },
+  {
+    "id": "F020",
+    "description": "API routes: /api/parse + /api/consultations (post + auto-seed responses)",
+    "file": "src/app/api/parse/route.ts",
+    "passes": true
+  },
+  {
+    "id": "F021",
+    "description": "Sponsor post flow: paste->parse->verify/correct low-confidence->post",
+    "file": "src/app/sponsor/new/page.tsx",
+    "passes": true
+  },
+  {
+    "id": "F022",
+    "description": "Credibility homework: adversarially-verified pitch stats + NCT verification",
+    "file": "docs/citations.md",
+    "passes": true
   }
 ]

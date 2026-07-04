@@ -44,10 +44,25 @@ service layer).
 
 ---
 
+## Posting a protocol (where Claude runs)
+
+At `/sponsor/new`, paste protocol text → **Claude (`claude-opus-4-8`) parses it into
+typed `Criterion[]`** via structured outputs → you verify and correct the flagged
+low-confidence rows → post. Set `ANTHROPIC_API_KEY` to run the live parse; without a
+key it falls back to the cached, human-verified criteria (clearly labelled) so the
+flow always works — this is ADR Decision 3B (parse offline, cache, verify) in action.
+Correcting a low-confidence row on screen is the trust moment: the LLM's weakest step
+is made human-auditable before anything reaches the deterministic matcher.
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...   # optional — enables the live Claude parse
+```
+
 ## What makes the matches trustworthy
 
 The **matcher is a pure, deterministic function** — the LLM is only ever used to parse
-free-text criteria into a typed schema (parsed offline, verified, cached). Arithmetic and
+free-text criteria into a typed schema (parsed live at `/sponsor/new`, verified, then
+the demo path replays the cached verified artifact). Arithmetic and
 comparisons decide every match, so every verdict is explainable and every softening number
 is attributable.
 
@@ -103,10 +118,13 @@ say exactly that much and no more.
   30–40% HER2 missingness among breast patients, mixed lab units). It is **not hand-fit to
   the protocol criteria** — the generator never reads the protocol. This is the defensible
   line between calibration and cheating.
-- The **hero protocol** is modeled on the HER2+ mBC second-line setting (T-DXd /
-  DESTINY-Breast program). **Its criteria are simplified and hand-transcribed for the
-  demo — verify NCT `NCT03529110` and the eligibility text against ClinicalTrials.gov
-  before using any figure in the pitch.**
+- The **hero protocol** `NCT03529110` is **verified as DESTINY-Breast03** (T-DXd vs
+  T-DM1, HER2+ unresectable/metastatic breast cancer) — HER2-positive, ECOG and
+  LVEF<50% are genuine eligibility gates, so HER2 is a legitimate softenable
+  bottleneck. Criteria are simplified for the demo (organ-function cutoffs are
+  illustrative). **Before the pitch, read [`docs/citations.md`](docs/citations.md)** —
+  it sources every macro stat (several in the original spec are misattributed; the
+  "86%" figure in particular should be dropped) and details the protocol simplifications.
 
 ---
 

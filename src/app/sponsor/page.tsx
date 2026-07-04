@@ -11,8 +11,13 @@ function fmt(n: number | "<5"): string {
   return n === "<5" ? "<5" : String(n);
 }
 
-export default function SponsorPage() {
-  const view = buildSponsorView(HERO_META.id);
+export default async function SponsorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ c?: string }>;
+}) {
+  const { c } = await searchParams;
+  const view = buildSponsorView(c || HERO_META.id) ?? buildSponsorView(HERO_META.id);
   if (!view) {
     return (
       <>
@@ -30,10 +35,18 @@ export default function SponsorPage() {
     <>
       <TopBar active="sponsor" />
       <main className="wrap">
-        <h1 style={{ marginBottom: 2 }}>{consultation.title}</h1>
-        <p className="muted" style={{ marginTop: 0 }}>
-          Posted by {consultation.sponsorName} · ref {consultation.nct}
-        </p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+          <div>
+            <h1 style={{ marginBottom: 2 }}>{consultation.title}</h1>
+            <p className="muted" style={{ marginTop: 0 }}>
+              Posted by {consultation.sponsorName}
+              {consultation.nct ? ` · ref ${consultation.nct}` : ""}
+            </p>
+          </div>
+          <Link href="/sponsor/new" className="btn no-print" style={{ flexShrink: 0 }}>
+            + Post from protocol text
+          </Link>
+        </div>
 
         <PrivacyBanner variant="sponsor" />
 
