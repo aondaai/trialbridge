@@ -270,15 +270,25 @@ export interface TransportabilityBound {
  * assumption, not an estimate from data — the honest framing is "sampling CI,
  * widened by a τ=X transportability assumption", which is a bound a reviewer can
  * argue with, instead of prose they can only nod at.
+ *
+ * `max` is the upper ceiling the widened band is clamped to: 1 for a proportion
+ * interval, the base-cohort count for a count interval (you can't have more
+ * eligible patients than exist in the base). It defaults to +∞ (no ceiling) so
+ * the caller must opt into a bound that fits the interval's units — clamping a
+ * count to [0,1] was a real bug this default prevents.
  */
-export function transportabilityBound(sampling: Interval, tau: number): TransportabilityBound {
+export function transportabilityBound(
+  sampling: Interval,
+  tau: number,
+  max = Infinity,
+): TransportabilityBound {
   if (tau < 0) throw new Error("transportabilityBound: tau must be >= 0");
   return {
     sampling,
     widened: {
       point: sampling.point,
-      lower: clamp01(sampling.lower * (1 - tau)),
-      upper: clamp01(sampling.upper * (1 + tau)),
+      lower: Math.max(0, sampling.lower * (1 - tau)),
+      upper: Math.min(max, sampling.upper * (1 + tau)),
       confidence: sampling.confidence,
     },
     tau,
@@ -353,8 +363,9 @@ export function estimateEligible(
   const jointFraction = standardized ? standardized.rate : rawJoint;
 
   const estimatedEligible = scaleByBase(jointFraction, input.base);
+  // Eligible count is bounded above by the base cohort — pass it as the ceiling.
   const transportability =
-    input.tau != null ? transportabilityBound(estimatedEligible, input.tau) : null;
+    input.tau != null ? transportabilityBound(estimatedEligible, input.tau, input.base) : null;
 
   return {
     region,

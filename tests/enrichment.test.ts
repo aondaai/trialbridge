@@ -167,9 +167,9 @@ describe("transportabilityBound — the caveat becomes a number (critique #3)", 
     expect(b.widened.upper).toBeCloseTo(sampling.upper, 12);
   });
 
-  it("stays within [0,1] for a proportion interval and rejects negative τ", () => {
+  it("respects an explicit ceiling for a proportion interval and rejects negative τ", () => {
     const sampling = wilsonInterval(390, 400, 0.95); // upper near 1
-    const b = transportabilityBound(sampling, 0.5);
+    const b = transportabilityBound(sampling, 0.5, 1); // proportion → ceiling 1
     expect(b.widened.upper).toBeLessThanOrEqual(1);
     expect(b.widened.lower).toBeGreaterThanOrEqual(0);
     expect(() => transportabilityBound(sampling, -0.1)).toThrow();
