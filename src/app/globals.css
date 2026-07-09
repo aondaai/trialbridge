@@ -1,15 +1,18 @@
+/* App-shell palette — mapped to the landing's Claude design system (claude.css
+   :root tokens). Light "paper" theme: terracota brand, ink text, sand borders.
+   Fallbacks keep these valid even if claude.css load order ever changes. */
 :root {
-  --bg: #0b1120;
-  --panel: #131c31;
-  --panel-2: #1b2740;
-  --border: #263353;
-  --text: #e6edf7;
-  --muted: #93a1bd;
-  --brand: #4f8cff;
-  --definite: #34d399;
-  --possible: #fbbf24;
-  --excluded: #6b7687;
-  --danger: #f87171;
+  --bg: var(--cl-bg, #faf9f5);        /* paper */
+  --panel: #ffffff;                    /* elevated card surface */
+  --panel-2: #f0eee6;                  /* ivory — subtle neutral fill */
+  --border: var(--cl-border, #e8e6dc); /* sand */
+  --text: var(--cl-text, #141413);     /* ink */
+  --muted: var(--cl-text-secondary, #6e6d66); /* slate */
+  --brand: var(--cl-accent, #d97757);  /* terracota */
+  --definite: #1f9d6b;
+  --possible: #d98a2b;
+  --excluded: #b8b7b0;
+  --danger: #c0392b;
 }
 
 * {
@@ -216,8 +219,8 @@ table.data td.num {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  border: 1px solid #274b7a;
-  background: linear-gradient(180deg, rgba(79, 140, 255, 0.12), rgba(79, 140, 255, 0.04));
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--cl-accent-subtle, #f5e5de), rgba(217, 119, 87, 0.04));
   border-radius: 12px;
   padding: 14px 16px;
   font-size: 13.5px;
@@ -244,7 +247,7 @@ table.data td.num {
 .btn.primary {
   background: var(--brand);
   border-color: transparent;
-  color: #04122e;
+  color: #ffffff;
 }
 .btn:disabled {
   opacity: 0.55;

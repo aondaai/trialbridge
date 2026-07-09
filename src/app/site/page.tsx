@@ -23,7 +23,10 @@ export default async function SitePage({
       <>
         <TopBar active="site" />
         <main className="wrap">
-          <p>No consultation seeded. Run <code>npm run db:seed</code>.</p>
+          <p>
+            No open consultation yet. A sponsor needs to post a protocol first —
+            head to the <a href="/sponsor/new">sponsor console</a>.
+          </p>
         </main>
       </>
     );

@@ -40,7 +40,7 @@ export default async function ScorecardPage({
           <p>
             {c
               ? <>No consultation found for id <code>{c}</code>.</>
-              : <>No consultation seeded. Run <code>npm run db:seed</code>.</>}
+              : <>No open consultation yet. Post a protocol from the <a href="/sponsor/new">sponsor console</a>.</>}
           </p>
         </main>
       </>
