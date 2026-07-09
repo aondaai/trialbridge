@@ -112,8 +112,8 @@ export default function Landing() {
               >
                 <span aria-hidden="true">{isDark ? "☀️" : "🌙"}</span>
               </button>
-              <Link href="/sponsor" className="cl-btn cl-btn--primary tb-nav__cta">
-                Run a feasibility check
+              <Link href="/start" className="cl-btn cl-btn--primary tb-nav__cta">
+                Entrar no app
               </Link>
               <button
                 type="button"

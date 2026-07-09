@@ -1,0 +1,83 @@
+import type { Metadata } from "next";
+import { ROLE_OPTIONS } from "./roles";
+
+export const metadata: Metadata = {
+  title: "TrialBridge — Escolha seu papel",
+};
+
+/**
+ * Role-selection entry screen. The user picks Patrocinador or Site and is routed
+ * to the matching journey. This is the canonical entry to the app — the top-bar
+ * toggle is a convenience, no longer the only way in. Plain <a> anchors (full
+ * navigation) keep this server-rendered and unit-testable. Light Claude theme
+ * (claude.css, .cl-root scope) — matches the marketing landing.
+ */
+export default function StartPage() {
+  return (
+    <div className="cl-root" style={{ minHeight: "100vh", background: "var(--cl-bg)" }}>
+      <main style={{ maxWidth: 940, margin: "0 auto", padding: "72px 24px" }}>
+        <p
+          style={{
+            color: "var(--cl-accent)",
+            fontWeight: 600,
+            letterSpacing: "0.02em",
+            marginBottom: 8,
+          }}
+        >
+          TrialBridge · Elegível
+        </p>
+        <h1 className="cl-h1" style={{ margin: "0 0 12px", lineHeight: 1.1 }}>
+          Como você quer começar?
+        </h1>
+        <p className="cl-text-secondary" style={{ fontSize: 18, margin: "0 0 40px", maxWidth: 620 }}>
+          Escolha seu papel para seguir a jornada certa. Você pode alternar depois pela barra
+          superior.
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 20,
+          }}
+        >
+          {ROLE_OPTIONS.map((r) => (
+            <a
+              key={r.key}
+              href={r.href}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+                padding: 28,
+                borderRadius: 16,
+                border: "1px solid var(--cl-border, #E5E3DC)",
+                background: "var(--cl-bg)",
+                color: "var(--cl-text)",
+                textDecoration: "none",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+              }}
+            >
+              <h2 className="cl-h2" style={{ margin: 0 }}>
+                {r.title}
+              </h2>
+              <p className="cl-text-secondary" style={{ margin: 0, flexGrow: 1 }}>
+                {r.blurb}
+              </p>
+              <span
+                style={{
+                  display: "inline-block",
+                  marginTop: 8,
+                  color: "var(--cl-accent)",
+                  fontWeight: 600,
+                }}
+              >
+                {r.cta}
+              </span>
+            </a>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
