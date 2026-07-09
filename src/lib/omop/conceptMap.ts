@@ -93,6 +93,14 @@ export interface ProtocolInput {
   criteria: Criterion[];
 }
 
+/**
+ * OFFLINE-ONLY anchor fallback: given a diagnosis the lexical layer couldn't
+ * resolve, propose CID-10 code(s). Injected by the build CLI (where it may call
+ * Claude). NEVER passed on the request-time path — the resolver stays LLM-free.
+ * Anything it returns is marked anchoredBy="model" + needsReview=true.
+ */
+export type AnchorFallback = (term: string) => { codes: string[]; note?: string } | null;
+
 /** "breast cancer" -> "breast_cancer" (the dx key both sides agree on). */
 export function dxKeyFromValue(value: CriterionValue): string {
   const s = Array.isArray(value) ? value.join(" ") : String(value ?? "");
@@ -116,7 +124,7 @@ function valueConstraintFor(c: Criterion): ValueConstraint | null {
  * needsMapping until a vocabulary bundle is loaded). Gender values resolve to
  * verified OMOP concept_ids.
  */
-export function resolveEntry(c: Criterion, ref: Cid10Reference): ConceptMapEntry {
+export function resolveEntry(c: Criterion, ref: Cid10Reference, fallback?: AnchorFallback): ConceptMapEntry {
   const base = FIELD_CONCEPT_MAP[c.field] ?? UNMAPPED_FIELD_CONCEPT;
   const answerability = classifyAnswerability(c.field);
   const common = {
@@ -136,22 +144,56 @@ export function resolveEntry(c: Criterion, ref: Cid10Reference): ConceptMapEntry
 
   // --- Diagnosis: lexical CID-10 anchor (the base-cohort join) ---
   if (c.field === "diagnosis") {
+    const key = dxKeyFromValue(c.value);
     const anchor = anchorLexical(String(c.value ?? ""), ref);
     const prefixes = expandPrefixes(anchor.codes);
-    const matched = prefixes.length > 0;
+
+    if (prefixes.length > 0) {
+      return {
+        ...common,
+        key,
+        conceptId: 0, // standard SNOMED concept_id requires a vocabulary bundle (needsMapping)
+        sourceCode: prefixes[0],
+        needsMapping: true,
+        icd10: { prefixes, members: expandMembers(prefixes, ref) },
+        anchoredBy: "lexical",
+        matchedOn: anchor.matchedOn,
+        needsReview: false,
+        provenance: `lexical anchor -> CID-10 ${prefixes.join(",")} (${anchor.matchedOn}); SNOMED concept_id needs a vocabulary bundle`,
+      };
+    }
+
+    // Lexical miss: try the offline model fallback (build-time only). Anything it
+    // proposes is model-anchored and MUST be human-reviewed before it is trusted.
+    const fb = fallback ? fallback(String(c.value ?? "")) : null;
+    if (fb && fb.codes.length > 0) {
+      const fbPrefixes = expandPrefixes(fb.codes);
+      return {
+        ...common,
+        key,
+        conceptId: 0,
+        sourceCode: fbPrefixes[0],
+        needsMapping: true,
+        icd10: { prefixes: fbPrefixes, members: expandMembers(fbPrefixes, ref) },
+        anchoredBy: "model",
+        matchedOn: null,
+        needsReview: true,
+        provenance: `model-proposed CID-10 ${fbPrefixes.join(",")}${fb.note ? ` (${fb.note})` : ""} — NEEDS HUMAN REVIEW before trusting`,
+      };
+    }
+
+    // No lexical match and no (successful) fallback.
     return {
       ...common,
-      key: dxKeyFromValue(c.value),
-      conceptId: 0, // standard SNOMED concept_id requires a vocabulary bundle (needsMapping)
-      sourceCode: matched ? prefixes[0] : null,
+      key,
+      conceptId: 0,
+      sourceCode: null,
       needsMapping: true,
-      icd10: matched ? { prefixes, members: expandMembers(prefixes, ref) } : null,
+      icd10: null,
       anchoredBy: "lexical",
-      matchedOn: anchor.matchedOn,
-      needsReview: !matched,
-      provenance: matched
-        ? `lexical anchor -> CID-10 ${prefixes.join(",")} (${anchor.matchedOn}); SNOMED concept_id needs a vocabulary bundle`
-        : `lexical anchor found no CID-10 match for "${String(c.value)}" — needs review / model fallback`,
+      matchedOn: null,
+      needsReview: true,
+      provenance: `lexical anchor found no CID-10 match for "${String(c.value)}" — needs review / model fallback`,
     };
   }
 
@@ -213,12 +255,17 @@ export function buildDxPrefixes(entries: ConceptMapEntry[]): Record<string, stri
   return result;
 }
 
-/** Build the full concept map from one or more parsed protocols. */
-export function buildConceptMap(protocols: ProtocolInput[], ref?: Cid10Reference): ConceptMap {
+/** Build the full concept map from one or more parsed protocols. `fallback` is
+ * an OFFLINE-only anchor fallback (build CLI passes a Claude-backed one). */
+export function buildConceptMap(
+  protocols: ProtocolInput[],
+  ref?: Cid10Reference,
+  fallback?: AnchorFallback,
+): ConceptMap {
   const reference = ref ?? loadCid10Reference();
   const entries: ConceptMapEntry[] = [];
   for (const p of protocols) {
-    for (const c of p.criteria) entries.push(resolveEntry(c, reference));
+    for (const c of p.criteria) entries.push(resolveEntry(c, reference, fallback));
   }
   return {
     version: "1",
