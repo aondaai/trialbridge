@@ -1,0 +1,40 @@
+# Local Docker orchestration for TrialBridge: the Next.js app + the Python
+# feasibility estimator (FastAPI over DataSUS/OMOP).
+#
+# Run from this directory:  docker compose up --build
+#   web:       http://localhost:3000   (start at /start)
+#   estimator: http://localhost:8421   (/health, /feasibility/estimate)
+#
+# The estimator build context is the sibling ../outputs/trialbridge_estimator
+# directory — it must be present. Its data/ is NOT baked into the image (see its
+# .dockerignore); the sample DataSUS + proprietary parquet are mounted read-only.
+# omop_full (163GB) is intentionally NOT used — omop_sample (213MB) is.
+
+services:
+  estimator:
+    build: ../outputs/trialbridge_estimator
+    # Sample DataSUS + proprietary parquet are baked into the image (host bind
+    # mounts fail here because the project path contains a colon). TB_DATASUS_DIR
+    # / TB_PROPRIETARY_GLOB are set in the estimator Dockerfile.
+    ports:
+      - "8421:8421"
+
+  web:
+    build: .
+    environment:
+      # Reach the estimator over the compose network by service name.
+      TB_ESTIMATOR_URL: http://estimator:8421
+      TB_DATASUS_LABEL: "DataSUS/OMOP (omop_sample)"
+      # Optional — paste your ROTATED key to enable live Claude parsing.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      # Persist the SQLite DB across restarts (starts empty on first run).
+      - tb-db:/app/prisma/data
+    # Host 3080 -> container 3000 (host 3000 is often taken by other services).
+    ports:
+      - "3080:3000"
+    depends_on:
+      - estimator
+
+volumes:
+  tb-db:
