@@ -53,6 +53,8 @@ export interface ConceptMapEntry {
   criterionId: string;
   /** Stable concept key: a dx key ("breast_cancer") or the field id ("her2_status"). */
   key: string;
+  /** The original Criterion.field this entry came from (e.g. "diagnosis", "her2_status"). */
+  field: string;
   textOriginal: string;
   inclusion: boolean;
   assertion: Assertion3;
@@ -119,6 +121,7 @@ export function resolveEntry(c: Criterion, ref: Cid10Reference): ConceptMapEntry
   const answerability = classifyAnswerability(c.field);
   const common = {
     criterionId: c.id,
+    field: c.field,
     textOriginal: c.rawText,
     inclusion: c.kind === "inclusion",
     assertion: assertionFor(c.kind),
