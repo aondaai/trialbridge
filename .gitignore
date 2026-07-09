@@ -30,3 +30,8 @@ yarn-error.log*
 
 # prisma / sqlite — NOTE: dev.db IS committed on purpose as the frozen demo snapshot.
 # (do not ignore prisma/dev.db)
+
+# OHDSI Athena vocabulary bundle — large, licensed data, download it yourself
+# from athena.ohdsi.org under your own account (docs/omop-vocabulary-mapping.md).
+# NOTE: data/vocab-index.json (the small derived index) IS committed on purpose.
+/data/vocab/

@@ -81,6 +81,42 @@ export function aggregate(sites: SiteEvals[]): AggregatedView {
   };
 }
 
+export interface RegionAggregate {
+  region: string;
+  siteCount: number;
+  definite: SafeCount;
+  possible: SafeCount;
+  /** definite + possible before suppression, then suppressed. */
+  candidates: SafeCount;
+  /** raw (unsuppressed) totals kept server-side only. */
+  _raw: { definite: number; possible: number };
+}
+
+/**
+ * Group per-site cohort counts by Brazilian macro-region and apply the same
+ * <5 suppression as `aggregate`. Suppression is applied to the REGION total,
+ * not per-site, so a single small site can't be read off through the group —
+ * though with one site per region today the two are equivalent in practice.
+ */
+export function aggregateByRegion(sites: { region: string; counts: CohortCounts }[]): RegionAggregate[] {
+  const byRegion = new Map<string, { siteCount: number; definite: number; possible: number }>();
+  for (const s of sites) {
+    const acc = byRegion.get(s.region) ?? { siteCount: 0, definite: 0, possible: 0 };
+    acc.siteCount += 1;
+    acc.definite += s.counts.definite;
+    acc.possible += s.counts.possible;
+    byRegion.set(s.region, acc);
+  }
+  return Array.from(byRegion.entries()).map(([region, acc]) => ({
+    region,
+    siteCount: acc.siteCount,
+    definite: suppress(acc.definite),
+    possible: suppress(acc.possible),
+    candidates: suppress(acc.definite + acc.possible),
+    _raw: { definite: acc.definite, possible: acc.possible },
+  }));
+}
+
 /**
  * Build a biomarker subgroup slice so the demo can SHOW suppression firing.
  * Returns per-site candidate counts restricted to patients whose `field === value`.

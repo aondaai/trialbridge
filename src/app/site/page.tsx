@@ -9,11 +9,15 @@ import type { Cohort } from "@/lib/matcher/types";
 
 export const dynamic = "force-dynamic";
 
-// This screen is Camila's site.
-const SITE_ID = "site-a";
-
-export default function SitePage() {
-  const consultation = getConsultation(HERO_META.id);
+export default async function SitePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ c?: string; site?: string }>;
+}) {
+  const { c, site } = await searchParams;
+  // This screen is Camila's site by default — same persona, any consultation.
+  const SITE_ID = site || "site-a";
+  const consultation = getConsultation(c || HERO_META.id);
   if (!consultation) {
     return (
       <>

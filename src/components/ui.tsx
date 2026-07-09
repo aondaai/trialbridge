@@ -97,6 +97,12 @@ export function CriterionList({ criteria }: { criteria: Criterion[] }) {
           <span style={{ flex: 1 }}>
             {c.rawText}
             {c.confidence < 0.75 && <span className="badge-low">low-confidence · verify</span>}
+            {c.evaluability === "not_evaluable" && (
+              <span className="badge-low" style={{ background: "var(--excluded)" }}>not evaluable in this data source</span>
+            )}
+            {c.evaluability === "partial" && (
+              <span className="badge-low" style={{ background: "var(--possible)" }}>partial data coverage</span>
+            )}
           </span>
           {c.groupLabel && c.groupId && (
             <span className="muted" style={{ fontSize: 12 }}>

@@ -16,6 +16,15 @@
  * R3: ~30–40% of HER2 values are missing (site-dependent), so the softenable
  * biomarker actually exercises the unknown path and the pool isn't suspiciously clean.
  * D5: labs are sampled in each site's native units, then canonicalized at seed time.
+ *
+ * NSCLC/KRAS-G12C scenario fields (kras_g12c, pdl1_status, histology, mi_recent,
+ * prior_kras_inhibitor) are drawn from a SECOND, independently seeded RNG stream
+ * per site (`lungRng`), used only inside the `isLung` branch. This is deliberate:
+ * the shared `rng` stream drives every existing (breast-scenario) draw in a fixed
+ * sequence, and inserting new conditional draws into that stream would shift every
+ * subsequent patient's record, silently invalidating the HER2 numbers already
+ * pinned in DEMO.md/progress.md. A dedicated stream keeps breast-patient output
+ * byte-identical across regeneration.
  */
 
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -126,23 +135,53 @@ const SITES: SiteConfig[] = [
   },
 ];
 
-const OTHER_CANCERS = ["lung cancer", "colorectal cancer", "gastric cancer", "ovarian cancer"];
+// Weighted (not equal) so the NSCLC/KRAS-G12C scenario has a meaningful
+// addressable pool within the existing 3 sites — still a single weighted()
+// call either way, so this reweighting doesn't shift the RNG stream position
+// (see the RNG-safety note above); it only changes which label a given
+// non-breast patient gets.
+const OTHER_CANCERS: [string, number][] = [
+  ["lung cancer", 12],
+  ["colorectal cancer", 1],
+  ["gastric cancer", 1],
+  ["ovarian cancer", 1],
+];
 
-function makePatient(rng: RNG, site: SiteConfig, i: number): Patient {
+function makePatient(rng: RNG, site: SiteConfig, i: number, lungRng: RNG): Patient {
   const isBreast = chance(rng, site.breastShare);
-  const diagnosis = isBreast ? "breast cancer" : weighted(rng, OTHER_CANCERS.map((c) => [c, 1] as [string, number]));
+  const diagnosis = isBreast ? "breast cancer" : weighted(rng, OTHER_CANCERS);
+  const isLung = diagnosis === "lung cancer";
 
-  // Stage: this is an mBC-oriented panel → enriched for stage IV.
-  const stage = weighted<string>(rng, [
-    ["IV", 0.55],
-    ["III", 0.25],
-    ["II", 0.15],
-    ["I", 0.05],
-  ]);
+  // Stage: enriched for stage IV — for breast this reflects an mBC-oriented
+  // panel; for lung it reflects screening specifically for a 1L ADVANCED-NSCLC
+  // trial (this population isn't a general lung-cancer census). Branching the
+  // table (not adding a call) keeps the RNG stream position unaffected.
+  const stage = isLung
+    ? weighted<string>(rng, [
+        ["IV", 0.78],
+        ["III", 0.16],
+        ["II", 0.04],
+        ["I", 0.02],
+      ])
+    : weighted<string>(rng, [
+        ["IV", 0.55],
+        ["III", 0.25],
+        ["II", 0.15],
+        ["I", 0.05],
+      ]);
 
-  // prior_lines correlated with stage (metastatic patients have prior therapy).
+  // prior_lines: correlated with stage for the breast/2L-shaped population,
+  // but the NSCLC scenario is a 1L trial (most patients treatment-naive in
+  // the advanced/metastatic setting) — branch the WEIGHT TABLE by diagnosis.
+  // Still exactly one weighted() call either way, so the RNG stream position
+  // is unaffected by which table backs it (see RNG-safety note above).
   let priorLines: number | null;
-  if (stage === "IV") priorLines = weighted<number>(rng, [[0, 0.12], [1, 0.34], [2, 0.3], [3, 0.16], [4, 0.08]]);
+  if (isLung) {
+    priorLines =
+      stage === "IV"
+        ? weighted<number>(rng, [[0, 0.8], [1, 0.15], [2, 0.04], [3, 0.01]])
+        : weighted<number>(rng, [[0, 0.95], [1, 0.05]]);
+  } else if (stage === "IV") priorLines = weighted<number>(rng, [[0, 0.12], [1, 0.34], [2, 0.3], [3, 0.16], [4, 0.08]]);
   else if (stage === "III") priorLines = weighted<number>(rng, [[0, 0.6], [1, 0.3], [2, 0.1]]);
   else priorLines = weighted<number>(rng, [[0, 0.85], [1, 0.15]]);
   if (chance(rng, 0.05)) priorLines = null; // occasional missing
@@ -165,6 +204,10 @@ function makePatient(rng: RNG, site: SiteConfig, i: number): Patient {
   const er = tripleNegish ? "negative" : weighted<string>(rng, [["positive", 0.7], ["negative", 0.3]]);
   const pr = er === "positive" ? weighted<string>(rng, [["positive", 0.8], ["negative", 0.2]]) : "negative";
 
+  // Drawn unconditionally (same call, same weights) for every patient so the
+  // RNG stream position never depends on diagnosis; NSCLC's ECOG is instead
+  // overridden to null below — a genuinely different missingness pattern
+  // (structurally never coded, not a probability) from the discard pattern.
   const ecog = weighted<number>(rng, [[0, 0.35], [1, 0.45], [2, 0.15], [3, 0.05]]);
 
   const brain = weighted<string | null>(rng, [
@@ -175,6 +218,47 @@ function makePatient(rng: RNG, site: SiteConfig, i: number): Patient {
 
   const age = Math.round(normal(rng, 58, 12, 28, 86, 0));
   const sex = chance(rng, 0.98) ? "F" : "M";
+
+  // ---- NSCLC/KRAS-G12C scenario fields — drawn from the independent lungRng
+  // stream, only for lung-cancer patients (see RNG-safety note at file top). ----
+  let histology: string | null = null;
+  let krasG12c: string | null = null;
+  let pdl1Status: string | null = null;
+  let miRecent: string | null = null;
+  let priorKrasInhibitor: string | null = null;
+
+  if (isLung) {
+    // PARTIAL — nonsquamous vs squamous/mixed, ~18% missing.
+    histology = weighted<string | null>(lungRng, [
+      ["nonsquamous", 0.75],
+      ["squamous", 0.12],
+      ["mixed/neuroendocrine", 0.02],
+      [null, 0.18],
+    ]);
+
+    // NOT EVALUABLE (high-missing, not literal-100%) — only a minority of
+    // patients have documented NGS/IHC results. This IS the "testing gap"
+    // the demo narrates: ~78% untested, not a flat 100%. Tested patients
+    // skew somewhat toward qualifying (this site-EHR population is a
+    // simplification, not the cited macro prevalence — see
+    // modeledPrevalence.ts for the epidemiologically-cited layer).
+    krasG12c = chance(lungRng, 0.28)
+      ? weighted<string>(lungRng, [["positive", 0.4], ["negative", 0.6]])
+      : null;
+    pdl1Status = chance(lungRng, 0.28)
+      ? weighted<string>(lungRng, [["negative", 0.4], ["low", 0.35], ["high", 0.25]])
+      : null;
+
+    // PASS-able — ICD-coded conditions are well captured (~8% missing).
+    miRecent = chance(lungRng, 0.92)
+      ? weighted<string>(lungRng, [["absent", 0.92], ["present", 0.08]])
+      : null;
+
+    // PARTIAL — high-cost drug capture (~30% missing).
+    priorKrasInhibitor = chance(lungRng, 0.7)
+      ? weighted<string>(lungRng, [["absent", 0.97], ["present", 0.03]])
+      : null;
+  }
 
   // ---- labs in the site's native units, then canonicalize at seed time (D5) ----
   const labs: Patient["labs"] = {};
@@ -202,9 +286,20 @@ function makePatient(rng: RNG, site: SiteConfig, i: number): Patient {
     siteId: site.id,
     diagnosis,
     stage,
-    biomarkers: { her2_status: her2, er_status: er, pr_status: pr, brain_metastases: brain },
+    biomarkers: {
+      her2_status: her2,
+      er_status: er,
+      pr_status: pr,
+      brain_metastases: brain,
+      histology,
+      kras_g12c: krasG12c,
+      pdl1_status: pdl1Status,
+      mi_recent: miRecent,
+      prior_kras_inhibitor: priorKrasInhibitor,
+    },
     priorLines,
-    ecog,
+    // NOT EVALUABLE for NSCLC — structurally uncodeable, not a probability.
+    ecog: isLung ? null : ecog,
     labs,
     sex,
     age,
@@ -226,8 +321,11 @@ function main() {
 
   for (const site of SITES) {
     const rng = mulberry32(site.seed);
+    // Independent stream for the NSCLC-only fields — see RNG-safety note at
+    // file top. Offset chosen well clear of any other seed in SITES.
+    const lungRng = mulberry32(site.seed + 9000);
     const patients: Patient[] = [];
-    for (let i = 0; i < site.n; i++) patients.push(makePatient(rng, site, i));
+    for (let i = 0; i < site.n; i++) patients.push(makePatient(rng, site, i, lungRng));
 
     const file = `${site.id}.json`;
     const payload = {
@@ -250,6 +348,13 @@ function main() {
     index.push({ id: site.id, name: site.name, country: site.country, city: site.city, persona: site.persona, monthlyIncidence: site.monthlyIncidence, count: patients.length, file });
     console.log(
       `${site.id}: ${patients.length} patients | HER2 missing ${her2Missing} (${Math.round((100 * her2Missing) / patients.length)}%) | HER2+ ${her2Pos}`,
+    );
+
+    const lungPatients = patients.filter((p) => p.diagnosis === "lung cancer");
+    const krasMissing = lungPatients.filter((p) => p.biomarkers.kras_g12c == null).length;
+    const pdl1Missing = lungPatients.filter((p) => p.biomarkers.pdl1_status == null).length;
+    console.log(
+      `  lung=${lungPatients.length} | KRAS untested ${krasMissing} (${lungPatients.length ? Math.round((100 * krasMissing) / lungPatients.length) : 0}%) | PD-L1 untested ${pdl1Missing} (${lungPatients.length ? Math.round((100 * pdl1Missing) / lungPatients.length) : 0}%)`,
     );
   }
 

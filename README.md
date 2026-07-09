@@ -46,17 +46,43 @@ service layer).
 
 ## Posting a protocol (where Claude runs)
 
-At `/sponsor/new`, paste protocol text → **Claude (`claude-opus-4-8`) parses it into
-typed `Criterion[]`** via structured outputs → you verify and correct the flagged
-low-confidence rows → post. Set `ANTHROPIC_API_KEY` to run the live parse; without a
-key it falls back to the cached, human-verified criteria (clearly labelled) so the
-flow always works — this is ADR Decision 3B (parse offline, cache, verify) in action.
-Correcting a low-confidence row on screen is the trust moment: the LLM's weakest step
-is made human-auditable before anything reaches the deterministic matcher.
+At `/sponsor/new`, either **fetch a real protocol from ClinicalTrials.gov by NCT id**
+(`src/lib/ctgov/` — live call to the public CT.gov REST API v2, falls back to the
+cached hero fixture if the network's unavailable) or paste protocol text directly →
+**Claude (`claude-opus-4-8`) parses it into typed `Criterion[]`** via structured
+outputs → you verify and correct the flagged low-confidence rows → post. Set
+`ANTHROPIC_API_KEY` to run the live parse; without a key it falls back to the cached,
+human-verified criteria (clearly labelled) so the flow always works — this is ADR
+Decision 3B (parse offline, cache, verify) in action. Correcting a low-confidence row
+on screen is the trust moment: the LLM's weakest step is made human-auditable before
+anything reaches the deterministic matcher.
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...   # optional — enables the live Claude parse
+cp .env.example .env.local
+# then edit .env.local — every var is optional, the app works with none of them set
 ```
+
+## OMOP coding layer (toward OMOP-native matching)
+
+`src/lib/omop/` turns a parsed `Criterion[]` into `OmopCriterion[]` — each criterion
+coded to an OMOP CDM domain/table, a standard vocabulary concept (SNOMED/LOINC/RxNorm),
+and a clinical assertion (`PRESENT`/`ABSENT`, inclusion/exclusion respectively). This
+is the artifact PRD v4's OMOP-native matching engine needs to eventually query real
+OMOP databases (DataSUS national aggregate, DoctorAssistant NLP→OMOP row-level)
+instead of only the synthetic patients — see `/sponsor/new`'s "OMOP mapping preview."
+
+**No fabricated concept_ids.** Every `conceptId` is `0` (`needsMapping: true`) unless
+verified — either the one hardcoded OMOP Gender mapping, or a real match from your own
+Athena vocabulary bundle (`npm run build-vocab-index` — see
+[`docs/omop-vocabulary-mapping.md`](docs/omop-vocabulary-mapping.md) for the how-to and
+why-no-live-API-exists).
+
+**`src/lib/omop/datasource/`** is a port (`OmopDataSource`) + one concrete adapter
+(DuckDB reading OMOP parquet over GCS, matching PRD v4's description of DataSUS) for
+querying a *real* OMOP database, plus stub adapters and an in-memory mock for tests.
+This is unconnected plumbing, not a wired feature — there are no DataSUS/DoctorAssistant
+credentials in this repo. Fill `.env.local` (`.env.example` documents every var) and
+`npm install duckdb` yourself when you have real access to test against.
 
 ## What makes the matches trustworthy
 
@@ -156,17 +182,23 @@ Next.js (App Router, TS)
 | `src/lib/service.ts` | shared computation (demo + app use the same code) |
 | `src/lib/store.ts` | consultations/responses (counts-not-rows) |
 | `src/data/hero-protocol.ts` | the verified hero `Criterion[]` |
+| `src/lib/ctgov/` | fetch a real protocol from ClinicalTrials.gov by NCT id |
+| `src/lib/omop/` | `Criterion[] → OmopCriterion[]` OMOP coding layer |
+| `src/lib/omop/datasource/` | `OmopDataSource` port + DuckDB/GCS, stub, and mock adapters (unwired plumbing — see above) |
 | `scripts/generate-data.ts` | hybrid seeded synthetic-data generator |
+| `scripts/build-vocab-index.ts` | matches `FIELD_CONCEPT_MAP` against a real Athena bundle |
 | `scripts/demo.ts` | `npm run demo` headless proof |
 | `src/app/` | landing, `/sponsor`, `/site`, `/scorecard` |
-| `tests/matcher.test.ts` | 19 unit tests |
+| `tests/` | unit tests (matcher, parse, ctgov, omop transform/vocab/datasource) |
 
 ---
 
 ## Non-goals (v1)
 
-No real patient data · no live EHR/ClinicalTrials.gov fetch · no auth/payments/open signup ·
-no non-oncology · no real federation (v2) · no negotiation/contracting.
+No real patient data · no live EHR feed or wired OMOP database (ClinicalTrials.gov
+fetch + OMOP coding *are* implemented — DataSUS/DoctorAssistant connectivity is not) ·
+no auth/payments/open signup · no non-oncology · no real federation (v2) ·
+no negotiation/contracting.
 
 ## Post-hackathon
 

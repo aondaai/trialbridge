@@ -16,6 +16,8 @@ export interface SiteMeta {
   name: string;
   country: string;
   city: string;
+  /** Brazilian macro-region (Norte/Nordeste/Centro-Oeste/Sudeste/Sul) — drives the regional breakdown. */
+  region: string;
   persona: string;
   monthlyIncidence: number;
 }

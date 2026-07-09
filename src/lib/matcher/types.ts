@@ -30,6 +30,20 @@ export type Operator =
 
 export type CriterionValue = string | number | (string | number)[] | null;
 
+/**
+ * Whether a real-world data source (e.g. a claims/EHR extract) can actually
+ * answer this criterion for a given patient — a fact about the DATA SOURCE,
+ * not about any individual patient record. Purely descriptive metadata for
+ * the UI/report layer; the matcher's pass/fail/unknown logic (D3) already
+ * handles missingness correctly regardless of whether this is set.
+ *
+ *  - "pass_able"    — routinely captured (e.g. age, diagnosis code).
+ *  - "partial"      — sometimes captured; real, measurable missingness.
+ *  - "not_evaluable" — the data source structurally can't (or essentially
+ *    never does) capture this, independent of any one patient's record.
+ */
+export type Evaluability = "pass_able" | "partial" | "not_evaluable";
+
 export interface Criterion {
   /** Stable id, referenced by the matcher and the softening UI. */
   id: string;
@@ -51,6 +65,8 @@ export interface Criterion {
    */
   groupId?: string;
   groupLabel?: string;
+  /** Optional data-source evaluability tag — see `Evaluability`. */
+  evaluability?: Evaluability;
 }
 
 /** Per-criterion, per-patient outcome. `pass` always means "good for eligibility". */

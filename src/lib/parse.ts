@@ -9,13 +9,35 @@
  * ADR Decision 3B — parse offline, cache, verify: the demo-critical path replays
  * the cached, verified hero criteria. When ANTHROPIC_API_KEY is set, this calls
  * Claude live (shown once, live-but-safe); when it is absent OR the call fails,
- * it falls back to the cached verified artifact. Either way the matcher only ever
- * sees verified criteria.
+ * it falls back to a cached verified artifact — but ONLY for the NCT id that
+ * artifact was actually verified against (`nctId` param). The caller (the
+ * "0 · Fetch from ClinicalTrials.gov" step) supplies the id it just fetched;
+ * a manual edit to the pasted text un-trusts it client-side (see sponsor/new).
+ * Without a key AND without a matching cached fixture, this throws rather than
+ * silently attaching the wrong trial's criteria to the wrong protocol text —
+ * same "nothing honest to fall back to" discipline as ctgov/index.ts.
  */
 
 import Anthropic from "@anthropic-ai/sdk";
 import type { Criterion, Operator } from "@/lib/matcher/types";
-import { HERO_CRITERIA } from "@/data/hero-protocol";
+import { HERO_META, HERO_CRITERIA } from "@/data/hero-protocol";
+import { NSCLC_META, NSCLC_CRITERIA } from "@/data/nsclc-kras-protocol";
+
+interface CachedFixture {
+  nct: string;
+  criteria: Criterion[];
+}
+
+const CACHED_FIXTURES: CachedFixture[] = [
+  { nct: HERO_META.nct, criteria: HERO_CRITERIA },
+  { nct: NSCLC_META.nct, criteria: NSCLC_CRITERIA },
+];
+
+function findCachedFixture(nctId?: string): CachedFixture | undefined {
+  if (!nctId) return undefined;
+  const id = nctId.trim().toUpperCase();
+  return CACHED_FIXTURES.find((f) => f.nct.toUpperCase() === id);
+}
 
 export interface ParseResult {
   criteria: Criterion[];
@@ -99,13 +121,32 @@ function normalize(raw: RawCriterion[]): Criterion[] {
   });
 }
 
-const CACHED_NOTE =
-  "ANTHROPIC_API_KEY not set — showing the pre-parsed, human-verified criteria the demo runs on (ADR Decision 3B: parse offline, cache, verify). Set the key to parse pasted text live with Claude.";
+const KNOWN_NCTS = CACHED_FIXTURES.map((f) => f.nct).join(", ");
 
-/** Parse pasted protocol text into Criterion[]. Falls back to cached on no-key/error. */
-export async function parseCriteria(text: string): Promise<ParseResult> {
+function noFixtureError(nctId: string | undefined, reason: string): Error {
+  const which = nctId ? `"${nctId}"` : "this text";
+  return new Error(
+    `${reason} ${which} isn't one of the verified cached fixtures (${KNOWN_NCTS}), so there is nothing honest to fall back to. Set ANTHROPIC_API_KEY to parse arbitrary protocol text live with Claude, or fetch/paste one of the known trials.`,
+  );
+}
+
+/**
+ * Parse pasted protocol text into Criterion[]. `nctId` should be the NCT id the
+ * text actually came from (the ctgov fetch step passes it; a manual edit to the
+ * textarea un-trusts it — see sponsor/new/page.tsx). Falls back to the matching
+ * cached fixture on no-key/error; throws if no fixture matches rather than
+ * attaching an unrelated trial's criteria to this text.
+ */
+export async function parseCriteria(text: string, nctId?: string): Promise<ParseResult> {
+  const fixture = findCachedFixture(nctId);
+
   if (!process.env.ANTHROPIC_API_KEY) {
-    return { criteria: HERO_CRITERIA, source: "cached", note: CACHED_NOTE };
+    if (!fixture) throw noFixtureError(nctId, "ANTHROPIC_API_KEY not set, and");
+    return {
+      criteria: fixture.criteria,
+      source: "cached",
+      note: `ANTHROPIC_API_KEY not set — showing the pre-parsed, human-verified criteria for ${fixture.nct} (ADR Decision 3B: parse offline, cache, verify). Set the key to parse pasted text live with Claude.`,
+    };
   }
   try {
     const client = new Anthropic();
@@ -130,10 +171,11 @@ export async function parseCriteria(text: string): Promise<ParseResult> {
       note: `Parsed live by ${resp.model}. Verify low-confidence rows (flagged) before posting — corrections here are the trust step.`,
     };
   } catch (err) {
+    if (!fixture) throw noFixtureError(nctId, `Live parse failed (${(err as Error).message}); fell back would need a cached fixture, but`);
     return {
-      criteria: HERO_CRITERIA,
+      criteria: fixture.criteria,
       source: "cached",
-      note: `Live parse failed (${(err as Error).message}); fell back to the cached verified criteria so the flow still works.`,
+      note: `Live parse failed (${(err as Error).message}); fell back to the cached verified ${fixture.nct} criteria so the flow still works.`,
     };
   }
 }

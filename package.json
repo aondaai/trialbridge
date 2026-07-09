@@ -13,7 +13,8 @@
     "test:watch": "./node_modules/.bin/vitest",
     "generate-data": "./node_modules/.bin/tsx scripts/generate-data.ts",
     "db:seed": "./node_modules/.bin/tsx prisma/seed.ts",
-    "demo": "./node_modules/.bin/tsx scripts/demo.ts"
+    "demo": "./node_modules/.bin/tsx scripts/demo.ts",
+    "build-vocab-index": "./node_modules/.bin/tsx scripts/build-vocab-index.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

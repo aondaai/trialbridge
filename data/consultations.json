@@ -137,5 +137,273 @@
     ],
     "heroBottleneckHandle": "her2_status",
     "createdAt": "2026-07-06T09:00:00.000Z"
+  },
+  {
+    "id": "nsclc-kras-g12c",
+    "sponsorName": "Marcus / Meridian Oncology (composite persona)",
+    "title": "Phase III — Sotorasib + chemo vs. pembrolizumab + chemo, 1L KRAS G12C+/PD-L1- NSCLC",
+    "nct": "NCT05920356",
+    "sourceNote": "Modeled on CodeBreaK 202 (Amgen), Phase 3, RECRUITING — first-line, nonsquamous advanced/metastatic NSCLC, KRAS G12C-positive AND PD-L1-negative. Criteria simplified & hand-transcribed for the demo; verify against ClinicalTrials.gov before the pitch.",
+    "protocolText": "Key Eligibility Criteria (simplified)\n\nInclusion:\n- Age >= 18 years.\n- Nonsquamous non-small-cell lung cancer (NSCLC).\n- Stage IV (advanced/metastatic) disease.\n- KRAS p.G12C mutation (central or central-confirmed).\n- PD-L1-negative (central or central-confirmed).\n- No prior systemic anticancer therapy in the metastatic/non-curable setting.\n- ECOG performance status 0 or 1.\n\nExclusion:\n- Symptomatic or untreated brain metastases.\n- Myocardial infarction within 6 months, or unstable arrhythmia/angina.\n- Prior treatment with a KRAS G12C inhibitor.",
+    "criteria": [
+      {
+        "id": "n_age",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "gte",
+        "value": 18,
+        "rawText": "Age >= 18 years.",
+        "confidence": 0.99,
+        "evaluability": "pass_able"
+      },
+      {
+        "id": "n_dx",
+        "kind": "inclusion",
+        "field": "diagnosis",
+        "operator": "eq",
+        "value": "lung cancer",
+        "rawText": "Non-small-cell lung cancer (NSCLC).",
+        "confidence": 0.95,
+        "evaluability": "pass_able"
+      },
+      {
+        "id": "n_histology",
+        "kind": "inclusion",
+        "field": "histology",
+        "operator": "in",
+        "value": [
+          "nonsquamous"
+        ],
+        "rawText": "Nonsquamous histology.",
+        "confidence": 0.85,
+        "evaluability": "partial"
+      },
+      {
+        "id": "n_stage",
+        "kind": "inclusion",
+        "field": "stage",
+        "operator": "in",
+        "value": [
+          "IV"
+        ],
+        "rawText": "Stage IV (advanced/metastatic) disease.",
+        "confidence": 0.9,
+        "evaluability": "pass_able"
+      },
+      {
+        "id": "n_kras",
+        "kind": "inclusion",
+        "field": "kras_g12c",
+        "operator": "in",
+        "value": [
+          "positive"
+        ],
+        "rawText": "KRAS p.G12C mutation (central or central-confirmed).",
+        "confidence": 0.9,
+        "evaluability": "not_evaluable"
+      },
+      {
+        "id": "n_pdl1",
+        "kind": "inclusion",
+        "field": "pdl1_status",
+        "operator": "in",
+        "value": [
+          "negative"
+        ],
+        "rawText": "PD-L1-negative (central or central-confirmed).",
+        "confidence": 0.88,
+        "evaluability": "not_evaluable"
+      },
+      {
+        "id": "n_prior_tx",
+        "kind": "inclusion",
+        "field": "prior_lines",
+        "operator": "lte",
+        "value": 0,
+        "rawText": "No prior systemic anticancer therapy in the metastatic/non-curable setting.",
+        "confidence": 0.75,
+        "evaluability": "pass_able"
+      },
+      {
+        "id": "n_ecog",
+        "kind": "inclusion",
+        "field": "ecog",
+        "operator": "lte",
+        "value": 1,
+        "rawText": "ECOG performance status 0 or 1.",
+        "confidence": 0.9,
+        "evaluability": "not_evaluable"
+      },
+      {
+        "id": "n_brain",
+        "kind": "exclusion",
+        "field": "brain_metastases",
+        "operator": "eq",
+        "value": "present",
+        "rawText": "Symptomatic or untreated brain metastases.",
+        "confidence": 0.85,
+        "evaluability": "partial"
+      },
+      {
+        "id": "n_mi",
+        "kind": "exclusion",
+        "field": "mi_recent",
+        "operator": "eq",
+        "value": "present",
+        "rawText": "Myocardial infarction within 6 months, or unstable arrhythmia/angina.",
+        "confidence": 0.85,
+        "evaluability": "pass_able"
+      },
+      {
+        "id": "n_prior_kras_inhibitor",
+        "kind": "exclusion",
+        "field": "prior_kras_inhibitor",
+        "operator": "eq",
+        "value": "present",
+        "rawText": "Prior treatment with a KRAS G12C inhibitor.",
+        "confidence": 0.85,
+        "evaluability": "partial"
+      }
+    ],
+    "heroBottleneckHandle": "pdl1_status",
+    "createdAt": "2026-07-08T09:00:00.000Z"
+  },
+  {
+    "id": "congenital-adrenal-hyper-mrd0jz1j",
+    "sponsorName": "Marcus / Meridian Oncology (composite persona)",
+    "title": "Congenital Adrenal Hyperplasia: Calcium Channels as Therapeutic Targets",
+    "nct": "NCT00000102",
+    "protocolText": "Inclusion Criteria:\n\n* diagnosed with Congenital Adrenal Hyperplasia (CAH)\n* normal ECG during baseline evaluation\n\nExclusion Criteria:\n\n* history of liver disease, or elevated liver function tests\n* history of cardiovascular disease",
+    "criteria": [
+      {
+        "id": "c_age",
+        "kind": "inclusion",
+        "field": "age",
+        "operator": "gte",
+        "value": 18,
+        "rawText": "Age >= 18 years.",
+        "confidence": 0.99
+      },
+      {
+        "id": "c_dx",
+        "kind": "inclusion",
+        "field": "diagnosis",
+        "operator": "eq",
+        "value": "breast cancer",
+        "rawText": "Histologically confirmed breast cancer.",
+        "confidence": 0.96
+      },
+      {
+        "id": "c_stage",
+        "kind": "inclusion",
+        "field": "stage",
+        "operator": "in",
+        "value": [
+          "IV"
+        ],
+        "rawText": "Unresectable and/or metastatic (stage IV) disease.",
+        "confidence": 0.9
+      },
+      {
+        "id": "c_her2",
+        "kind": "inclusion",
+        "field": "her2_status",
+        "operator": "in",
+        "value": [
+          "positive"
+        ],
+        "rawText": "HER2-positive (IHC 3+ or ISH-amplified).",
+        "confidence": 0.82,
+        "groupId": "her2_status",
+        "groupLabel": "HER2 status = positive"
+      },
+      {
+        "id": "c_ecog",
+        "kind": "inclusion",
+        "field": "ecog",
+        "operator": "lte",
+        "value": 1,
+        "rawText": "ECOG performance status 0 or 1.",
+        "confidence": 0.94
+      },
+      {
+        "id": "c_prior",
+        "kind": "inclusion",
+        "field": "prior_lines",
+        "operator": "gte",
+        "value": 1,
+        "rawText": "At least one prior line of therapy in the metastatic setting.",
+        "confidence": 0.7
+      },
+      {
+        "id": "c_organ_creat",
+        "kind": "inclusion",
+        "field": "creatinine",
+        "operator": "lte",
+        "value": 1.5,
+        "unit": "mg/dL",
+        "rawText": "Adequate organ function: creatinine <= 1.5 mg/dL.",
+        "confidence": 0.88,
+        "groupId": "organ_function",
+        "groupLabel": "Adequate organ function"
+      },
+      {
+        "id": "c_organ_hgb",
+        "kind": "inclusion",
+        "field": "hemoglobin",
+        "operator": "gte",
+        "value": 9,
+        "unit": "g/dL",
+        "rawText": "Adequate organ function: hemoglobin >= 9 g/dL.",
+        "confidence": 0.88,
+        "groupId": "organ_function",
+        "groupLabel": "Adequate organ function"
+      },
+      {
+        "id": "c_organ_plt",
+        "kind": "inclusion",
+        "field": "platelets",
+        "operator": "gte",
+        "value": 100,
+        "unit": "10^9/L",
+        "rawText": "Adequate organ function: platelets >= 100 x10^9/L.",
+        "confidence": 0.88,
+        "groupId": "organ_function",
+        "groupLabel": "Adequate organ function"
+      },
+      {
+        "id": "c_organ_bili",
+        "kind": "inclusion",
+        "field": "bilirubin",
+        "operator": "lte",
+        "value": 1.5,
+        "unit": "mg/dL",
+        "rawText": "Adequate organ function: total bilirubin <= 1.5 mg/dL.",
+        "confidence": 0.88,
+        "groupId": "organ_function",
+        "groupLabel": "Adequate organ function"
+      },
+      {
+        "id": "c_brain",
+        "kind": "exclusion",
+        "field": "brain_metastases",
+        "operator": "eq",
+        "value": "present",
+        "rawText": "Active (untreated/symptomatic) brain metastases.",
+        "confidence": 0.85
+      },
+      {
+        "id": "c_lvef",
+        "kind": "exclusion",
+        "field": "ejection_fraction",
+        "operator": "lt",
+        "value": 50,
+        "unit": "%",
+        "rawText": "Left ventricular ejection fraction < 50%.",
+        "confidence": 0.8
+      }
+    ],
+    "heroBottleneckHandle": "her2_status",
+    "createdAt": "2026-07-09T04:35:25.351Z"
   }
 ]

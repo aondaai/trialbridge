@@ -6,7 +6,7 @@
 
 import type { Criterion, Patient, PatientEvaluation } from "@/lib/matcher/types";
 import { evaluateCohort, countCohorts, CohortCounts } from "@/lib/matcher/engine";
-import { aggregate, AggregatedView, biomarkerSlice, SliceRow } from "@/lib/matcher/aggregate";
+import { aggregate, AggregatedView, aggregateByRegion, RegionAggregate, biomarkerSlice, SliceRow } from "@/lib/matcher/aggregate";
 import { softenCriterion, rankBottlenecks, SofteningResult } from "@/lib/matcher/soften";
 import { estimateFeasibility, FeasibilityEstimate } from "@/lib/feasibility";
 import { loadAllSites, SiteDataset, SiteMeta } from "@/lib/data/sites";
@@ -50,6 +50,36 @@ export function combinedBottlenecks(sites: EvaluatedSite[], criteria: Criterion[
   return rankBottlenecks(sites.flatMap((s) => s.patients), criteria);
 }
 
+export interface RegionRow extends RegionAggregate {
+  monthlyIncidence: number;
+  feasibility: FeasibilityEstimate;
+}
+
+/**
+ * Group evaluated sites by Brazilian macro-region and attach a per-region
+ * feasibility estimate (summed monthly incidence, same R1/R2 model as a
+ * single site). Sorted by deliverable estimate, biggest region first.
+ */
+export function regionBreakdown(sites: EvaluatedSite[], months = 6): RegionRow[] {
+  const byRegion = aggregateByRegion(sites.map((s) => ({ region: s.meta.region, counts: s.counts })));
+  const incidenceByRegion = new Map<string, number>();
+  for (const s of sites) {
+    incidenceByRegion.set(s.meta.region, (incidenceByRegion.get(s.meta.region) ?? 0) + s.meta.monthlyIncidence);
+  }
+  return byRegion
+    .map((r) => {
+      const monthlyIncidence = incidenceByRegion.get(r.region) ?? 0;
+      const feasibility = estimateFeasibility({
+        definite: r._raw.definite,
+        possible: r._raw.possible,
+        monthlyIncidence,
+        months,
+      });
+      return { ...r, monthlyIncidence, feasibility };
+    })
+    .sort((a, b) => b.feasibility.enrollableEstimate - a.feasibility.enrollableEstimate);
+}
+
 /** Per-site feasibility estimate (R1 funnel + R2 rate). */
 export function siteFeasibility(site: EvaluatedSite, months = 6): FeasibilityEstimate {
   return estimateFeasibility({
@@ -73,17 +103,37 @@ export function suppressionSlice(
   );
 }
 
-/** HER2 missingness among the protocol-relevant (breast-cancer) population — R3 evidence. */
-export function biomarkerMissingnessAmongBreast(sites: EvaluatedSite[], field = "her2_status"): { siteId: string; siteName: string; breast: number; missing: number; pct: number }[] {
+/**
+ * Missingness of one biomarker/data field among a diagnosis-filtered
+ * population — R3 realism evidence, and the "testing gap" stat for any
+ * not-evaluable field (e.g. kras_g12c/pdl1_status among lung-cancer
+ * patients). The denominator is the diagnosis subgroup, not the whole site.
+ */
+export function biomarkerMissingness(
+  sites: EvaluatedSite[],
+  diagnosis: string,
+  field: string,
+): { siteId: string; siteName: string; cohort: number; missing: number; pct: number }[] {
   return sites.map((s) => {
-    const breast = s.patients.filter((p) => p.diagnosis === "breast cancer");
-    const missing = breast.filter((p) => p.biomarkers[field] == null).length;
+    const cohort = s.patients.filter((p) => p.diagnosis === diagnosis);
+    const missing = cohort.filter((p) => p.biomarkers[field] == null).length;
     return {
       siteId: s.meta.id,
       siteName: s.meta.name,
-      breast: breast.length,
+      cohort: cohort.length,
       missing,
-      pct: breast.length ? Math.round((100 * missing) / breast.length) : 0,
+      pct: cohort.length ? Math.round((100 * missing) / cohort.length) : 0,
     };
   });
+}
+
+/** HER2 missingness among the protocol-relevant (breast-cancer) population — R3 evidence. */
+export function biomarkerMissingnessAmongBreast(sites: EvaluatedSite[], field = "her2_status"): { siteId: string; siteName: string; breast: number; missing: number; pct: number }[] {
+  return biomarkerMissingness(sites, "breast cancer", field).map((r) => ({
+    siteId: r.siteId,
+    siteName: r.siteName,
+    breast: r.cohort,
+    missing: r.missing,
+    pct: r.pct,
+  }));
 }

@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { loadSite, loadAllSites } from "@/lib/data/sites";
 import { getConsultation } from "@/lib/store";
-import { evaluateDataset } from "@/lib/service";
+import { evaluateDataset, regionBreakdown } from "@/lib/service";
 import { rankBottlenecks } from "@/lib/matcher/soften";
 import { estimateFeasibility } from "@/lib/feasibility";
 import { HERO_META } from "@/data/hero-protocol";
@@ -9,27 +10,130 @@ import { PrintButton } from "@/components/PrintButton";
 
 export const dynamic = "force-dynamic";
 
+function fmt(n: number | "<5"): string {
+  return n === "<5" ? "<5" : String(n);
+}
+
+/** Build a `/scorecard` query string, dropping empty params. */
+function scorecardHref(params: { c?: string; view?: string; site?: string }): string {
+  const sp = new URLSearchParams();
+  if (params.c) sp.set("c", params.c);
+  if (params.view) sp.set("view", params.view);
+  if (params.site) sp.set("site", params.site);
+  const qs = sp.toString();
+  return qs ? `/scorecard?${qs}` : "/scorecard";
+}
+
 export default async function ScorecardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ site?: string }>;
+  searchParams: Promise<{ site?: string; view?: string; c?: string }>;
 }) {
-  const { site } = await searchParams;
-  const siteId = site ?? loadAllSites()[0].site.id;
-  const consultation = getConsultation(HERO_META.id);
-  const ds = loadSite(siteId);
+  const { site, view, c } = await searchParams;
+  const consultation = getConsultation(c ?? HERO_META.id);
 
   if (!consultation) {
     return (
       <>
         <TopBar />
         <main className="wrap">
-          <p>No consultation seeded. Run <code>npm run db:seed</code>.</p>
+          <p>
+            {c
+              ? <>No consultation found for id <code>{c}</code>.</>
+              : <>No consultation seeded. Run <code>npm run db:seed</code>.</>}
+          </p>
         </main>
       </>
     );
   }
 
+  if (view === "brasil") {
+    const allSites = loadAllSites();
+    const evaluatedSites = allSites.map((ds) => evaluateDataset(ds, consultation.criteria));
+    const regions = regionBreakdown(evaluatedSites);
+    const totalDefinite = evaluatedSites.reduce((s, e) => s + e.counts.definite, 0);
+    const totalPossible = evaluatedSites.reduce((s, e) => s + e.counts.possible, 0);
+
+    return (
+      <>
+        <TopBar />
+        <main className="wrap">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+            <h1 style={{ margin: 0 }}>Feasibility scorecard — Brazil, by region</h1>
+            <PrintButton />
+          </div>
+          <p className="muted" style={{ marginTop: 4 }}>
+            {allSites.length} site{allSites.length === 1 ? "" : "s"} across{" "}
+            {regions.length} region{regions.length === 1 ? "" : "s"} ·{" "}
+            <Link href={scorecardHref({ c })} className="no-print">per-site scorecard →</Link>
+          </p>
+
+          <div className="card">
+            <h2>{consultation.title}</h2>
+            <p className="sub">
+              Sponsor {consultation.sponsorName} · ref {consultation.nct}
+            </p>
+            <div style={{ margin: "12px 0" }}>
+              <CohortBar
+                definite={totalDefinite}
+                possible={totalPossible}
+                excluded={evaluatedSites.reduce((s, e) => s + e.counts.excluded, 0)}
+              />
+              <CohortLegend />
+            </div>
+          </div>
+
+          <div className="card">
+            <h2>Candidate pool by region</h2>
+            <div className="table-scroll">
+              <table className="data">
+                <thead>
+                  <tr>
+                    <th>Region</th>
+                    <th className="num">Sites</th>
+                    <th className="num">Definite</th>
+                    <th className="num">Possible</th>
+                    <th className="num">Candidates</th>
+                    <th className="num">Monthly incidence</th>
+                    <th className="num">≈ enrollable / 6mo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {regions.map((r) => (
+                    <tr key={r.region}>
+                      <td>{r.region}</td>
+                      <td className="num">{r.siteCount}</td>
+                      <td className="num">{fmt(r.definite)}</td>
+                      <td className="num">{fmt(r.possible)}</td>
+                      <td className="num">
+                        <strong>{fmt(r.candidates)}</strong>
+                      </td>
+                      <td className="num">{r.monthlyIncidence}/mo</td>
+                      <td className="num">
+                        <strong>~{r.feasibility.enrollableEstimate}</strong>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+              Each region here is currently a single site — the breakdown becomes
+              a real multi-site rollup as more sites per region come online.
+            </p>
+          </div>
+
+          <p className="muted" style={{ fontSize: 12 }}>
+            Generated by TrialBridge (Elegível). Counts only — no patient rows.
+            Synthetic/de-identified data; {consultation.sourceNote}
+          </p>
+        </main>
+      </>
+    );
+  }
+
+  const siteId = site ?? loadAllSites()[0].site.id;
+  const ds = loadSite(siteId);
   const evaluated = evaluateDataset(ds, consultation.criteria);
   const { counts } = evaluated;
   const bottleneck = rankBottlenecks(ds.patients, consultation.criteria)[0];
@@ -49,7 +153,8 @@ export default async function ScorecardPage({
           <PrintButton />
         </div>
         <p className="muted" style={{ marginTop: 4 }}>
-          {ds.site.name} — {ds.site.city}, {ds.site.country}
+          {ds.site.name} — {ds.site.city}, {ds.site.region} ·{" "}
+          <Link href={scorecardHref({ view: "brasil", c })} className="no-print">national breakdown →</Link>
         </p>
 
         <div className="card">

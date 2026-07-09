@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./claude.css";
+import "./landing.css";
 
 export const metadata: Metadata = {
   title: "TrialBridge — Elegível",

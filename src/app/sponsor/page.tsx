@@ -3,6 +3,7 @@ import { buildSponsorView } from "@/lib/sponsor-view";
 import { HERO_META } from "@/data/hero-protocol";
 import { TopBar, PrivacyBanner, CohortBar, CriterionList } from "@/components/ui";
 import { SofteningPanel } from "@/components/SofteningPanel";
+import { ModeledFunnelPanel } from "@/components/ModeledFunnelPanel";
 
 // Always read the live store (a site may have just submitted).
 export const dynamic = "force-dynamic";
@@ -29,7 +30,7 @@ export default async function SponsorPage({
     );
   }
 
-  const { consultation, responded, waitingOn, totals, feasibility, softening } = view;
+  const { consultation, responded, waitingOn, totals, feasibility, softening, modeledFunnel, regions } = view;
 
   return (
     <>
@@ -89,7 +90,7 @@ export default async function SponsorPage({
                       <strong>{fmt(r.candidates)}</strong>
                     </td>
                     <td className="num">
-                      <Link href={`/scorecard?site=${r.siteId}`} className="no-print">
+                      <Link href={`/scorecard?site=${r.siteId}&c=${consultation.id}`} className="no-print">
                         scorecard →
                       </Link>
                     </td>
@@ -114,6 +115,53 @@ export default async function SponsorPage({
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Regional breakdown — responding sites grouped by Brazilian macro-region */}
+        <div className="card">
+          <h2>Breakdown by region (Brazil)</h2>
+          <p className="sub">
+            Same candidate pool, grouped by macro-region instead of by site —
+            {" "}<Link href={`/scorecard?view=brasil&c=${consultation.id}`} className="no-print">open as a national scorecard →</Link>
+          </p>
+          <div className="table-scroll">
+            <table className="data">
+              <thead>
+                <tr>
+                  <th>Region</th>
+                  <th className="num">Sites</th>
+                  <th className="num">Definite</th>
+                  <th className="num">Possible</th>
+                  <th className="num">Candidates</th>
+                  <th className="num">Monthly incidence</th>
+                  <th className="num">≈ enrollable / 6mo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {regions.map((r) => (
+                  <tr key={r.region}>
+                    <td>{r.region}</td>
+                    <td className="num">{r.siteCount}</td>
+                    <td className="num">{fmt(r.definite)}</td>
+                    <td className="num">{fmt(r.possible)}</td>
+                    <td className="num">
+                      <strong>{fmt(r.candidates)}</strong>
+                    </td>
+                    <td className="num">{r.monthlyIncidence}/mo</td>
+                    <td className="num">
+                      <strong>~{r.feasibility.enrollableEstimate}</strong>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {regions.length <= 1 && (
+            <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+              Only one region responding so far — this table becomes useful once sites
+              from more than one macro-region are live.
+            </p>
+          )}
         </div>
 
         {/* Deliverable estimate — funnel + rate */}
@@ -146,6 +194,14 @@ export default async function SponsorPage({
           <h2>Protocol softening — what loosening a criterion would do</h2>
           <SofteningPanel softening={softening} heroHandle={consultation.heroBottleneckHandle} />
         </div>
+
+        {/* Modeled-prevalence funnel — only for protocols with not-evaluable gating criteria */}
+        {modeledFunnel && (
+          <div className="card">
+            <h2>Addressable vs. biomarker-eligible — what the data can and can&apos;t prove</h2>
+            <ModeledFunnelPanel view={modeledFunnel} />
+          </div>
+        )}
 
         {/* Parsed criteria read-back */}
         <div className="card">

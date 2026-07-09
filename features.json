@@ -130,5 +130,17 @@
     "description": "Credibility homework: adversarially-verified pitch stats + NCT verification",
     "file": "docs/citations.md",
     "passes": true
+  },
+  {
+    "id": "F023",
+    "description": "Feasibility scorecard region breakdown: SiteMeta.region + aggregateByRegion/regionBreakdown, /sponsor regional table, /scorecard?view=brasil national rollup",
+    "file": "src/lib/service.ts",
+    "passes": true
+  },
+  {
+    "id": "F024",
+    "description": "Fixed two fragilities found in a live end-to-end test: (a) /scorecard was hardcoded to the hero consultation, now reads ?c=; (b) no-key parse fallback silently attached hero criteria to unrelated protocol text, now nct-gated and throws honestly on mismatch",
+    "file": "src/lib/parse.ts",
+    "passes": true
   }
 ]

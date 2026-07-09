@@ -80,5 +80,66 @@ as HER2-positive stays the highlighted gate):
 
 ---
 
+## Second protocol — NCT05920356 — ✅ VERIFIED, keep it
+
+Confirmed as **CodeBreaK 202** (Amgen): Phase 3, RECRUITING — sotorasib +
+platinum-doublet chemotherapy vs. pembrolizumab + platinum-doublet
+chemotherapy, **first-line**, nonsquamous advanced/metastatic NSCLC,
+**KRAS G12C-positive AND PD-L1-negative**. N=750, 383 sites, including 21 in
+Brazil. Both molecular gates (KRAS G12C, PD-L1-negative) are real, central-lab-
+confirmed eligibility criteria — so this fully supports the demo's honesty
+point: two of the criteria that define the trial population sit on data a
+claims-style source structurally can't observe.
+
+Our simplified criteria differ from the real protocol (all safe for a demo as
+long as the two molecular gates stay the highlighted "not evaluable" rows):
+- Real scope is stage IV **or** unresectable/advanced IIIB–IIIC; our "stage
+  IV only" is narrower.
+- Real molecular requirements are central-lab NGS (KRAS) and IHC/TPS scoring
+  (PD-L1); we don't sub-type further (e.g. PD-L1 TPS bands beyond negative/
+  low/high).
+- Real prior-therapy requirement is specific to the metastatic/non-curable
+  setting; our synthetic data's "prior_lines" is a coarser proxy.
+- Real exclusions also include a broader cardiac/organ panel; we capture
+  brain metastases, recent MI, and prior KRAS G12C inhibitor only.
+
+**If asked "are these the real criteria?"** — say: *"Modeled on CodeBreaK 202
+and simplified for the demo; nonsquamous histology, stage IV, KRAS G12C,
+PD-L1-negative, and no prior systemic therapy are all genuine gates. Exact
+sub-typing (PD-L1 TPS bands, staging detail) is simplified."*
+
+### Prevalence rates behind the modeled-eligible funnel
+
+The `src/lib/modeledPrevalence.ts` module scales the matcher's OBSERVED
+addressable pool into a `MODELED` biomarker-eligible estimate using two
+cited rates:
+
+- **KRAS G12C prevalence in NSCLC ≈ 13–15%** (poor-prognosis, smoker-enriched
+  subgroup) — Gálffy et al., "Targeting KRAS Mutant Lung Cancer," *Pathology
+  and Oncology Research* 2024;30:1611715, DOI
+  [10.3389/pore.2024.1611715](https://doi.org/10.3389/pore.2024.1611715).
+- **PD-L1-negative vs. negative-or-low (TPS 0–49%) — Beat 3's softening
+  lever.** Remon et al., "KRAS G12C-mutant NSCLC: first-line treatment
+  strategies," *Cancer Treatment Reviews* 2026, DOI
+  [10.1016/j.ctrv.2026.103144](https://doi.org/10.1016/j.ctrv.2026.103144).
+  Per this source, KRAS-inhibitor + immunotherapy combinations look most
+  promising in **high PD-L1**, while chemo-immunotherapy regimens give more
+  consistent benefit **irrespective of PD-L1** — CodeBreaK 202 deliberately
+  restricts to PD-L1-negative (where IO monotherapy underperforms) as the
+  cleanest population to isolate a KRAS-inhibitor effect from a
+  pembrolizumab-chemo control. Widening to PD-L1 1–49% enlarges the
+  addressable pool but muddies that rationale — the trade the demo narrates
+  when Marcus clicks "widen."
+
+**If asked "are these prevalence numbers real?"** — say: *"Yes — KRAS G12C
+~13–15% of NSCLC and the PD-L1 negative-vs-negative-or-low split are both
+PubMed-cited (Gálffy 2024, Remon 2026). The resulting patient COUNTS
+(~1,900 addressable, ~75/yr modeled-eligible, illustrative against the
+seeded synthetic panel) are demo-scale extrapolations, not observed data —
+labeled MODELED throughout, same discipline as the funnel-discount numbers
+above."*
+
+---
+
 *Generated from an adversarial research pass (11 agents, primary-source tracing +
 refutation). Re-verify any figure you quote verbatim; sourcing drifts over time.*

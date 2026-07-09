@@ -8,12 +8,35 @@
 
 import { getConsultation, loadResponses, StoredResponse } from "@/lib/store";
 import { loadAllSites } from "@/lib/data/sites";
-import { evaluateDataset, EvaluatedSite } from "@/lib/service";
+import { evaluateDataset, EvaluatedSite, biomarkerMissingness, regionBreakdown, RegionRow } from "@/lib/service";
 import { aggregate } from "@/lib/matcher/aggregate";
 import { softenableHandles, softenCriterion } from "@/lib/matcher/soften";
 import { evaluateCohort } from "@/lib/matcher/engine";
 import { estimateFeasibility } from "@/lib/feasibility";
+import {
+  estimateModeledEligible,
+  ModeledFunnelEstimate,
+  KRAS_G12C_PREVALENCE,
+  PDL1_NEGATIVE_ONLY,
+  PDL1_NEGATIVE_OR_LOW,
+} from "@/lib/modeledPrevalence";
 import type { Criterion } from "@/lib/matcher/types";
+
+/**
+ * The modeled-prevalence funnel section — only populated when the protocol
+ * has not-evaluable gating criteria (see modeledPrevalence.ts). Wiring is
+ * specific to the NSCLC/KRAS-G12C fields today (kras_g12c + pdl1_status);
+ * a broader per-field prevalence-assumption registry is the natural v2
+ * extension if a third not-evaluable-gated scenario is added.
+ */
+export interface ModeledFunnelView {
+  /** Observed pool this layer scales from — definite+possible across responded sites. */
+  addressablePool: number;
+  testingGap: { field: string; label: string; pct: number }[];
+  baseline: ModeledFunnelEstimate;
+  widened: ModeledFunnelEstimate;
+  widenedLabel: string;
+}
 
 export interface SofteningRow {
   handle: string;
@@ -61,6 +84,10 @@ export interface SponsorView {
   };
   softening: SofteningRow[];
   baselineCandidates: number;
+  /** Present only when the protocol has not-evaluable gating criteria. */
+  modeledFunnel?: ModeledFunnelView;
+  /** Candidate pool grouped by Brazilian macro-region, across responding sites. */
+  regions: RegionRow[];
 }
 
 export function buildSponsorView(consultationId: string): SponsorView | null {
@@ -128,6 +155,32 @@ export function buildSponsorView(consultationId: string): SponsorView | null {
 
   const rawCandidates = responses.reduce((s, r) => s + r.definite + r.possible, 0);
 
+  // Modeled-prevalence funnel — only for protocols with not-evaluable gating
+  // criteria (see ModeledFunnelView docstring for the current wiring scope).
+  const notEvaluableFields = new Set(
+    consultation.criteria.filter((c) => c.evaluability === "not_evaluable").map((c) => c.field),
+  );
+  let modeledFunnel: SponsorView["modeledFunnel"];
+  if (notEvaluableFields.has("kras_g12c") && notEvaluableFields.has("pdl1_status")) {
+    const missingnessBySite = respondedDatasets.map((ds) => evaluateDataset(ds, consultation.criteria));
+    const testingGap = [
+      { field: "kras_g12c", label: "KRAS G12C" },
+      { field: "pdl1_status", label: "PD-L1 status" },
+    ].map(({ field, label }) => {
+      const rows = biomarkerMissingness(missingnessBySite, "lung cancer", field);
+      const cohort = rows.reduce((s, r) => s + r.cohort, 0);
+      const missing = rows.reduce((s, r) => s + r.missing, 0);
+      return { field, label, pct: cohort ? Math.round((100 * missing) / cohort) : 0 };
+    });
+    modeledFunnel = {
+      addressablePool: rawCandidates,
+      testingGap,
+      baseline: estimateModeledEligible({ addressablePool: rawCandidates, assumptions: [KRAS_G12C_PREVALENCE, PDL1_NEGATIVE_ONLY] }),
+      widened: estimateModeledEligible({ addressablePool: rawCandidates, assumptions: [KRAS_G12C_PREVALENCE, PDL1_NEGATIVE_OR_LOW] }),
+      widenedLabel: PDL1_NEGATIVE_OR_LOW.label,
+    };
+  }
+
   return {
     consultation: {
       id: consultation.id,
@@ -149,5 +202,7 @@ export function buildSponsorView(consultationId: string): SponsorView | null {
     feasibility: { screeningPool, incidentOverWindow, enrollableEstimate, months, screenToEnroll: 0.3 },
     softening,
     baselineCandidates: rawCandidates,
+    modeledFunnel,
+    regions: regionBreakdown(evaluated),
   };
 }

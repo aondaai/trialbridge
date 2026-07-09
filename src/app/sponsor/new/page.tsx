@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Criterion } from "@/lib/matcher/types";
+import type { OmopCriterion } from "@/lib/omop/types";
 import { HERO_PROTOCOL_TEXT, HERO_META } from "@/data/hero-protocol";
 import { TopBar } from "@/components/ui";
 
@@ -22,16 +23,85 @@ interface ParseResult {
   note: string;
 }
 
+interface CtGovFetchResult {
+  protocol: {
+    nctId: string;
+    title: string;
+    eligibilityCriteria: string;
+    sponsor: string | null;
+    sourceUrl: string;
+  };
+  source: "live" | "cached";
+  note: string;
+}
+
 export default function NewConsultationPage() {
   const router = useRouter();
   const [text, setText] = useState(HERO_PROTOCOL_TEXT);
   const [title, setTitle] = useState<string>(HERO_META.title);
   const [nct, setNct] = useState<string>(HERO_META.nct);
+  // True only while `text` is known to actually correspond to `nct` (freshly
+  // fetched, or the untouched default) — a manual edit un-trusts it so the
+  // no-API-key fallback can't attach an unrelated trial's cached criteria to
+  // whatever the user just typed. See src/lib/parse.ts.
+  const [textMatchesNct, setTextMatchesNct] = useState(true);
   const [parsing, setParsing] = useState(false);
   const [posting, setPosting] = useState(false);
   const [result, setResult] = useState<ParseResult | null>(null);
   const [rows, setRows] = useState<Criterion[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const [nctInput, setNctInput] = useState<string>(HERO_META.nct);
+  const [fetchingCt, setFetchingCt] = useState(false);
+  const [ctResult, setCtResult] = useState<CtGovFetchResult | null>(null);
+
+  const [omopRows, setOmopRows] = useState<OmopCriterion[] | null>(null);
+  const [mappingOmop, setMappingOmop] = useState(false);
+
+  async function fetchFromCtGov() {
+    setFetchingCt(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/ctgov", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ nctId: nctInput }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? "ClinicalTrials.gov fetch failed");
+      const r = (await res.json()) as CtGovFetchResult;
+      setCtResult(r);
+      setText(r.protocol.eligibilityCriteria);
+      if (r.protocol.title) setTitle(r.protocol.title);
+      setNct(r.protocol.nctId);
+      setTextMatchesNct(true);
+      setResult(null);
+      setRows([]);
+      setOmopRows(null);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setFetchingCt(false);
+    }
+  }
+
+  async function mapToOmop() {
+    setMappingOmop(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/omop", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ criteria: rows }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? "OMOP mapping failed");
+      const { omopCriteria } = (await res.json()) as { omopCriteria: OmopCriterion[] };
+      setOmopRows(omopCriteria);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setMappingOmop(false);
+    }
+  }
 
   async function parse() {
     setParsing(true);
@@ -40,7 +110,7 @@ export default function NewConsultationPage() {
       const res = await fetch("/api/parse", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, nctId: textMatchesNct ? nct : undefined }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "parse failed");
       const r = (await res.json()) as ParseResult;
@@ -95,10 +165,37 @@ export default function NewConsultationPage() {
         </p>
 
         <div className="card">
+          <h2>0 · Fetch from ClinicalTrials.gov (optional)</h2>
+          <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
+            Pull the eligibility text straight from a real NCT record instead of pasting it.
+          </p>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input
+              value={nctInput}
+              onChange={(e) => setNctInput(e.target.value)}
+              placeholder="NCT03529110"
+              style={{ ...selStyle, width: 160 }}
+            />
+            <button className="btn soft" onClick={fetchFromCtGov} disabled={fetchingCt || !nctInput.trim()}>
+              {fetchingCt ? "Fetching…" : "Fetch protocol →"}
+            </button>
+          </div>
+          {ctResult && (
+            <div className="privacy" style={{ marginTop: 10 }}>
+              <span className="lock">{ctResult.source === "live" ? "🌐" : "📦"}</span>
+              <div>
+                <strong>{ctResult.source === "live" ? "Fetched live" : "Cached fallback"}.</strong>{" "}
+                {ctResult.note}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="card">
           <h2>1 · Protocol text</h2>
           <textarea
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => { setText(e.target.value); setTextMatchesNct(false); }}
             spellCheck={false}
             style={{
               width: "100%", minHeight: 180, background: "var(--panel-2)",
@@ -111,6 +208,12 @@ export default function NewConsultationPage() {
               {parsing ? "Parsing…" : "Parse with Claude →"}
             </button>
           </div>
+          {!textMatchesNct && (
+            <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
+              Text edited since the last fetch — without <code>ANTHROPIC_API_KEY</code> this
+              can only be parsed live; it won&apos;t silently fall back to another trial&apos;s cached criteria.
+            </p>
+          )}
         </div>
 
         {error && (
@@ -180,6 +283,55 @@ export default function NewConsultationPage() {
               </div>
               <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
                 Highlighted rows are low-confidence — the parser flagged them for a human. Fix a value and it flows straight into the deterministic matcher.
+              </p>
+            </div>
+
+            <div className="card">
+              <h2>2b · OMOP mapping preview</h2>
+              <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
+                Codes each criterion to an OMOP CDM domain/table + vocabulary — the shape a
+                future matcher needs to query real OMOP databases (DataSUS, DoctorAssistant
+                NLP→OMOP) instead of only the synthetic patients. Preview only — posting still
+                sends the criteria as today.
+              </p>
+              <button className="btn soft" onClick={mapToOmop} disabled={mappingOmop || rows.length === 0}>
+                {mappingOmop ? "Mapping…" : "Map to OMOP →"}
+              </button>
+              {omopRows && (
+                <div className="table-scroll" style={{ marginTop: 10 }}>
+                  <table className="data">
+                    <thead>
+                      <tr>
+                        <th>Field</th><th>Domain</th><th>Table</th><th>Vocabulary</th>
+                        <th>Concept</th><th>Assertion</th><th>Mapped?</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {omopRows.map((o) => (
+                        <tr key={o.criterionId}>
+                          <td className="mono">{o.sourceField}</td>
+                          <td>{o.concept.domain}</td>
+                          <td className="mono">{o.concept.table}</td>
+                          <td>{o.concept.vocabularyId}</td>
+                          <td className="mono">
+                            {o.concept.needsMapping ? "0 (unmapped)" : o.concept.conceptId}
+                          </td>
+                          <td className="mono">{o.assertion}</td>
+                          <td>
+                            {o.concept.verified ? (
+                              <span>✅ verified</span>
+                            ) : (
+                              <span className="badge-low">⏳ needs mapping</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
+                See <code>docs/omop-vocabulary-mapping.md</code> for which concepts are verified vs. placeholder, and why.
               </p>
             </div>
 
