@@ -30,6 +30,19 @@ export default async function SitePage({
   }
 
   const ds = await loadSite(SITE_ID);
+  if (!ds) {
+    return (
+      <>
+        <TopBar active="site" />
+        <main className="wrap">
+          <p>
+            No site found for <code>{SITE_ID}</code>. A site needs to be listed
+            (with its patient records uploaded) before it can respond.
+          </p>
+        </main>
+      </>
+    );
+  }
   const evaluated = evaluateDataset(ds, consultation.criteria);
   const { counts } = evaluated;
   const responsesForConsultation = await loadResponses(consultation.id);

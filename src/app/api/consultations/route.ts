@@ -44,7 +44,7 @@ export async function POST(req: Request) {
   // Auto-compute all responding sites so the posted consultation has a working
   // aggregate + softening view immediately (counts-not-rows).
   const newResponses: StoredResponse[] = [];
-  for (const ds of loadAllSites()) {
+  for (const ds of await loadAllSites()) {
     const evals = evaluateCohort(ds.patients, criteria);
     const counts = countCohorts(evals);
     const top = rankBottlenecks(ds.patients, criteria)[0];

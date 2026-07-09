@@ -39,12 +39,12 @@ function hr(title: string) {
   console.log("─".repeat(72));
 }
 
-function main() {
+async function main() {
   console.log("TrialBridge (Elegível) — demo proof");
   console.log(`Hero protocol: ${HERO_META.title}`);
   console.log(`Reference: ${HERO_META.nct} (${HERO_META.sourceNote})`);
 
-  const sites = evaluateAllSites(HERO_CRITERIA);
+  const sites = await evaluateAllSites(HERO_CRITERIA);
 
   // 1. Per-site tri-state counts
   hr("1. PER-SITE TRI-STATE COHORTS  [definite = passes all · possible = has unknowns · excluded]");
@@ -130,7 +130,7 @@ function main() {
   hr("7. SECOND SCENARIO — " + NSCLC_META.title);
   console.log(`Reference: ${NSCLC_META.nct} (${NSCLC_META.sourceNote})`);
 
-  const nsclcSites = evaluateAllSites(NSCLC_CRITERIA);
+  const nsclcSites = await evaluateAllSites(NSCLC_CRITERIA);
   console.log("\n  Per-site tri-state cohorts:");
   for (const s of nsclcSites) {
     const c = s.counts;
@@ -188,4 +188,7 @@ function main() {
   console.log("═".repeat(72));
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

@@ -115,7 +115,7 @@ export async function buildSponsorView(consultationId: string): Promise<SponsorV
   }));
 
   // Which seeded sites haven't responded yet (drives the "waiting on / submit live" story).
-  const allSites = loadAllSites();
+  const allSites = await loadAllSites();
   const waitingOn = allSites.filter((s) => !respondedIds.has(s.site.id)).map((s) => s.site.name);
 
   // Softening + feasibility need patient data — server-only — for responded sites.

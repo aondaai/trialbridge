@@ -21,6 +21,7 @@ export async function submitCapacity(formData: FormData) {
   const consultation = await getConsultation(consultationId);
   if (!consultation) throw new Error(`Unknown consultation ${consultationId}`);
   const ds = await loadSite(siteId);
+  if (!ds) throw new Error(`Unknown site ${siteId}`);
 
   const evals = evaluateCohort(ds.patients, consultation.criteria);
   const counts = countCohorts(evals);

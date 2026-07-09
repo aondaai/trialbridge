@@ -4,7 +4,7 @@ import { evaluatePatient, evaluateCohort, countCohorts } from "@/lib/matcher/eng
 import { softenCriterion, relaxToVariant } from "@/lib/matcher/soften";
 import { estimateModeledEligible, KRAS_G12C_PREVALENCE, PDL1_NEGATIVE_ONLY, PDL1_NEGATIVE_OR_LOW } from "@/lib/modeledPrevalence";
 import { biomarkerMissingness, evaluateDataset } from "@/lib/service";
-import { loadAllSites } from "@/lib/data/sites";
+import { generatePanel } from "../scripts/generate-data";
 import { NSCLC_CRITERIA, NSCLC_META } from "@/data/nsclc-kras-protocol";
 
 /**
@@ -187,9 +187,9 @@ describe("estimateModeledEligible — the addressable-vs-modeled funnel (Beat 3/
   });
 });
 
-describe("biomarkerMissingness — the testing-gap stat, against the real generated data", () => {
+describe("biomarkerMissingness — the testing-gap stat, against the synthetic generator panel", () => {
   it("KRAS/PD-L1 testing gap among lung-cancer patients lands in the designed high-but-not-total range", () => {
-    const sites = loadAllSites().map((ds) => evaluateDataset(ds, NSCLC_CRITERIA));
+    const sites = generatePanel().map((ds) => evaluateDataset(ds, NSCLC_CRITERIA));
     const kras = biomarkerMissingness(sites, "lung cancer", "kras_g12c");
     const pdl1 = biomarkerMissingness(sites, "lung cancer", "pdl1_status");
     for (const row of [...kras, ...pdl1]) {
@@ -200,7 +200,7 @@ describe("biomarkerMissingness — the testing-gap stat, against the real genera
   });
 
   it("ECOG, by construction, is 100% missing for lung-cancer patients — the structural (not probabilistic) gap", () => {
-    const sites = loadAllSites();
+    const sites = generatePanel();
     for (const ds of sites) {
       const lung = ds.patients.filter((p) => p.diagnosis === "lung cancer");
       const ecogKnown = lung.filter((p) => p.ecog != null);

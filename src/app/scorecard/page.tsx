@@ -48,7 +48,7 @@ export default async function ScorecardPage({
   }
 
   if (view === "brasil") {
-    const allSites = loadAllSites();
+    const allSites = await loadAllSites();
     const evaluatedSites = allSites.map((ds) => evaluateDataset(ds, consultation.criteria));
     const regions = regionBreakdown(evaluatedSites);
     const totalDefinite = evaluatedSites.reduce((s, e) => s + e.counts.definite, 0);
@@ -132,8 +132,22 @@ export default async function ScorecardPage({
     );
   }
 
-  const siteId = site ?? loadAllSites()[0].site.id;
-  const ds = loadSite(siteId);
+  const allSites = await loadAllSites();
+  const siteId = site ?? allSites[0]?.site.id;
+  const ds = siteId ? await loadSite(siteId) : null;
+  if (!ds) {
+    return (
+      <>
+        <TopBar />
+        <main className="wrap">
+          <p>
+            No site data available yet. List a site and upload its patient
+            records to generate a scorecard.
+          </p>
+        </main>
+      </>
+    );
+  }
   const evaluated = evaluateDataset(ds, consultation.criteria);
   const { counts } = evaluated;
   const bottleneck = rankBottlenecks(ds.patients, consultation.criteria)[0];

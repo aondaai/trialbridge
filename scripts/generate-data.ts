@@ -31,6 +31,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Patient } from "../src/lib/matcher/types";
+import type { SiteMeta } from "../src/lib/data/sites";
 import { canonicalizeLab } from "../src/lib/matcher/units";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -79,6 +80,8 @@ interface SiteConfig {
   name: string;
   country: string;
   city: string;
+  /** Brazilian macro-region — drives the regional breakdown. */
+  region: string;
   persona: string;
   monthlyIncidence: number; // R2: nominal new eligible breast-mets patients / month
   n: number;
@@ -95,6 +98,7 @@ const SITES: SiteConfig[] = [
     name: "Hospital Bandeirantes Oncology Network",
     country: "BR",
     city: "São Paulo",
+    region: "Sudeste",
     persona: "Dra. Camila Rocha — large academic network (submits live)",
     monthlyIncidence: 9,
     n: 220,
@@ -109,6 +113,7 @@ const SITES: SiteConfig[] = [
     name: "Instituto Sul de Oncologia",
     country: "BR",
     city: "Porto Alegre",
+    region: "Sul",
     persona: "Regional network (pre-seeded response)",
     monthlyIncidence: 5,
     n: 185,
@@ -124,6 +129,7 @@ const SITES: SiteConfig[] = [
     name: "Clínica Norte Câncer",
     country: "BR",
     city: "Recife",
+    region: "Nordeste",
     persona: "Community clinic (pre-seeded response)",
     monthlyIncidence: 3,
     n: 150,
@@ -315,17 +321,36 @@ function canon(field: string, value: number, unit: string) {
   return { value: Math.round(c.value * 100) / 100, unit: c.unit };
 }
 
-function main() {
-  mkdirSync(DATA_DIR, { recursive: true });
-  const index: { id: string; name: string; country: string; city: string; persona: string; monthlyIncidence: number; count: number; file: string }[] = [];
-
-  for (const site of SITES) {
+/**
+ * Build the synthetic panel IN MEMORY (no file I/O). Reusable by tests and by
+ * any "load sample data" upload flow. Deterministic (fixed per-site seeds).
+ */
+export function generatePanel(): { site: SiteMeta; patients: Patient[] }[] {
+  return SITES.map((site) => {
     const rng = mulberry32(site.seed);
-    // Independent stream for the NSCLC-only fields — see RNG-safety note at
-    // file top. Offset chosen well clear of any other seed in SITES.
     const lungRng = mulberry32(site.seed + 9000);
     const patients: Patient[] = [];
     for (let i = 0; i < site.n; i++) patients.push(makePatient(rng, site, i, lungRng));
+    return {
+      site: {
+        id: site.id,
+        name: site.name,
+        country: site.country,
+        city: site.city,
+        region: site.region,
+        persona: site.persona,
+        monthlyIncidence: site.monthlyIncidence,
+      },
+      patients,
+    };
+  });
+}
+
+function main() {
+  mkdirSync(DATA_DIR, { recursive: true });
+  const index: { id: string; name: string; country: string; city: string; region: string; persona: string; monthlyIncidence: number; count: number; file: string }[] = [];
+
+  for (const { site, patients } of generatePanel()) {
 
     const file = `${site.id}.json`;
     const payload = {
@@ -334,10 +359,11 @@ function main() {
         name: site.name,
         country: site.country,
         city: site.city,
+        region: site.region,
         persona: site.persona,
         monthlyIncidence: site.monthlyIncidence,
       },
-      generatedWith: { seed: site.seed, generator: "programmatic-mulberry32", note: "population calibrated to breast-oncology epidemiology; NOT fit to protocol criteria" },
+      generatedWith: { generator: "programmatic-mulberry32", note: "population calibrated to breast-oncology epidemiology; NOT fit to protocol criteria" },
       patients,
     };
     writeFileSync(resolve(DATA_DIR, file), JSON.stringify(payload, null, 2) + "\n");
@@ -345,7 +371,7 @@ function main() {
     // quick summary
     const her2Missing = patients.filter((p) => p.biomarkers.her2_status == null).length;
     const her2Pos = patients.filter((p) => p.biomarkers.her2_status === "positive").length;
-    index.push({ id: site.id, name: site.name, country: site.country, city: site.city, persona: site.persona, monthlyIncidence: site.monthlyIncidence, count: patients.length, file });
+    index.push({ id: site.id, name: site.name, country: site.country, city: site.city, region: site.region, persona: site.persona, monthlyIncidence: site.monthlyIncidence, count: patients.length, file });
     console.log(
       `${site.id}: ${patients.length} patients | HER2 missing ${her2Missing} (${Math.round((100 * her2Missing) / patients.length)}%) | HER2+ ${her2Pos}`,
     );
@@ -362,4 +388,6 @@ function main() {
   console.log(`\nWrote ${index.length} site datasets + index.json to data/`);
 }
 
-main();
+// Only write files when run directly as a script (`npm run generate-data`),
+// not when imported for its generatePanel() export (e.g. by tests).
+if (process.argv[1] && /generate-data\.ts$/.test(process.argv[1])) main();

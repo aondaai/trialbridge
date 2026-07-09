@@ -23,9 +23,10 @@ export function evaluateDataset(ds: SiteDataset, criteria: Criterion[]): Evaluat
   return { meta: ds.site, patients: ds.patients, evals, counts: countCohorts(evals) };
 }
 
-/** Evaluate every seeded site against a protocol. */
-export function evaluateAllSites(criteria: Criterion[]): EvaluatedSite[] {
-  return loadAllSites().map((ds) => evaluateDataset(ds, criteria));
+/** Evaluate every listed site against a protocol. */
+export async function evaluateAllSites(criteria: Criterion[]): Promise<EvaluatedSite[]> {
+  const sites = await loadAllSites();
+  return sites.map((ds) => evaluateDataset(ds, criteria));
 }
 
 /** Sponsor-facing aggregate (counts-only + suppression) across responding sites. */

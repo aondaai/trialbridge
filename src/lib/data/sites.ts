@@ -1,14 +1,15 @@
 /**
- * Server-side loader for the seeded site datasets. Used by both the demo script
- * and the Next server components — one source of truth for reading data/.
+ * Server-side loader for site datasets — now backed by the real database
+ * (Prisma over SQLite), not the committed data/*.json snapshot.
  *
- * Reads plain JSON from the committed data/ directory (the frozen snapshot). This
- * is the counts-not-rows boundary's *origin*: raw patient rows live here and are
- * only ever read server-side; nothing below sends rows across the sponsor boundary.
+ * This is the counts-not-rows boundary's *origin*: raw patient rows live in the
+ * per-site Patient table and are only ever read server-side; nothing below sends
+ * rows across the sponsor boundary. The app starts EMPTY — a site lists itself
+ * (upsertSite) and uploads its patients (replacePatients) before any of these
+ * reads return data.
  */
 
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { prisma } from "@/lib/db";
 import type { Patient } from "@/lib/matcher/types";
 
 export interface SiteMeta {
@@ -27,22 +28,73 @@ export interface SiteDataset {
   patients: Patient[];
 }
 
-function dataDir(): string {
-  return resolve(process.cwd(), "data");
-}
+type SiteRow = {
+  id: string;
+  name: string;
+  country: string;
+  city: string;
+  region: string;
+  persona: string;
+  monthlyIncidence: number;
+};
 
-export function loadSiteIds(): string[] {
-  const idx = JSON.parse(readFileSync(resolve(dataDir(), "index.json"), "utf8")) as {
-    sites: { id: string; file: string }[];
+function toMeta(row: SiteRow): SiteMeta {
+  return {
+    id: row.id,
+    name: row.name,
+    country: row.country,
+    city: row.city,
+    region: row.region,
+    persona: row.persona,
+    monthlyIncidence: row.monthlyIncidence,
   };
-  return idx.sites.map((s) => s.id);
 }
 
-export function loadSite(id: string): SiteDataset {
-  const raw = JSON.parse(readFileSync(resolve(dataDir(), `${id}.json`), "utf8")) as SiteDataset;
-  return raw;
+export async function loadSiteIds(): Promise<string[]> {
+  const rows = await prisma.site.findMany({ select: { id: true }, orderBy: { id: "asc" } });
+  return rows.map((r) => r.id);
 }
 
-export function loadAllSites(): SiteDataset[] {
-  return loadSiteIds().map(loadSite);
+export async function loadSite(id: string): Promise<SiteDataset | null> {
+  const site = await prisma.site.findUnique({ where: { id } });
+  if (!site) return null;
+  const patients = await prisma.patient.findMany({ where: { siteId: id } });
+  return {
+    site: toMeta(site),
+    patients: patients.map((p) => JSON.parse(p.data) as Patient),
+  };
+}
+
+export async function loadAllSites(): Promise<SiteDataset[]> {
+  const sites = await prisma.site.findMany({ orderBy: { id: "asc" } });
+  const datasets: SiteDataset[] = [];
+  for (const site of sites) {
+    const patients = await prisma.patient.findMany({ where: { siteId: site.id } });
+    datasets.push({
+      site: toMeta(site),
+      patients: patients.map((p) => JSON.parse(p.data) as Patient),
+    });
+  }
+  return datasets;
+}
+
+/** List (or update) a site. Called when a site registers itself. */
+export async function upsertSite(meta: SiteMeta): Promise<void> {
+  await prisma.site.upsert({
+    where: { id: meta.id },
+    create: { ...meta },
+    update: { ...meta },
+  });
+}
+
+/** Replace a site's patient records with `patients` (idempotent per site). */
+export async function replacePatients(siteId: string, patients: Patient[]): Promise<void> {
+  await prisma.$transaction([
+    prisma.patient.deleteMany({ where: { siteId } }),
+    ...patients.map((p) =>
+      prisma.patient.create({
+        data: { id: p.id, siteId, data: JSON.stringify({ ...p, siteId }) },
+      }),
+    ),
+  ]);
 }
