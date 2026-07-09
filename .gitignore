@@ -37,3 +37,11 @@ yarn-error.log*
 # from athena.ohdsi.org under your own account (docs/omop-vocabulary-mapping.md).
 # NOTE: data/vocab-index.json (the small derived index) IS committed on purpose.
 /data/vocab/
+
+# Synthetic sample data written by `npm run generate-data` (a dev tool). The app
+# no longer reads these at runtime — persistence is the Prisma DB (prisma/dev.db),
+# which starts empty. Regenerate locally if you want sample rows to upload.
+/data/site-*.json
+/data/consultations.json
+/data/responses.json
+/data/index.json
