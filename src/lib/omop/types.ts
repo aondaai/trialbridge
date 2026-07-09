@@ -70,4 +70,12 @@ export interface OmopCriterion {
   operator: Operator;
   value: CriterionValue;
   unit: string | null;
+  /**
+   * Tier from the shared concept map (§2.2 answerability): "datasus" = exact
+   * base cohort, "depth" = estimated via enrichment, "ambos" = both. Optional
+   * so older callers/fixtures without a resolver remain valid.
+   */
+  answerability?: "datasus" | "depth" | "ambos";
+  /** For datasus-tier condition criteria: the CID-10 LIKE prefixes; null otherwise. */
+  icd10Prefixes?: string[] | null;
 }
