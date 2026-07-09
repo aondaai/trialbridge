@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+
+# The minimal DataSUS sample the estimator actually reads (person +
+# condition_occurrence) and proprietary_ha ARE committed so `docker compose up`
+# works from a fresh clone. Ignore the large sync targets if a user pulls them
+# into this dir locally.
+data/omop_full/
+data/spike_visit_sample/
+data/spike_care_site/
+data/omop_sample/procedure_occurrence/
+data/omop_sample/apac_person/
+data/omop_sample/apac_condition_occurrence/
+data/omop_sample/apac_visit_occurrence/

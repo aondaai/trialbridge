@@ -2,6 +2,7 @@ node_modules
 .next
 .git
 .gitignore
+estimator
 prisma/data
 prisma/dev.db
 prisma/dev.db-journal

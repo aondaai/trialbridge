@@ -1,0 +1,16 @@
+# Keep the small sample data (omop_sample ~213MB, proprietary_ha ~268KB) IN the
+# build context so it can be baked into the image — the host path contains a
+# colon ("Built with Claude: …"), which breaks Docker bind-mount volumes, so
+# baking is the reliable local option.
+#
+# CRITICAL: never send the big data to the build context.
+data/omop_full
+data/spike_visit_sample
+data/spike_care_site
+
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+.pytest_cache
