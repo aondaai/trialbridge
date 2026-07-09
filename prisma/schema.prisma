@@ -24,9 +24,25 @@ model Site {
   name             String
   country          String
   city             String
+  /// Brazilian macro-region (Norte/Nordeste/Centro-Oeste/Sudeste/Sul) — drives the regional breakdown.
+  region           String     @default("")
   persona          String
   monthlyIncidence Int
   responses        Response[]
+  patients         Patient[]
+}
+
+/// A site's own patient record. The nested Patient shape (biomarkers/labs maps,
+/// see src/lib/matcher/types.ts) is stored as a JSON string so the matcher type
+/// is unchanged; rows live per-site and never cross the sponsor boundary.
+model Patient {
+  id     String @id
+  siteId String
+  /// JSON-serialized Patient (matcher types).
+  data   String
+  site   Site   @relation(fields: [siteId], references: [id])
+
+  @@index([siteId])
 }
 
 model Consultation {
