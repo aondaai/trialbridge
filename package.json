@@ -15,6 +15,7 @@
     "db:seed": "./node_modules/.bin/tsx prisma/seed.ts",
     "demo": "./node_modules/.bin/tsx scripts/demo.ts",
     "build-vocab-index": "./node_modules/.bin/tsx scripts/build-vocab-index.ts",
+    "build-concept-map": "./node_modules/.bin/tsx scripts/build-concept-map.ts",
     "smoke": "./node_modules/.bin/tsx scripts/smoke.ts",
     "db:push": "./node_modules/.bin/prisma db push",
     "postinstall": "./node_modules/.bin/prisma generate"
