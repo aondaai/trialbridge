@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TrialBridge — Feasibility Scorecard</title>
+<style>
+  :root {
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --good:           #006300;
+    --border:         rgba(11,11,11,0.10);
+    --seq-100: #cde2fb; --seq-150: #b7d3f6; --seq-200: #9ec5f4; --seq-250: #86b6ef;
+    --seq-300: #6da7ec; --seq-350: #5598e7; --seq-400: #3987e5; --seq-450: #2a78d6;
+    --seq-500: #256abf; --seq-550: #1c5cab; --seq-600: #184f95; --seq-650: #104281; --seq-700: #0d366b;
+    --zero-fill: #ececea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --good:           #0ca30c;
+      --border:         rgba(255,255,255,0.10);
+      --seq-100: #16232f; --seq-150: #182a3a; --seq-200: #1b3247; --seq-250: #1e3d56;
+      --seq-300: #214968; --seq-350: #25577c; --seq-400: #2a6892; --seq-450: #2f79a8;
+      --seq-500: #358dc0; --seq-550: #3987e5; --seq-600: #4f95e8; --seq-650: #68a4eb; --seq-700: #86b6ef;
+      --zero-fill: #232320;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.5;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 2.25rem 1.5rem 5rem; }
+
+  header.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+  .proto-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .proto-sub { color: var(--text-secondary); font-size: 0.9rem; }
+  .status-line { font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); display: inline-block; }
+  .status-dot.loading { background: var(--seq-450); animation: pulse 1s infinite ease-in-out; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  section.card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.4rem 1.5rem; margin-bottom: 1.25rem;
+  }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+  .card-title { font-size: 0.95rem; font-weight: 700; margin: 0; }
+  .card-note { font-size: 0.8rem; color: var(--text-muted); max-width: 46ch; }
+
+  /* ---------- Criteria / softening panel ---------- */
+  .criteria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.6rem; }
+  .crit-pill {
+    display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem;
+  }
+  .crit-pill.checkable { color: var(--text-secondary); background: color-mix(in srgb, var(--gridline) 40%, transparent); }
+  .crit-pill.depth { cursor: pointer; user-select: none; }
+  .crit-pill.depth input { width: 15px; height: 15px; accent-color: var(--seq-450); cursor: pointer; flex: none; }
+  .crit-pill.depth.excluded { opacity: 0.5; }
+  .crit-pill .tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); flex: none; }
+
+  /* ---------- Stat tiles ---------- */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--gridline); border: 1px solid var(--gridline); border-radius: 12px; overflow: hidden; margin-bottom: 1.25rem; }
+  .kpi { background: var(--surface-1); padding: 1.1rem 1.3rem; }
+  .kpi.hero { grid-column: span 1; }
+  .kpi-label { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+  .kpi-value { font-size: 2.1rem; font-weight: 700; letter-spacing: -0.01em; }
+  .kpi-value.small { font-size: 1.5rem; }
+  .kpi-delta { font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.3rem; }
+  .kpi-delta .ci { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Heatmap ---------- */
+  .region-cols { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.9rem; }
+  .region-col-title { font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem; text-align: center; }
+  .state-cell {
+    position: relative; border-radius: 6px; padding: 0.5rem 0.4rem; margin-bottom: 2px;
+    text-align: center; cursor: default; border: 1px solid var(--border);
+  }
+  .state-uf { font-size: 0.78rem; font-weight: 700; }
+  .state-val { font-size: 0.68rem; font-variant-numeric: tabular-nums; opacity: 0.92; }
+  .scale-legend { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 0.72rem; color: var(--text-muted); }
+  .scale-ramp { display: flex; height: 10px; border-radius: 3px; overflow: hidden; flex: 1; max-width: 220px; }
+  .scale-ramp span { flex: 1; }
+
+  .tooltip {
+    position: fixed; pointer-events: none; background: var(--text-primary); color: var(--surface-1);
+    font-size: 0.76rem; padding: 0.4rem 0.6rem; border-radius: 6px; z-index: 50; opacity: 0;
+    transition: opacity 0.08s; white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .tooltip.show { opacity: 1; }
+
+  /* ---------- Bar chart (bottlenecks) ---------- */
+  .bar-row { display: grid; grid-template-columns: 190px 1fr 90px; align-items: center; gap: 0.75rem; margin-bottom: 0.55rem; font-size: 0.82rem; }
+  .bar-row .label { color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-row .label.excl { text-decoration: line-through; color: var(--text-muted); }
+  .bar-track { background: var(--gridline); border-radius: 4px; height: 20px; position: relative; overflow: hidden; }
+  .bar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--seq-450); border-radius: 4px 0 0 4px; min-width: 2px; }
+  .bar-row .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-primary); font-weight: 600; }
+
+  /* ---------- Table ---------- */
+  table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+  th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--gridline); }
+  th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  .zero-note { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; }
+
+  footer.note { font-size: 0.78rem; color: var(--text-muted); margin-top: 1.5rem; max-width: 68ch; }
+
+  @media (max-width: 760px) {
+    .region-cols { grid-template-columns: repeat(2, 1fr); }
+    .bar-row { grid-template-columns: 110px 1fr 70px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="proto-title" id="protoTitle">Carregando protocolo…</p>
+      <p class="proto-sub">Câncer de mama HER2+, metastático — DataSUS real × NLP proprietário real</p>
+    </div>
+    <div class="status-line"><span class="status-dot" id="statusDot"></span><span id="statusText">pronto</span></div>
+  </header>
+
+  <section class="card">
+    <div class="card-head">
+      <p class="card-title">Critérios do protocolo</p>
+      <p class="card-note">Desmarque um critério de profundidade para "amolecer" (softening) e ver as duas estimativas se moverem ao vivo.</p>
+    </div>
+    <div class="criteria-grid" id="criteriaGrid"></div>
+  </section>
+
+  <div class="kpi-row" id="kpiRow">
+    <div class="kpi hero">
+      <div class="kpi-label">Estimated N — nacional, padronizado</div>
+      <div class="kpi-value" id="kpiEstimated">—</div>
+      <div class="kpi-delta">95% CI <span class="ci" id="kpiCI">—</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Base cohort (DataSUS, exato)</div>
+      <div class="kpi-value small" id="kpiBase">—</div>
+      <div class="kpi-delta" id="kpiFraction">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Observed N — total (linha-a-linha, sem modelo)</div>
+      <div class="kpi-value small" id="kpiObserved">—</div>
+      <div class="kpi-delta" id="kpiObservedSites">—</div>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="card-head">
+      <p class="card-title">Estimated N por estado</p>
+      <p class="card-note">Agrupado pelas 5 macrorregiões oficiais (não é geometria de fronteira real — cor = magnitude, sequencial).</p>
+    </div>
+    <div class="region-cols" id="regionCols"></div>
+    <div class="scale-legend">
+      <span>menor</span>
+      <div class="scale-ramp" id="scaleRamp"></div>
+      <span>maior</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <p class="card-title">Velocidade de recrutamento (fill-speed)</p>
+      <p class="card-note">Incidência real do DataSUS (novos diagnósticos/mês, janela estável 2023-07–2025-07) × fração elegível padronizada → meses para preencher <span id="fillTargetLabel">50</span> pacientes.</p>
+    </div>
+    <div class="kpi-row" style="margin-bottom:1rem;">
+      <div class="kpi">
+        <div class="kpi-label">Nacional — todas as regiões somadas</div>
+        <div class="kpi-value" id="kpiNationalFill">—</div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Região</th><th class="num">Incidência/mês (real)</th><th class="num">Elegíveis/mês (est.)</th><th class="num">Meses p/ preencher</th></tr></thead>
+      <tbody id="fillSpeedBody"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <p class="card-title">Ranking de bottleneck</p>
+      <p class="card-note">Ganho no Estimated N nacional se cada critério de profundidade fosse relaxado a partir do protocolo completo.</p>
+    </div>
+    <div id="bottleneckBars"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <p class="card-title">Observed N por site</p>
+      <p class="card-note">Contagem direta e real de pacientes que passam em todos os critérios — o número de maior confiança, sem modelo.</p>
+    </div>
+    <table>
+      <thead><tr><th>Hospital</th><th class="num">Pacientes na base</th><th class="num">Observed N</th></tr></thead>
+      <tbody id="siteTableBody"></tbody>
+    </table>
+    <p class="zero-note" id="zeroSitesNote"></p>
+  </section>
+
+  <footer class="note">
+    Dado real dos dois lados: base DataSUS nacional exata (person + condition_occurrence) e taxas de profundidade extraídas de NLP clínico proprietário em 14 hospitais. Estimated N é padronizado por estrato (dx × faixa etária × sexo) — não usa record linkage. Servido por <code>api.py</code> em tempo real.
+  </footer>
+
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const API = "";
+const SEQ_STEPS = ["seq-100","seq-150","seq-200","seq-250","seq-300","seq-350","seq-400","seq-450","seq-500","seq-550","seq-600","seq-650","seq-700"];
+const REGIONS = {
+  "Norte": ["AC","AM","AP","PA","RO","RR","TO"],
+  "Nordeste": ["AL","BA","CE","MA","PB","PE","PI","RN","SE"],
+  "Centro-Oeste": ["DF","GO","MS","MT"],
+  "Sudeste": ["ES","MG","RJ","SP"],
+  "Sul": ["PR","RS","SC"],
+};
+
+let currentProtocol = null;
+let excludedIds = new Set();
+
+function fmt(n) { return Math.round(n).toLocaleString("pt-BR"); }
+function fmt1(n) { return n.toLocaleString("pt-BR", {maximumFractionDigits: 1}); }
+
+function setStatus(loading) {
+  const dot = document.getElementById("statusDot");
+  const text = document.getElementById("statusText");
+  dot.classList.toggle("loading", loading);
+  text.textContent = loading ? "recalculando…" : "pronto";
+}
+
+async function loadProtocol() {
+  const res = await fetch(`${API}/protocol`);
+  currentProtocol = await res.json();
+  document.getElementById("protoTitle").textContent = currentProtocol.protocol_id;
+  renderCriteria();
+}
+
+function renderCriteria() {
+  const grid = document.getElementById("criteriaGrid");
+  grid.innerHTML = "";
+  for (const c of currentProtocol.checkable) {
+    const el = document.createElement("div");
+    el.className = "crit-pill checkable";
+    el.innerHTML = `<span class="tag">Checkable</span><span>${c.text}</span>`;
+    grid.appendChild(el);
+  }
+  for (const c of currentProtocol.depth) {
+    const excluded = excludedIds.has(c.id);
+    const el = document.createElement("label");
+    el.className = "crit-pill depth" + (excluded ? " excluded" : "");
+    el.innerHTML = `<input type="checkbox" ${excluded ? "" : "checked"} data-id="${c.id}" />
+                     <span class="tag">Depth</span><span>${c.text}</span>`;
+    el.querySelector("input").addEventListener("change", (e) => {
+      if (e.target.checked) excludedIds.delete(c.id);
+      else excludedIds.add(c.id);
+      renderCriteria();
+      refresh();
+    });
+    grid.appendChild(el);
+  }
+}
+
+function seqStepForRatio(ratio) {
+  // ratio in [0,1] -> pick one of the 13 sequential steps
+  const idx = Math.min(SEQ_STEPS.length - 1, Math.round(ratio * (SEQ_STEPS.length - 1)));
+  return `var(--${SEQ_STEPS[idx]})`;
+}
+
+function textOnFill(ratio) {
+  return ratio > 0.55 ? "#ffffff" : "var(--text-primary)";
+}
+
+function renderRegions(byRegion) {
+  const byUF = Object.fromEntries(byRegion.map(r => [r.region, r]));
+  const maxEst = Math.max(1, ...byRegion.map(r => r.est_eligible));
+  const cols = document.getElementById("regionCols");
+  cols.innerHTML = "";
+  const tooltip = document.getElementById("tooltip");
+
+  for (const [regionName, ufs] of Object.entries(REGIONS)) {
+    const col = document.createElement("div");
+    const title = document.createElement("div");
+    title.className = "region-col-title";
+    title.textContent = regionName;
+    col.appendChild(title);
+
+    for (const uf of ufs) {
+      const d = byUF[uf];
+      const cell = document.createElement("div");
+      cell.className = "state-cell";
+      if (!d || d.est_eligible <= 0) {
+        cell.style.background = "var(--zero-fill)";
+        cell.innerHTML = `<div class="state-uf">${uf}</div><div class="state-val">—</div>`;
+      } else {
+        const ratio = d.est_eligible / maxEst;
+        cell.style.background = seqStepForRatio(ratio);
+        const ink = textOnFill(ratio);
+        cell.innerHTML = `<div class="state-uf" style="color:${ink}">${uf}</div><div class="state-val" style="color:${ink}">${fmt(d.est_eligible)}</div>`;
+        cell.addEventListener("mousemove", (e) => {
+          tooltip.classList.add("show");
+          tooltip.style.left = (e.clientX + 14) + "px";
+          tooltip.style.top = (e.clientY + 14) + "px";
+          tooltip.innerHTML = `<strong>${uf}</strong> — est. ${fmt(d.est_eligible)} (95% CI ${fmt(d.ci_lo)}–${fmt(d.ci_hi)})<br/>base DataSUS: ${fmt(d.base_cohort)}`;
+        });
+        cell.addEventListener("mouseleave", () => tooltip.classList.remove("show"));
+      }
+      col.appendChild(cell);
+    }
+    cols.appendChild(col);
+  }
+
+  const ramp = document.getElementById("scaleRamp");
+  ramp.innerHTML = SEQ_STEPS.map(s => `<span style="background:var(--${s})"></span>`).join("");
+}
+
+function renderFillSpeed(data) {
+  document.getElementById("fillTargetLabel").textContent = data.fill_speed_target_n;
+  document.getElementById("kpiNationalFill").textContent =
+    data.national_months_to_fill != null ? `${fmt1(data.national_months_to_fill)} meses` : "sem estimativa";
+
+  const body = document.getElementById("fillSpeedBody");
+  body.innerHTML = "";
+  const rows = [...data.fill_speed_by_region]
+    .filter(f => f.months_to_fill != null)
+    .sort((a, b) => a.months_to_fill - b.months_to_fill)
+    .slice(0, 12);
+  for (const f of rows) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${f.region}</td><td class="num">${fmt1(f.monthly_incidence)}</td>
+                     <td class="num">${fmt1(f.monthly_eligible)}</td>
+                     <td class="num"><strong>${fmt1(f.months_to_fill)}</strong></td>`;
+    body.appendChild(tr);
+  }
+}
+
+function renderBottlenecks(bottlenecks) {
+  const wrap = document.getElementById("bottleneckBars");
+  wrap.innerHTML = "";
+  const maxGain = Math.max(1, ...bottlenecks.map(b => b.gain));
+  for (const b of bottlenecks) {
+    const isExcluded = excludedIds.has(b.criterion_id);
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    const pct = Math.max(0.5, (b.gain / maxGain) * 100);
+    row.innerHTML = `
+      <span class="label ${isExcluded ? 'excl' : ''}">${b.text}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${isExcluded ? 0 : pct}%"></div></div>
+      <span class="val">${isExcluded ? "já relaxado" : "+" + fmt(b.gain)}</span>
+    `;
+    wrap.appendChild(row);
+  }
+}
+
+function renderSites(sites) {
+  const body = document.getElementById("siteTableBody");
+  body.innerHTML = "";
+  const nonZero = sites.filter(s => s.observed_n > 0).sort((a,b) => b.observed_n - a.observed_n);
+  const zero = sites.filter(s => s.observed_n === 0);
+  for (const s of nonZero) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${s.site}</td><td class="num">${fmt(s.n_patients)}</td><td class="num"><strong>${fmt(s.observed_n)}</strong></td>`;
+    body.appendChild(tr);
+  }
+  document.getElementById("zeroSitesNote").textContent =
+    zero.length ? `+ ${zero.length} sites com Observed N = 0 (${zero.map(s => s.site).join(", ")}) — amostra fina, real.` : "";
+}
+
+function renderKPIs(data) {
+  document.getElementById("kpiEstimated").textContent = fmt(data.national_estimated_n);
+  document.getElementById("kpiCI").textContent = `${fmt(data.national_ci_lo)}–${fmt(data.national_ci_hi)}`;
+  document.getElementById("kpiBase").textContent = fmt(data.national_base_cohort);
+  const frac = data.national_base_cohort > 0 ? (data.national_estimated_n / data.national_base_cohort * 100) : 0;
+  document.getElementById("kpiFraction").textContent = `${fmt1(frac)}% da base`;
+  const totalObserved = data.observed_by_site.reduce((a, s) => a + s.observed_n, 0);
+  const sitesWithAny = data.observed_by_site.filter(s => s.observed_n > 0).length;
+  document.getElementById("kpiObserved").textContent = fmt(totalObserved);
+  document.getElementById("kpiObservedSites").textContent = `em ${sitesWithAny} de ${data.observed_by_site.length} sites`;
+}
+
+async function refresh() {
+  setStatus(true);
+  try {
+    const body = excludedIds.size ? { exclude_depth_ids: Array.from(excludedIds) } : {};
+    const endpoint = excludedIds.size ? "/soften" : "/feasibility/estimate";
+    const res = await fetch(`${API}${endpoint}`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    renderKPIs(data);
+    renderRegions(data.by_region);
+    renderFillSpeed(data);
+    renderBottlenecks(data.bottlenecks);
+    renderSites(data.observed_by_site);
+  } finally {
+    setStatus(false);
+  }
+}
+
+(async () => { await loadProtocol(); await refresh(); })();
+</script>
+</body>
+</html>

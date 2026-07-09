@@ -4,12 +4,13 @@ Two services, one command: the **Next.js app** (`web`) and the **Python feasibil
 estimator** (`estimator`, FastAPI + DuckDB over OMOP).
 
 ## Prerequisites
-- Docker + Docker Compose v2.
-- The estimator lives in the sibling directory `../outputs/trialbridge_estimator`
-  (the compose file builds it from there). It must be present next to this repo,
-  with its sample data at `data/omop_sample/` and `data/proprietary_ha/` — these are
-  **baked into the estimator image** at build time. The 163GB `data/omop_full/` is
-  excluded (see that dir's `.dockerignore`) and is **not** required.
+- Docker + Docker Compose v2. **That's it** — `git clone` + `docker compose up` works.
+
+The estimator is vendored in-repo at [`estimator/`](estimator/), including the minimal
+DataSUS sample it actually reads (`person` + `condition_occurrence`, ~61MB) and the
+proprietary parquet (~268KB). These are **baked into the estimator image** at build
+time — no external data or sibling directory needed. The 163GB `omop_full` is **not**
+required (the estimator README documents how to point at it for the full national figure).
 
 ## Start
 ```bash
@@ -44,7 +45,7 @@ docker compose up --build
 The estimator runs on `omop_sample` (a small, real subset), so the national estimate can
 be 0 while **Observed N** (direct count from the 14 proprietary hospitals) is real (~29).
 The full national figure (~4,588 for the HER2+ hero protocol) needs `omop_full` — see
-`../outputs/trialbridge_estimator/README.md`.
+[`estimator/README.md`](estimator/README.md).
 
 ## Reset the database
 ```bash

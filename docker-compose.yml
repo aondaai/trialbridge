@@ -12,10 +12,11 @@
 
 services:
   estimator:
-    build: ../outputs/trialbridge_estimator
-    # Sample DataSUS + proprietary parquet are baked into the image (host bind
-    # mounts fail here because the project path contains a colon). TB_DATASUS_DIR
-    # / TB_PROPRIETARY_GLOB are set in the estimator Dockerfile.
+    build: ./estimator
+    # Estimator is vendored in-repo at ./estimator. The minimal DataSUS sample
+    # (person + condition_occurrence) and proprietary parquet are baked into the
+    # image; TB_DATASUS_DIR / TB_PROPRIETARY_GLOB are set in its Dockerfile.
+    restart: unless-stopped
     ports:
       - "8421:8421"
 
@@ -27,6 +28,7 @@ services:
       TB_DATASUS_LABEL: "DataSUS/OMOP (omop_sample)"
       # Optional — paste your ROTATED key to enable live Claude parsing.
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    restart: unless-stopped
     volumes:
       # Persist the SQLite DB across restarts (starts empty on first run).
       - tb-db:/app/prisma/data
