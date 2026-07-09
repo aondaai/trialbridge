@@ -17,7 +17,7 @@ export default async function SitePage({
   const { c, site } = await searchParams;
   // This screen is Camila's site by default — same persona, any consultation.
   const SITE_ID = site || "site-a";
-  const consultation = getConsultation(c || HERO_META.id);
+  const consultation = await getConsultation(c || HERO_META.id);
   if (!consultation) {
     return (
       <>
@@ -29,10 +29,11 @@ export default async function SitePage({
     );
   }
 
-  const ds = loadSite(SITE_ID);
+  const ds = await loadSite(SITE_ID);
   const evaluated = evaluateDataset(ds, consultation.criteria);
   const { counts } = evaluated;
-  const alreadySubmitted = loadResponses(consultation.id).some((r) => r.siteId === SITE_ID);
+  const responsesForConsultation = await loadResponses(consultation.id);
+  const alreadySubmitted = responsesForConsultation.some((r) => r.siteId === SITE_ID);
   const feas = estimateFeasibility({
     definite: counts.definite,
     possible: counts.possible,

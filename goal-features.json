@@ -1,6 +1,6 @@
 [
   { "id": "F001", "description": "Prisma SQLite foundation: add Patient model + region to Site, db client singleton (src/lib/db.ts), prisma generate + db push, empty seed (0 rows), smoke script proving counts=0", "file": "prisma/schema.prisma, src/lib/db.ts, prisma/seed.ts, scripts/smoke.ts", "passes": true },
-  { "id": "F002", "description": "Migrate store.ts (consultations/responses) from JSON files to Prisma queries, same signatures; criteria stays JSON-serialized", "file": "src/lib/store.ts", "passes": false },
+  { "id": "F002", "description": "Migrate store.ts (consultations/responses) from JSON files to Prisma queries, async; criteria stays JSON-serialized; all callers awaited", "file": "src/lib/store.ts", "passes": true },
   { "id": "F003", "description": "Migrate site+patient reads (data/sites.ts) from data/*.json to Prisma Patient/Site; app starts with zero patients", "file": "src/lib/data/sites.ts", "passes": false },
   { "id": "F004", "description": "Zero the mock: remove runtime dependence on data/site-*.json, consultations.json, responses.json; grep shows no runtime import", "file": "data/, scripts/", "passes": false },
   { "id": "F005", "description": "Role-selection entry screen (Patrocinador/Site) routing to journeys + Vitest test asserting render/routing", "file": "src/app/start/page.tsx, tests/role-select.test.ts", "passes": false },

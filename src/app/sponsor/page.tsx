@@ -18,7 +18,7 @@ export default async function SponsorPage({
   searchParams: Promise<{ c?: string }>;
 }) {
   const { c } = await searchParams;
-  const view = buildSponsorView(c || HERO_META.id) ?? buildSponsorView(HERO_META.id);
+  const view = (await buildSponsorView(c || HERO_META.id)) ?? (await buildSponsorView(HERO_META.id));
   if (!view) {
     return (
       <>

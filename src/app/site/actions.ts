@@ -18,9 +18,9 @@ export async function submitCapacity(formData: FormData) {
   const consultationId = String(formData.get("consultationId"));
   const siteId = String(formData.get("siteId"));
 
-  const consultation = getConsultation(consultationId);
+  const consultation = await getConsultation(consultationId);
   if (!consultation) throw new Error(`Unknown consultation ${consultationId}`);
-  const ds = loadSite(siteId);
+  const ds = await loadSite(siteId);
 
   const evals = evaluateCohort(ds.patients, consultation.criteria);
   const counts = countCohorts(evals);
@@ -41,7 +41,7 @@ export async function submitCapacity(formData: FormData) {
     live: true,
     submittedAt: new Date().toISOString(),
   };
-  upsertResponse(resp);
+  await upsertResponse(resp);
 
   revalidatePath("/site");
   revalidatePath("/sponsor");
@@ -52,7 +52,8 @@ export async function withdrawCapacity(formData: FormData) {
   const consultationId = String(formData.get("consultationId"));
   const siteId = String(formData.get("siteId"));
   const { loadResponses, writeResponses } = await import("@/lib/store");
-  writeResponses(loadResponses().filter((r) => !(r.consultationId === consultationId && r.siteId === siteId)));
+  const all = await loadResponses();
+  await writeResponses(all.filter((r) => !(r.consultationId === consultationId && r.siteId === siteId)));
   revalidatePath("/site");
   revalidatePath("/sponsor");
 }

@@ -90,10 +90,10 @@ export interface SponsorView {
   regions: RegionRow[];
 }
 
-export function buildSponsorView(consultationId: string): SponsorView | null {
-  const consultation = getConsultation(consultationId);
+export async function buildSponsorView(consultationId: string): Promise<SponsorView | null> {
+  const consultation = await getConsultation(consultationId);
   if (!consultation) return null;
-  const responses = loadResponses(consultationId);
+  const responses = await loadResponses(consultationId);
   const respondedIds = new Set(responses.map((r) => r.siteId));
 
   // Aggregate straight from the reported response counts (counts-not-rows).

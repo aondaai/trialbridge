@@ -30,7 +30,7 @@ export default async function ScorecardPage({
   searchParams: Promise<{ site?: string; view?: string; c?: string }>;
 }) {
   const { site, view, c } = await searchParams;
-  const consultation = getConsultation(c ?? HERO_META.id);
+  const consultation = await getConsultation(c ?? HERO_META.id);
 
   if (!consultation) {
     return (

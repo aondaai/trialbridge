@@ -38,7 +38,8 @@ export async function POST(req: Request) {
     heroBottleneckHandle: body.heroBottleneckHandle,
     createdAt: new Date().toISOString(),
   };
-  writeConsultations([...loadConsultations().filter((c) => c.id !== consultation.id), consultation]);
+  const existing = await loadConsultations();
+  await writeConsultations([...existing.filter((c) => c.id !== consultation.id), consultation]);
 
   // Auto-compute all responding sites so the posted consultation has a working
   // aggregate + softening view immediately (counts-not-rows).
@@ -63,8 +64,9 @@ export async function POST(req: Request) {
       submittedAt: new Date().toISOString(),
     });
   }
-  const others = loadResponses().filter((r) => r.consultationId !== consultation.id);
-  writeResponses([...others, ...newResponses]);
+  const allResponses = await loadResponses();
+  const others = allResponses.filter((r) => r.consultationId !== consultation.id);
+  await writeResponses([...others, ...newResponses]);
 
   return NextResponse.json({ id: consultation.id });
 }

@@ -1,22 +1,20 @@
 /**
  * The consultations & responses store — the marketplace layer.
  *
- * Persistence is a committed JSON snapshot (data/consultations.json,
- * data/responses.json). This is deliberately lightweight (the spec calls for a
- * "single in-memory / lightweight-DB consultations list", not real marketplace
- * infra) and it makes the frozen demo snapshot a plain committed file — nothing
- * on the demo path needs a query engine or network. The Prisma/SQLite schema in
- * prisma/schema.prisma is the documented post-hackathon swap target (ADR
- * Decision 2: datasource is swappable).
+ * Persistence is now a real database (Prisma over SQLite, prisma/dev.db) — the
+ * post-hackathon swap target from ADR-001 Decision 2, now in place. The store
+ * starts EMPTY; every consultation and response is created live by real users.
  *
  * PRIVACY BY CONSTRUCTION: a `StoredResponse` carries COUNTS and a bottleneck
  * reference — never patient rows. A sponsor reading responses physically cannot
  * reach row-level patient data because it was never written here. Patient rows
- * live only in the per-site data/*.json (the site's own origin).
+ * live only in the per-site Patient table (the site's own origin).
+ *
+ * Functions are async (Prisma is async). All callers run in async-capable
+ * contexts: server components, route handlers, and server actions.
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { prisma } from "@/lib/db";
 import type { Criterion } from "@/lib/matcher/types";
 
 export interface StoredConsultation {
@@ -45,62 +43,172 @@ export interface StoredResponse {
   bottleneckHandle: string | null;
   bottleneckLabel: string | null;
   monthlyIncidence: number;
-  /** true when submitted live in the UI (Camila's site), false for pre-seeded. */
+  /** true when submitted live in the UI, false for programmatic/seed writes. */
   live: boolean;
   submittedAt: string;
 }
 
-function dataDir(): string {
-  return resolve(process.cwd(), "data");
+// ---- row <-> domain mapping -------------------------------------------------
+
+type ConsultationRow = {
+  id: string;
+  sponsorName: string;
+  title: string;
+  nct: string | null;
+  sourceNote: string | null;
+  protocolText: string;
+  criteria: string;
+  heroBottleneckHandle: string | null;
+  createdAt: Date;
+};
+
+function toStoredConsultation(row: ConsultationRow): StoredConsultation {
+  return {
+    id: row.id,
+    sponsorName: row.sponsorName,
+    title: row.title,
+    nct: row.nct ?? undefined,
+    sourceNote: row.sourceNote ?? undefined,
+    protocolText: row.protocolText,
+    criteria: JSON.parse(row.criteria) as Criterion[],
+    heroBottleneckHandle: row.heroBottleneckHandle ?? undefined,
+    createdAt: row.createdAt.toISOString(),
+  };
 }
 
-function consultationsPath(): string {
-  return resolve(dataDir(), "consultations.json");
+type ResponseRow = {
+  id: string;
+  consultationId: string;
+  siteId: string;
+  siteName: string;
+  definite: number;
+  possible: number;
+  excluded: number;
+  total: number;
+  bottleneckHandle: string | null;
+  bottleneckLabel: string | null;
+  monthlyIncidence: number;
+  live: boolean;
+  submittedAt: Date;
+};
+
+function toStoredResponse(row: ResponseRow): StoredResponse {
+  return {
+    id: row.id,
+    consultationId: row.consultationId,
+    siteId: row.siteId,
+    siteName: row.siteName,
+    definite: row.definite,
+    possible: row.possible,
+    excluded: row.excluded,
+    total: row.total,
+    bottleneckHandle: row.bottleneckHandle,
+    bottleneckLabel: row.bottleneckLabel,
+    monthlyIncidence: row.monthlyIncidence,
+    live: row.live,
+    submittedAt: row.submittedAt.toISOString(),
+  };
 }
 
-function responsesPath(): string {
-  return resolve(dataDir(), "responses.json");
+// ---- consultations ----------------------------------------------------------
+
+export async function loadConsultations(): Promise<StoredConsultation[]> {
+  const rows = await prisma.consultation.findMany({ orderBy: { createdAt: "asc" } });
+  return rows.map(toStoredConsultation);
 }
 
-export function loadConsultations(): StoredConsultation[] {
-  const p = consultationsPath();
-  if (!existsSync(p)) return [];
-  return JSON.parse(readFileSync(p, "utf8")) as StoredConsultation[];
+export async function getConsultation(id: string): Promise<StoredConsultation | undefined> {
+  const row = await prisma.consultation.findUnique({ where: { id } });
+  return row ? toStoredConsultation(row) : undefined;
 }
 
-export function getConsultation(id: string): StoredConsultation | undefined {
-  return loadConsultations().find((c) => c.id === id);
+/** Upsert each consultation in the list (idempotent by id). */
+export async function writeConsultations(list: StoredConsultation[]): Promise<void> {
+  for (const c of list) {
+    const data = {
+      sponsorName: c.sponsorName,
+      title: c.title,
+      nct: c.nct ?? null,
+      sourceNote: c.sourceNote ?? null,
+      protocolText: c.protocolText,
+      criteria: JSON.stringify(c.criteria),
+      heroBottleneckHandle: c.heroBottleneckHandle ?? null,
+      createdAt: new Date(c.createdAt),
+    };
+    await prisma.consultation.upsert({
+      where: { id: c.id },
+      create: { id: c.id, ...data },
+      update: data,
+    });
+  }
 }
 
-export function writeConsultations(list: StoredConsultation[]): void {
-  writeFileSync(consultationsPath(), JSON.stringify(list, null, 2) + "\n");
+// ---- responses --------------------------------------------------------------
+
+export async function loadResponses(consultationId?: string): Promise<StoredResponse[]> {
+  const rows = await prisma.response.findMany({
+    where: consultationId ? { consultationId } : undefined,
+  });
+  return rows.map(toStoredResponse);
 }
 
-export function loadResponses(consultationId?: string): StoredResponse[] {
-  const p = responsesPath();
-  if (!existsSync(p)) return [];
-  const all = JSON.parse(readFileSync(p, "utf8")) as StoredResponse[];
-  return consultationId ? all.filter((r) => r.consultationId === consultationId) : all;
+/** Replace the whole responses set with `list` (used by bulk rewrites). */
+export async function writeResponses(list: StoredResponse[]): Promise<void> {
+  await prisma.$transaction([
+    prisma.response.deleteMany({}),
+    ...list.map((r) =>
+      prisma.response.create({
+        data: {
+          id: r.id,
+          consultationId: r.consultationId,
+          siteId: r.siteId,
+          siteName: r.siteName,
+          definite: r.definite,
+          possible: r.possible,
+          excluded: r.excluded,
+          total: r.total,
+          bottleneckHandle: r.bottleneckHandle,
+          bottleneckLabel: r.bottleneckLabel,
+          monthlyIncidence: r.monthlyIncidence,
+          live: r.live,
+          submittedAt: new Date(r.submittedAt),
+        },
+      }),
+    ),
+  ]);
 }
 
-export function writeResponses(list: StoredResponse[]): void {
-  writeFileSync(responsesPath(), JSON.stringify(list, null, 2) + "\n");
-}
-
-export function hasResponded(consultationId: string, siteId: string): boolean {
-  return loadResponses(consultationId).some((r) => r.siteId === siteId);
+export async function hasResponded(consultationId: string, siteId: string): Promise<boolean> {
+  const row = await prisma.response.findUnique({
+    where: { consultationId_siteId: { consultationId, siteId } },
+  });
+  return row !== null;
 }
 
 /**
  * Insert or replace a site's response to a consultation (idempotent per site).
- * This is the write path used by the live "submit capacity" action.
+ * This is the write path used by the live "submit capacity" action. Returns the
+ * responses for that consultation.
  */
-export function upsertResponse(resp: StoredResponse): StoredResponse[] {
-  const all = loadResponses();
-  const filtered = all.filter(
-    (r) => !(r.consultationId === resp.consultationId && r.siteId === resp.siteId),
-  );
-  filtered.push(resp);
-  writeResponses(filtered);
-  return filtered.filter((r) => r.consultationId === resp.consultationId);
+export async function upsertResponse(resp: StoredResponse): Promise<StoredResponse[]> {
+  const data = {
+    consultationId: resp.consultationId,
+    siteId: resp.siteId,
+    siteName: resp.siteName,
+    definite: resp.definite,
+    possible: resp.possible,
+    excluded: resp.excluded,
+    total: resp.total,
+    bottleneckHandle: resp.bottleneckHandle,
+    bottleneckLabel: resp.bottleneckLabel,
+    monthlyIncidence: resp.monthlyIncidence,
+    live: resp.live,
+    submittedAt: new Date(resp.submittedAt),
+  };
+  await prisma.response.upsert({
+    where: { consultationId_siteId: { consultationId: resp.consultationId, siteId: resp.siteId } },
+    create: { id: resp.id, ...data },
+    update: data,
+  });
+  return loadResponses(resp.consultationId);
 }

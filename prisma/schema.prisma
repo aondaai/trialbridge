@@ -20,15 +20,14 @@ generator client {
 }
 
 model Site {
-  id               String     @id
+  id               String    @id
   name             String
   country          String
   city             String
   /// Brazilian macro-region (Norte/Nordeste/Centro-Oeste/Sudeste/Sul) — drives the regional breakdown.
-  region           String     @default("")
+  region           String    @default("")
   persona          String
   monthlyIncidence Int
-  responses        Response[]
   patients         Patient[]
 }
 
@@ -46,33 +45,38 @@ model Patient {
 }
 
 model Consultation {
-  id           String     @id
-  sponsorName  String
-  title        String
-  nct          String?
-  sourceNote   String?
-  protocolText String
-  criteria     String // JSON-serialized Criterion[]
-  createdAt    DateTime   @default(now())
-  responses    Response[]
+  id                   String   @id
+  sponsorName          String
+  title                String
+  nct                  String?
+  sourceNote           String?
+  protocolText         String
+  criteria             String // JSON-serialized Criterion[]
+  /// Intended hero bottleneck handle, for the softening UI default.
+  heroBottleneckHandle String?
+  createdAt            DateTime @default(now())
 }
 
+// Relations to Consultation/Site are intentionally NOT enforced as FKs: the app
+// starts empty and records are created live in any order (a site can respond, a
+// sponsor can post) without a create-order dependency. siteName is denormalized
+// so a response is self-describing. counts-not-rows: no patient list is
+// representable here.
 model Response {
-  id                String       @id @default(cuid())
-  consultationId    String
-  siteId            String
-  // counts-not-rows: no patient list is representable here.
-  definite          Int
-  possible          Int
-  excluded          Int
-  total             Int
-  bottleneckHandle  String?
-  bottleneckLabel   String?
-  monthlyIncidence  Int
-  live              Boolean      @default(false)
-  submittedAt       DateTime     @default(now())
-  consultation      Consultation @relation(fields: [consultationId], references: [id])
-  site              Site         @relation(fields: [siteId], references: [id])
+  id               String   @id @default(cuid())
+  consultationId   String
+  siteId           String
+  siteName         String
+  definite         Int
+  possible         Int
+  excluded         Int
+  total            Int
+  bottleneckHandle String?
+  bottleneckLabel  String?
+  monthlyIncidence Int
+  live             Boolean  @default(false)
+  submittedAt      DateTime @default(now())
 
   @@unique([consultationId, siteId])
+  @@index([consultationId])
 }
