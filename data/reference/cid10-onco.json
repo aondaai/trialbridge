@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "vocabulary": "ICD-10 / CID-10 (WHO)",
+    "note": "Oncology-scoped subset. Keyed by 3-char CID-10 category. `synonyms` are the free-text clinical labels the lexical anchor matches against (English + pt-BR). A diagnosis label resolves to the SET of categories whose title/synonyms it matches; those 3-char codes become the `condition_source_value LIKE '<code>%'` prefixes the DataSUS base cohort keys on. `lung cancer` deliberately spans C33+C34 (trachea+bronchus+lung), matching the project's hand-typed dx_cid_prefixes. Extend by adding categories; do not invent codes.",
+    "source": "WHO ICD-10 tabular list, Chapter II (C00-C97). See docs/citations.md."
+  },
+  "C50": {
+    "title": "Malignant neoplasm of breast",
+    "synonyms": ["breast cancer", "breast carcinoma", "carcinoma of breast", "breast neoplasm", "mammary carcinoma", "cancer de mama", "neoplasia de mama", "mama"],
+    "parent": "C00-C97"
+  },
+  "C34": {
+    "title": "Malignant neoplasm of bronchus and lung",
+    "synonyms": ["lung cancer", "lung carcinoma", "nsclc", "non small cell lung cancer", "non-small cell lung cancer", "sclc", "small cell lung cancer", "bronchogenic carcinoma", "cancer de pulmao", "neoplasia de pulmao", "pulmao"],
+    "parent": "C30-C39"
+  },
+  "C33": {
+    "title": "Malignant neoplasm of trachea",
+    "synonyms": ["tracheal cancer", "trachea cancer", "lung cancer", "nsclc", "non small cell lung cancer", "non-small cell lung cancer", "respiratory tract cancer"],
+    "parent": "C30-C39"
+  },
+  "C18": {
+    "title": "Malignant neoplasm of colon",
+    "synonyms": ["colon cancer", "colorectal cancer", "colonic carcinoma", "cancer de colon"],
+    "parent": "C15-C26"
+  },
+  "C61": {
+    "title": "Malignant neoplasm of prostate",
+    "synonyms": ["prostate cancer", "prostatic carcinoma", "cancer de prostata"],
+    "parent": "C60-C63"
+  },
+  "C25": {
+    "title": "Malignant neoplasm of pancreas",
+    "synonyms": ["pancreatic cancer", "pancreas cancer", "cancer de pancreas"],
+    "parent": "C15-C26"
+  },
+  "C56": {
+    "title": "Malignant neoplasm of ovary",
+    "synonyms": ["ovarian cancer", "ovary cancer", "cancer de ovario"],
+    "parent": "C51-C58"
+  },
+  "C53": {
+    "title": "Malignant neoplasm of cervix uteri",
+    "synonyms": ["cervical cancer", "cervix cancer", "cancer de colo do utero", "cancer cervical"],
+    "parent": "C51-C58"
+  },
+  "C16": {
+    "title": "Malignant neoplasm of stomach",
+    "synonyms": ["stomach cancer", "gastric cancer", "cancer de estomago"],
+    "parent": "C15-C26"
+  },
+  "C22": {
+    "title": "Malignant neoplasm of liver and intrahepatic bile ducts",
+    "synonyms": ["liver cancer", "hepatocellular carcinoma", "hcc", "cancer de figado"],
+    "parent": "C15-C26"
+  }
+}
