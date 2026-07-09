@@ -4,12 +4,69 @@ import { HERO_META } from "@/data/hero-protocol";
 import { TopBar, PrivacyBanner, CohortBar, CriterionList } from "@/components/ui";
 import { SofteningPanel } from "@/components/SofteningPanel";
 import { ModeledFunnelPanel } from "@/components/ModeledFunnelPanel";
+import { fetchNationalEstimate, estimatorConfigured } from "@/lib/estimator/client";
 
 // Always read the live store (a site may have just submitted).
 export const dynamic = "force-dynamic";
 
 function fmt(n: number | "<5"): string {
   return n === "<5" ? "<5" : String(n);
+}
+
+type NationalEstimateData = Awaited<ReturnType<typeof fetchNationalEstimate>>;
+
+/** National feasibility card — fed by the Python estimator (DataSUS/OMOP). */
+function NationalCard({ national }: { national: NationalEstimateData }) {
+  return (
+    <div className="card">
+      <h2>National feasibility estimate — DataSUS via estimator</h2>
+      {!national ? (
+        <p className="sub">
+          Estimator offline at <code>{estimatorConfigured().baseUrl}</code>. Start it
+          (<code>uvicorn api:app</code> on port 8421, see <code>.claude/launch.json</code>)
+          to show the standardized national estimate.
+        </p>
+      ) : (
+        <>
+          <p className="sub">
+            Standardized estimate over the national DataSUS base for protocol{" "}
+            <strong>{national.protocolId}</strong> — source: {national.dataSource}.
+          </p>
+          <div className="grid2">
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>Estimated eligible (national)</div>
+              <div className="stat" style={{ color: "var(--brand)" }}>
+                {Math.round(national.estimatedN).toLocaleString("pt-BR")}
+              </div>
+              <div className="muted" style={{ fontSize: 12 }}>
+                95% CI {Math.round(national.ciLo).toLocaleString("pt-BR")}–
+                {Math.round(national.ciHi).toLocaleString("pt-BR")}
+              </div>
+            </div>
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>
+                Observed (direct count, {national.sitesWithData} sites with real data)
+              </div>
+              <div className="stat small" style={{ color: "var(--definite)" }}>
+                {national.observedTotal.toLocaleString("pt-BR")}
+              </div>
+              <div className="muted" style={{ fontSize: 12 }}>
+                Base cohort (DataSUS): {national.baseCohort.toLocaleString("pt-BR")}
+                {national.monthsToFill != null && ` · ≈ ${national.monthsToFill} mo to fill`}
+              </div>
+            </div>
+          </div>
+          {national.baseCohort === 0 && (
+            <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+              The shipped <code>omop_sample</code> subset has no matching cohort here — connect
+              <code> TB_DATASUS_DIR=…/omop_full</code> for the full national figure (~4,588 for the
+              HER2+ hero protocol, per the estimator README). Number shown is real, not fabricated.
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
 export default async function SponsorPage({
@@ -19,12 +76,27 @@ export default async function SponsorPage({
 }) {
   const { c } = await searchParams;
   const view = (await buildSponsorView(c || HERO_META.id)) ?? (await buildSponsorView(HERO_META.id));
+  // National feasibility from the Python estimator (DataSUS/OMOP). Null when the
+  // estimator service is offline — the card renders an honest offline state.
+  const national = await fetchNationalEstimate();
   if (!view) {
     return (
       <>
         <TopBar active="sponsor" />
         <main className="wrap">
-          <p>No consultation seeded. Run <code>npm run db:seed</code>.</p>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+            <div>
+              <h1 style={{ marginBottom: 2 }}>Sponsor console</h1>
+              <p className="muted" style={{ marginTop: 0 }}>
+                No protocol posted yet — post one to see site responses and softening.
+              </p>
+            </div>
+            <Link href="/sponsor/new" className="btn no-print" style={{ flexShrink: 0 }}>
+              + Post from protocol text
+            </Link>
+          </div>
+          <PrivacyBanner variant="sponsor" />
+          <NationalCard national={national} />
         </main>
       </>
     );
@@ -50,6 +122,8 @@ export default async function SponsorPage({
         </div>
 
         <PrivacyBanner variant="sponsor" />
+
+        <NationalCard national={national} />
 
         {/* Aggregated responses */}
         <div className="card">
