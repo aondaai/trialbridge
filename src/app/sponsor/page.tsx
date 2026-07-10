@@ -4,7 +4,7 @@ import { HERO_META } from "@/data/hero-protocol";
 import { TopBar, PrivacyBanner, CohortBar, CriterionList } from "@/components/ui";
 import { SofteningPanel } from "@/components/SofteningPanel";
 import { ModeledFunnelPanel } from "@/components/ModeledFunnelPanel";
-import { fetchNationalEstimate, estimatorConfigured } from "@/lib/estimator/client";
+import { fetchNationalEstimate } from "@/lib/estimator/client";
 
 // Always read the live store (a site may have just submitted).
 export const dynamic = "force-dynamic";
@@ -21,11 +21,45 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
     <div className="card">
       <h2>National feasibility estimate — DataSUS via estimator</h2>
       {!national ? (
-        <p className="sub">
-          Estimator offline at <code>{estimatorConfigured().baseUrl}</code>. Start it
-          (<code>uvicorn api:app</code> on port 8421, see <code>.claude/launch.json</code>)
-          to show the standardized national estimate.
-        </p>
+        <>
+          <p className="sub">
+            The national estimator service isn't reachable right now — the standardized DataSUS estimate will appear here once it's back online.
+          </p>
+          {process.env.NODE_ENV !== "production" && (
+            <p className="muted" style={{ fontSize: 12 }}>
+              Start it (<code>uvicorn api:app</code> on port 8421, see <code>.claude/launch.json</code>).
+            </p>
+          )}
+        </>
+      ) : national.baseCohort === 0 ? (
+        <>
+          <p className="sub">
+            Standardized estimate over the national DataSUS base for protocol{" "}
+            <strong>{national.protocolId}</strong> — source: {national.dataSource}.
+          </p>
+          <div className="grid2">
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>No matching cohort in the connected sample</div>
+            </div>
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>
+                Observed (direct count, {national.sitesWithData} sites with real data)
+              </div>
+              <div className="stat" style={{ color: "var(--definite)" }}>
+                {national.observedTotal.toLocaleString("en-US")}
+              </div>
+              <div className="muted" style={{ fontSize: 12 }}>
+                Base cohort (DataSUS): {national.baseCohort.toLocaleString("en-US")}
+                {national.monthsToFill != null && ` · ≈ ${national.monthsToFill} mo to fill`}
+              </div>
+            </div>
+          </div>
+          <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+            The shipped <code>omop_sample</code> subset has no matching cohort here — connect
+            <code> TB_DATASUS_DIR=…/omop_full</code> for the full national figure (~4,588 for the
+            HER2+ hero protocol, per the estimator README). Number shown is real, not fabricated.
+          </p>
+        </>
       ) : (
         <>
           <p className="sub">
@@ -36,11 +70,11 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
             <div>
               <div className="muted" style={{ fontSize: 13 }}>Estimated eligible (national)</div>
               <div className="stat" style={{ color: "var(--brand)" }}>
-                {Math.round(national.estimatedN).toLocaleString("pt-BR")}
+                {Math.round(national.estimatedN).toLocaleString("en-US")}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
-                95% CI {Math.round(national.ciLo).toLocaleString("pt-BR")}–
-                {Math.round(national.ciHi).toLocaleString("pt-BR")}
+                95% CI {Math.round(national.ciLo).toLocaleString("en-US")}–
+                {Math.round(national.ciHi).toLocaleString("en-US")}
               </div>
             </div>
             <div>
@@ -48,21 +82,14 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
                 Observed (direct count, {national.sitesWithData} sites with real data)
               </div>
               <div className="stat small" style={{ color: "var(--definite)" }}>
-                {national.observedTotal.toLocaleString("pt-BR")}
+                {national.observedTotal.toLocaleString("en-US")}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
-                Base cohort (DataSUS): {national.baseCohort.toLocaleString("pt-BR")}
+                Base cohort (DataSUS): {national.baseCohort.toLocaleString("en-US")}
                 {national.monthsToFill != null && ` · ≈ ${national.monthsToFill} mo to fill`}
               </div>
             </div>
           </div>
-          {national.baseCohort === 0 && (
-            <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-              The shipped <code>omop_sample</code> subset has no matching cohort here — connect
-              <code> TB_DATASUS_DIR=…/omop_full</code> for the full national figure (~4,588 for the
-              HER2+ hero protocol, per the estimator README). Number shown is real, not fabricated.
-            </p>
-          )}
         </>
       )}
     </div>
@@ -191,6 +218,37 @@ export default async function SponsorPage({
           </div>
         </div>
 
+        {/* Softening — hero moment */}
+        <div className="card">
+          <h2>Protocol softening — what loosening a criterion would do</h2>
+          <SofteningPanel softening={softening} heroHandle={consultation.heroBottleneckHandle} />
+        </div>
+
+        {/* Deliverable estimate — funnel + rate */}
+        <div className="card">
+          <h2>Deliverable estimate — not the raw count</h2>
+          <p className="sub">
+            A chart match is an upper bound. Discounted for the screen-to-enrol
+            funnel (×{feasibility.screenToEnroll}) and projected over an incident
+            enrolment window, capacity reads as a rate.
+          </p>
+          <div className="grid2">
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>Screening pool now (match ≠ enrollable)</div>
+              <div className="stat small">{feasibility.screeningPool}</div>
+            </div>
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>
+                ≈ enrollable over {feasibility.months} months
+              </div>
+              <div className="stat" style={{ color: "var(--brand)" }}>~{feasibility.enrollableEstimate}</div>
+              <div className="muted" style={{ fontSize: 12 }}>
+                incl. ~{feasibility.incidentOverWindow} incident patients across the window
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Regional breakdown — responding sites grouped by Brazilian macro-region */}
         <div className="card">
           <h2>Breakdown by region (Brazil)</h2>
@@ -236,37 +294,6 @@ export default async function SponsorPage({
               from more than one macro-region are live.
             </p>
           )}
-        </div>
-
-        {/* Deliverable estimate — funnel + rate */}
-        <div className="card">
-          <h2>Deliverable estimate — not the raw count</h2>
-          <p className="sub">
-            A chart match is an upper bound. Discounted for the screen-to-enrol
-            funnel (×{feasibility.screenToEnroll}) and projected over an incident
-            enrolment window, capacity reads as a rate.
-          </p>
-          <div className="grid2">
-            <div>
-              <div className="muted" style={{ fontSize: 13 }}>Screening pool now (match ≠ enrollable)</div>
-              <div className="stat small">{feasibility.screeningPool}</div>
-            </div>
-            <div>
-              <div className="muted" style={{ fontSize: 13 }}>
-                ≈ enrollable over {feasibility.months} months
-              </div>
-              <div className="stat" style={{ color: "var(--brand)" }}>~{feasibility.enrollableEstimate}</div>
-              <div className="muted" style={{ fontSize: 12 }}>
-                incl. ~{feasibility.incidentOverWindow} incident patients across the window
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Softening — hero moment */}
-        <div className="card">
-          <h2>Protocol softening — what loosening a criterion would do</h2>
-          <SofteningPanel softening={softening} heroHandle={consultation.heroBottleneckHandle} />
         </div>
 
         {/* Modeled-prevalence funnel — only for protocols with not-evaluable gating criteria */}

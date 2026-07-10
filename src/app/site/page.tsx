@@ -40,7 +40,8 @@ export default async function SitePage({
         <main className="wrap">
           <p>
             No site found for <code>{SITE_ID}</code>. A site needs to be listed
-            (with its patient records uploaded) before it can respond.
+            (with its patient records uploaded) before it can respond —{" "}
+            <a href="/site/new">List your site →</a>
           </p>
         </main>
       </>
@@ -67,7 +68,7 @@ export default async function SitePage({
       <main className="wrap">
         <h1 style={{ marginBottom: 2 }}>Open consultation for {ds.site.name}</h1>
         <p className="muted" style={{ marginTop: 0 }}>
-          {ds.site.city}, {ds.site.country} · {ds.site.persona}
+          {ds.site.city}, {ds.site.country}{ds.site.persona ? ` · ${ds.site.persona}` : ""}
         </p>
 
         <PrivacyBanner variant="site" />

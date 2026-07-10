@@ -141,7 +141,8 @@ export default async function ScorecardPage({
         <TopBar />
         <main className="wrap">
           <p>
-            No site data available yet. List a site and upload its patient
+            No site data available yet.{" "}
+            <a href="/site/new">List a site</a> and upload its patient
             records to generate a scorecard.
           </p>
         </main>

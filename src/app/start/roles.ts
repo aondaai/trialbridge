@@ -15,18 +15,18 @@ export interface RoleOption {
 export const ROLE_OPTIONS: RoleOption[] = [
   {
     key: "sponsor",
-    title: "Sou Patrocinador",
+    title: "I'm a Sponsor",
     blurb:
-      "Publique um protocolo e veja, por site e por região do Brasil, quantos pacientes elegíveis existem — com intervalo de confiança.",
-    cta: "Rodar feasibility →",
+      "Post a protocol and see, per site and per Brazilian region, how many eligible patients exist — with a confidence interval.",
+    cta: "Run feasibility →",
     href: "/sponsor",
   },
   {
     key: "site",
-    title: "Sou Site / Centro",
+    title: "I'm a Site / Center",
     blurb:
-      "Cadastre seu centro e responda a protocolos com sua capacidade real — apenas contagens agregadas, nunca dados de paciente.",
-    cta: "Listar meu site →",
+      "List your center and respond to protocols with your real capacity — aggregate counts only, never patient data.",
+    cta: "List my site →",
     href: "/site",
   },
 ];

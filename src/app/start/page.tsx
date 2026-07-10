@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ROLE_OPTIONS } from "./roles";
 
 export const metadata: Metadata = {
-  title: "TrialBridge — Escolha seu papel",
+  title: "TrialBridge — Choose your role",
 };
 
 /**
@@ -27,11 +27,10 @@ export default function StartPage() {
           TrialBridge · Elegível
         </p>
         <h1 className="cl-h1" style={{ margin: "0 0 12px", lineHeight: 1.1 }}>
-          Como você quer começar?
+          How do you want to start?
         </h1>
         <p className="cl-text-secondary" style={{ fontSize: 18, margin: "0 0 40px", maxWidth: 620 }}>
-          Escolha seu papel para seguir a jornada certa. Você pode alternar depois pela barra
-          superior.
+          Choose your role to follow the right journey. You can switch later from the top bar.
         </p>
 
         <div

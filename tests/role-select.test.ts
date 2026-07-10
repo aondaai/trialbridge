@@ -16,8 +16,19 @@ describe("role-selection entry screen", () => {
     const html = renderToStaticMarkup(createElement(StartPage));
     expect(html).toContain('href="/sponsor"');
     expect(html).toContain('href="/site"');
+    // Decode HTML entities for title matching (apostrophes are encoded as &#x27;)
+    const decoded = html.replace(/&#x27;/g, "'");
     for (const r of ROLE_OPTIONS) {
-      expect(html).toContain(r.title);
+      expect(decoded).toContain(r.title);
+    }
+  });
+
+  it("has no Portuguese characters in ROLE_OPTIONS", () => {
+    const portugueseChars = /[ãáâéêíóôõúç]/;
+    for (const r of ROLE_OPTIONS) {
+      expect(r.title).not.toMatch(portugueseChars);
+      expect(r.blurb).not.toMatch(portugueseChars);
+      expect(r.cta).not.toMatch(portugueseChars);
     }
   });
 });
