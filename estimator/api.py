@@ -25,31 +25,30 @@ from typing import List, Optional
 
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from trialbridge.data import DuckDBDataSUS, RealProprietary
+from trialbridge.data import MaterializedDataSUS, RealProprietary
 from trialbridge.estimator import (
     estimate, national_total, rank_bottlenecks, observed_n_by_site,
     fill_speed, national_fill_speed,
 )
 from trialbridge.protocols import hero_protocol_real
-from trialbridge.concept_map import dx_cid_prefixes
 
 FILL_SPEED_TARGET_N = 50  # a typical single-region Phase II cohort size — illustrative default
 
-DATASUS_DIR = os.environ["TB_DATASUS_DIR"]
+# Asset 3 (materialized DataSUS base cohort) — small, reconstructible from the
+# 163GB export by scripts/materialize_datasus.py. Read this instead of scanning
+# live: national breast cohort ~394k, so the Estimated N is real (not 0 on a sample).
+DATASUS_BASE_DIR = os.environ.get("TB_DATASUS_BASE_DIR", "data/datasus_base")
 PROPRIETARY_GLOB = os.environ["TB_PROPRIETARY_GLOB"]
 
-app = FastAPI(title="TrialBridge Feasibility API", version="0.1.0")
+app = FastAPI(title="TrialBridge Feasibility API", version="0.2.0")
 
-# Loaded once at import time — see module docstring. `datasus.records()` and
-# `proprietary.patients()` are cheap (~1.6s / <1s locally) but re-running the DuckDB
-# scan on every request would still add unnecessary latency to a live demo.
-# dx_cid_prefixes DERIVED from the shared concept-map.json (not hand-typed) — see
-# trialbridge/concept_map.py and src/lib/omop/conceptMap.ts.
-_datasus = DuckDBDataSUS(parquet_dir=DATASUS_DIR, dx_cid_prefixes=dx_cid_prefixes())
+# Loaded once at import time. DataSUS side = Asset 3 (materialized aggregate);
+# proprietary side = Asset 2 (row-level depth, backs Observed N).
+_datasus = MaterializedDataSUS(base_dir=DATASUS_BASE_DIR)
 _proprietary_complete = RealProprietary(parquet_paths=[PROPRIETARY_GLOB], complete_cases_only=True)
 _proprietary_all = RealProprietary(parquet_paths=[PROPRIETARY_GLOB], complete_cases_only=False)
 _protocol = hero_protocol_real()
@@ -95,10 +94,44 @@ class FeasibilityResponse(BaseModel):
     fill_speed_target_n: int
     fill_speed_by_region: List[FillSpeedOut]
     national_months_to_fill: Optional[float]
+    # Provenance for the DataSUS (Asset 3) side of the estimate.
+    datasus_source: str
+    datasus_as_of: Optional[str] = None
+    coverage_ufs: List[str] = []
 
 
 class SoftenRequest(BaseModel):
     exclude_depth_ids: Optional[List[str]] = None
+
+
+# ---- semantic query layer: count (Asset 3) vs find (Asset 2) ----------------
+
+class Provenance(BaseModel):
+    """Every number the query layer returns is stamped with where it came from,
+    so 'observed' (localizable, Asset 2) and 'estimated' (imputed, Asset 3) are
+    never confused. See the data strategy: contar != encontrar."""
+    origin: str            # "observed" | "estimated"
+    asset: str             # "proprietary_pure" | "datasus_enriched"
+    confidence: str        # human label
+    source: str
+    as_of: Optional[str] = None
+    coverage_ufs: Optional[List[str]] = None   # count only
+    ci: Optional[List[float]] = None           # [lo, hi], count only
+    sites_with_data: Optional[int] = None      # find only
+    note: str
+
+
+class QueryRequest(BaseModel):
+    # "count" -> how many exist in the market (Asset 3, estimated, with CI).
+    # "find"  -> how many are localizable now (Asset 2, observed). Never touches Asset 3.
+    intent: str
+
+
+class QueryResponse(BaseModel):
+    intent: str
+    protocol_id: str
+    value: float
+    provenance: Provenance
 
 
 def _run(exclude_depth_ids: Optional[List[str]]) -> FeasibilityResponse:
@@ -141,6 +174,47 @@ def _run(exclude_depth_ids: Optional[List[str]]) -> FeasibilityResponse:
             for f in fspeed
         ],
         national_months_to_fill=nat_months,
+        datasus_source=_datasus.provenance.get("source", "DataSUS (materialized)"),
+        datasus_as_of=_datasus.provenance.get("as_of"),
+        coverage_ufs=_datasus.provenance.get("coverage_ufs", []),
+    )
+
+
+def _count() -> QueryResponse:
+    """COUNT — how many eligible patients EXIST in the market (Asset 3, estimated)."""
+    ests = estimate(_protocol, _datasus, _proprietary_complete, exclude_depth_ids=None)
+    nat, lo, hi = national_total(ests)
+    prov = _datasus.provenance
+    return QueryResponse(
+        intent="count", protocol_id=_protocol.protocol_id, value=nat,
+        provenance=Provenance(
+            origin="estimated", asset="datasus_enriched",
+            confidence="estimated (with CI, within covered UFs)",
+            source=prov.get("source", "DataSUS (materialized)"),
+            as_of=prov.get("as_of"),
+            coverage_ufs=prov.get("coverage_ufs", []),
+            ci=[lo, hi],
+            note="Standardized estimate over the national DataSUS base. Counting, not finding — "
+                 "these are not individually localizable patients.",
+        ),
+    )
+
+
+def _find() -> QueryResponse:
+    """FIND — how many eligible patients are LOCALIZABLE now (Asset 2, observed).
+    Never touches Asset 3 (the golden rule: you cannot 'find' an imputed patient)."""
+    observed = observed_n_by_site(_protocol, _proprietary_all, exclude_depth_ids=None)
+    total = sum(s.observed_n for s in observed)
+    return QueryResponse(
+        intent="find", protocol_id=_protocol.protocol_id, value=float(total),
+        provenance=Provenance(
+            origin="observed", asset="proprietary_pure",
+            confidence="observed (row-level, localizable)",
+            source="Proprietary NLP->OMOP depth (14 sites)",
+            sites_with_data=len(observed),
+            note="Direct count over real proprietary patients. Finding, not counting — "
+                 "each is a real, localizable record. Asset 3 (imputed) is never used here.",
+        ),
     )
 
 
@@ -174,3 +248,15 @@ def feasibility_estimate():
 @app.post("/soften", response_model=FeasibilityResponse)
 def soften(req: SoftenRequest):
     return _run(exclude_depth_ids=req.exclude_depth_ids)
+
+
+@app.post("/query", response_model=QueryResponse)
+def query(req: QueryRequest):
+    """Semantic layer: route by intent. count -> Asset 3 (estimated), find -> Asset 2
+    (observed). Enforces the golden rule 'contar != encontrar' at the boundary."""
+    intent = (req.intent or "").strip().lower()
+    if intent == "count":
+        return _count()
+    if intent == "find":
+        return _find()
+    raise HTTPException(status_code=400, detail="intent must be 'count' or 'find'")
