@@ -9,6 +9,7 @@
 
 import { IntakeRegistry } from "./registry";
 import { ctgovAdapter } from "./adapters/ctgov";
+import { documentAdapter } from "./adapters/document";
 
 export type {
   IntakeInput,
@@ -23,5 +24,5 @@ export { IntakeRegistry } from "./registry";
 
 /** A registry with all shipped adapters registered. */
 export function defaultRegistry(): IntakeRegistry {
-  return new IntakeRegistry().register(ctgovAdapter);
+  return new IntakeRegistry().register(ctgovAdapter).register(documentAdapter);
 }

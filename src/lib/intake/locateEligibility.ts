@@ -1,0 +1,107 @@
+/**
+ * Locate the eligibility section inside a full document.
+ *
+ * A protocol / IND clinical protocol / CSR is dozens of pages; only the
+ * inclusion & exclusion block feeds the matcher. This step narrows a whole
+ * document down to that block BEFORE `parse.ts` sees it — so the LLM parse (or
+ * the offline cache) works on the right few paragraphs, not a 40-page dump
+ * (context rot, and cost).
+ *
+ * Offline-first: a deterministic heuristic (heading detection + section-end
+ * cutoff) runs with no network and no API key, so the whole pipeline and its
+ * tests work with nothing configured. When `ANTHROPIC_API_KEY` is set and the
+ * caller opts in, Claude does the same job more robustly; on any failure it
+ * falls back to the heuristic. Either way the output still flows through the
+ * existing verify table — the trust moment is unchanged.
+ */
+
+import Anthropic from "@anthropic-ai/sdk";
+
+export interface LocatedEligibility {
+  /** The narrowed eligibility text (or the whole input if no section was found). */
+  text: string;
+  method: "heuristic" | "llm" | "verbatim";
+  /** True when an explicit inclusion/eligibility heading was located. */
+  found: boolean;
+  note: string;
+}
+
+/** Headings that mark the START of the eligibility block. */
+const START_RE =
+  /(?:^|\n)[ \t>*#\-]*((?:key\s+)?inclusion\s+criteria|(?:key\s+)?eligibility(?:\s+criteria)?|patient\s+selection|study\s+population)\b/i;
+
+/** The exclusion heading (used to know we've captured both halves). */
+const EXCLUSION_RE = /(?:^|\n)[ \t>*#\-]*(?:key\s+)?exclusion\s+criteria\b/i;
+
+/** Section titles that mean "eligibility is over" — cut the capture here. */
+const SECTION_END_RE =
+  /\n[ \t]*(?:\d+(?:\.\d+)*\.?\s+)?(study\s+design|trial\s+design|treatments?|interventions?|objectives?|endpoints?|outcome\s+measures?|statistical|sample\s+size|assessments?|schedule\s+of|study\s+procedures?|discontinuation|withdrawal|references?|appendix|investigational\s+plan|dosing|randomi[sz]ation)\b/i;
+
+/** Deterministic, offline eligibility locator. */
+export function locateEligibilityHeuristic(fullText: string): LocatedEligibility {
+  const start = fullText.match(START_RE);
+  if (!start || start.index === undefined) {
+    return {
+      text: fullText.trim(),
+      method: "verbatim",
+      found: false,
+      note: "No inclusion/eligibility heading found — passing the whole text through for parsing.",
+    };
+  }
+  const startIdx = start.index + (start[0].startsWith("\n") ? 1 : 0);
+
+  // Find where eligibility ends: the first "new section" heading AFTER the
+  // exclusion block (so the exclusion list itself isn't cut off).
+  const afterStart = fullText.slice(startIdx);
+  const exMatch = afterStart.match(EXCLUSION_RE);
+  const searchFrom = exMatch && exMatch.index !== undefined ? exMatch.index + exMatch[0].length : 0;
+  const endMatch = afterStart.slice(searchFrom).match(SECTION_END_RE);
+
+  const endIdx =
+    endMatch && endMatch.index !== undefined ? searchFrom + endMatch.index : afterStart.length;
+
+  const text = afterStart.slice(0, endIdx).trim();
+  return {
+    text,
+    method: "heuristic",
+    found: true,
+    note: exMatch
+      ? "Located inclusion + exclusion block by headings."
+      : "Located an eligibility heading (no explicit exclusion section found).",
+  };
+}
+
+const LLM_SYSTEM = `You are given the full text of a clinical trial document (protocol, synopsis, IND clinical protocol, or CSR). Return ONLY the verbatim eligibility text — the inclusion and exclusion criteria — with nothing added, summarized, or invented. Include both the "Inclusion Criteria" and "Exclusion Criteria" content. If the document contains no eligibility criteria, return the single word: NONE.`;
+
+/**
+ * Locate eligibility. Uses Claude when `opts.useLlm` and a key are present;
+ * otherwise (and on any LLM error) uses the deterministic heuristic.
+ */
+export async function locateEligibility(
+  fullText: string,
+  opts: { useLlm?: boolean } = {},
+): Promise<LocatedEligibility> {
+  if (!opts.useLlm || !process.env.ANTHROPIC_API_KEY) {
+    return locateEligibilityHeuristic(fullText);
+  }
+  try {
+    const client = new Anthropic();
+    const resp = await client.messages.create({
+      model: "claude-opus-4-8",
+      max_tokens: 2048,
+      system: LLM_SYSTEM,
+      messages: [{ role: "user", content: fullText }],
+    });
+    const block = resp.content.find((b) => b.type === "text");
+    const out = block && block.type === "text" ? block.text.trim() : "";
+    if (!out || out === "NONE") return locateEligibilityHeuristic(fullText);
+    return {
+      text: out,
+      method: "llm",
+      found: true,
+      note: `Eligibility section extracted by ${resp.model}.`,
+    };
+  } catch {
+    return locateEligibilityHeuristic(fullText);
+  }
+}
