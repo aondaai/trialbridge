@@ -183,16 +183,14 @@ export default function Landing() {
               </div>
             </div>
             <div className="tb-hero__visual">
-              <div
-                className="mascot-placeholder cl-card cl-card--flat"
-                role="img"
-                aria-label="TrialBridge mascot placeholder — capybara illustration not yet supplied"
-              >
-                <span className="mascot-placeholder__glyph" aria-hidden="true">
-                  ●●
-                </span>
-                <span className="mascot-placeholder__label">mascot here</span>
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="tb-mascot-img tb-mascot-img--hero"
+                src="/mascot/dr-capy.png"
+                alt="Dr. Capy, the TrialBridge capybara physician"
+                width={320}
+                height={362}
+              />
             </div>
           </div>
         </section>
@@ -616,15 +614,14 @@ export default function Landing() {
         <div className="tb-container">
           <div className="tb-footer__top">
             <div className="tb-footer__brand">
-              <div
-                className="mascot-placeholder mascot-placeholder--sm cl-card cl-card--flat"
-                role="img"
-                aria-label="TrialBridge mascot placeholder — capybara illustration not yet supplied"
-              >
-                <span className="mascot-placeholder__glyph" aria-hidden="true">
-                  ●
-                </span>
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="tb-mascot-img tb-mascot-img--footer"
+                src="/mascot/dr-capy.png"
+                alt=""
+                width={56}
+                height={63}
+              />
               <span className="tb-footer__brand-name">TrialBridge</span>
             </div>
             <div className="tb-footer__links">

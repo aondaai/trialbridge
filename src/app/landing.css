@@ -187,7 +187,10 @@
   height: auto;
   display: block;
 }
-.tb-mascot-img--hero { width: 320px; }
+.tb-mascot-img--hero {
+  width: 320px;
+  filter: drop-shadow(0 8px 24px rgba(20, 20, 19, 0.12));
+}
 .tb-mascot-img--footer { width: 56px; }
 
 .mascot-placeholder {
