@@ -12,6 +12,9 @@ import { ctgovAdapter } from "./adapters/ctgov";
 import { documentAdapter } from "./adapters/document";
 import { fhirAdapter } from "./adapters/fhir";
 import { euctrAdapter } from "./adapters/euctr";
+import { ectdAdapter } from "./adapters/ectd";
+import { xlsxAdapter } from "./adapters/xlsx";
+import { atlasAdapter } from "./adapters/atlas";
 
 export type {
   IntakeInput,
@@ -30,5 +33,8 @@ export function defaultRegistry(): IntakeRegistry {
     .register(ctgovAdapter)
     .register(documentAdapter)
     .register(fhirAdapter)
-    .register(euctrAdapter);
+    .register(euctrAdapter)
+    .register(ectdAdapter)
+    .register(xlsxAdapter)
+    .register(atlasAdapter);
 }

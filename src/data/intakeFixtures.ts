@@ -29,6 +29,28 @@ Exclusion Criteria:
   sourceUrl: "https://www.clinicaltrialsregister.eu/ctr-search/trial/2019-000123-45/results",
 } as const;
 
+/** A minimal ATLAS / OHDSI cohort definition (structured lane, approximate map). */
+export const ATLAS_COHORT = {
+  ConceptSets: [{ id: 0, name: "HER2-positive breast cancer" }],
+  PrimaryCriteria: {
+    CriteriaList: [{ ConditionOccurrence: { CodesetId: 0 } }],
+    ObservationWindow: { PriorDays: 0, PostDays: 0 },
+    PrimaryCriteriaLimit: { Type: "First" },
+  },
+  InclusionRules: [
+    { name: "HER2-positive status confirmed", expression: {} },
+    { name: "ECOG performance status 0-1", expression: {} },
+    { name: "At least one prior line of therapy", expression: {} },
+  ],
+  AdditionalCriteria: {
+    Type: "ALL",
+    CriteriaList: [
+      { DemographicCriteriaList: [{ Age: { Value: 18, Op: "gte" } }], Groups: [] },
+    ],
+  },
+  cdmVersionRange: ">=5.0.0",
+} as const;
+
 /** A FHIR R5 EvidenceVariable for a HER2+ mBC 2nd-line trial (structured lane). */
 export const FHIR_EVIDENCE_VARIABLE = {
   resourceType: "EvidenceVariable",
