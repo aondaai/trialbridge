@@ -40,7 +40,8 @@ export default async function SitePage({
         <main className="wrap">
           <p>
             No site found for <code>{SITE_ID}</code>. A site needs to be listed
-            (with its patient records uploaded) before it can respond.
+            (with its patient records uploaded) before it can respond —{" "}
+            <a href="/site/new">List your site →</a>
           </p>
         </main>
       </>
