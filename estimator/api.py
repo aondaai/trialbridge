@@ -35,6 +35,7 @@ from trialbridge.estimator import (
     fill_speed, national_fill_speed,
 )
 from trialbridge.protocols import hero_protocol_real
+from trialbridge.concept_map import dx_cid_prefixes
 
 FILL_SPEED_TARGET_N = 50  # a typical single-region Phase II cohort size — illustrative default
 
@@ -46,7 +47,9 @@ app = FastAPI(title="TrialBridge Feasibility API", version="0.1.0")
 # Loaded once at import time — see module docstring. `datasus.records()` and
 # `proprietary.patients()` are cheap (~1.6s / <1s locally) but re-running the DuckDB
 # scan on every request would still add unnecessary latency to a live demo.
-_datasus = DuckDBDataSUS(parquet_dir=DATASUS_DIR, dx_cid_prefixes={"breast_cancer": ["C50"]})
+# dx_cid_prefixes DERIVED from the shared concept-map.json (not hand-typed) — see
+# trialbridge/concept_map.py and src/lib/omop/conceptMap.ts.
+_datasus = DuckDBDataSUS(parquet_dir=DATASUS_DIR, dx_cid_prefixes=dx_cid_prefixes())
 _proprietary_complete = RealProprietary(parquet_paths=[PROPRIETARY_GLOB], complete_cases_only=True)
 _proprietary_all = RealProprietary(parquet_paths=[PROPRIETARY_GLOB], complete_cases_only=False)
 _protocol = hero_protocol_real()
