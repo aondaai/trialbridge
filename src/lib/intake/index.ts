@@ -11,6 +11,7 @@ import { IntakeRegistry } from "./registry";
 import { ctgovAdapter } from "./adapters/ctgov";
 import { documentAdapter } from "./adapters/document";
 import { fhirAdapter } from "./adapters/fhir";
+import { euctrAdapter } from "./adapters/euctr";
 
 export type {
   IntakeInput,
@@ -28,5 +29,6 @@ export function defaultRegistry(): IntakeRegistry {
   return new IntakeRegistry()
     .register(ctgovAdapter)
     .register(documentAdapter)
-    .register(fhirAdapter);
+    .register(fhirAdapter)
+    .register(euctrAdapter);
 }
