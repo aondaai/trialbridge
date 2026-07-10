@@ -93,7 +93,10 @@ export async function replacePatients(siteId: string, patients: Patient[]): Prom
     prisma.patient.deleteMany({ where: { siteId } }),
     ...patients.map((p) =>
       prisma.patient.create({
-        data: { id: p.id, siteId, data: JSON.stringify({ ...p, siteId }) },
+        // Patient.id is a GLOBAL primary key, so the row key is namespaced per
+        // site to avoid cross-site id collisions; the JSON payload keeps the
+        // original p.id so the matcher and UI are unaffected.
+        data: { id: `${siteId}:${p.id}`, siteId, data: JSON.stringify({ ...p, siteId }) },
       }),
     ),
   ]);

@@ -74,4 +74,16 @@ describe("parsePatientsJson", () => {
       parsePatientsJson(JSON.stringify([{ id: "" }]), "site-x"),
     ).toThrow();
   });
+
+  it("rejects duplicate ids within one paste", () => {
+    expect(() =>
+      parsePatientsJson(
+        JSON.stringify([
+          { id: "p1", diagnosis: "breast cancer" },
+          { id: "p1", diagnosis: "lung cancer" },
+        ]),
+        "site-x",
+      ),
+    ).toThrow(/duplicate/i);
+  });
 });
