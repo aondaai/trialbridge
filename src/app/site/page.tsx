@@ -68,7 +68,7 @@ export default async function SitePage({
       <main className="wrap">
         <h1 style={{ marginBottom: 2 }}>Open consultation for {ds.site.name}</h1>
         <p className="muted" style={{ marginTop: 0 }}>
-          {ds.site.city}, {ds.site.country} · {ds.site.persona}
+          {ds.site.city}, {ds.site.country}{ds.site.persona ? ` · ${ds.site.persona}` : ""}
         </p>
 
         <PrivacyBanner variant="site" />

@@ -57,6 +57,7 @@ export function parsePatientsJson(raw: string, siteId: string): Patient[] {
     throw new Error("Patient records must contain at least one patient.");
   }
 
+  const seenIds = new Set<string>();
   list.forEach((el, i) => {
     if (
       !el ||
@@ -66,6 +67,11 @@ export function parsePatientsJson(raw: string, siteId: string): Patient[] {
     ) {
       throw new Error(`Patient at index ${i} is missing a string "id".`);
     }
+    const id = (el as { id: string }).id;
+    if (seenIds.has(id)) {
+      throw new Error(`Duplicate patient id "${id}" in pasted records — ids must be unique within a site.`);
+    }
+    seenIds.add(id);
   });
 
   return list.map((el) => ({ ...(el as Record<string, unknown>), siteId }) as Patient);

@@ -4,7 +4,7 @@ import { HERO_META } from "@/data/hero-protocol";
 import { TopBar, PrivacyBanner, CohortBar, CriterionList } from "@/components/ui";
 import { SofteningPanel } from "@/components/SofteningPanel";
 import { ModeledFunnelPanel } from "@/components/ModeledFunnelPanel";
-import { fetchNationalEstimate, estimatorConfigured } from "@/lib/estimator/client";
+import { fetchNationalEstimate } from "@/lib/estimator/client";
 
 // Always read the live store (a site may have just submitted).
 export const dynamic = "force-dynamic";
