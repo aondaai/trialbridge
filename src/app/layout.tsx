@@ -10,7 +10,6 @@ import "./landing.css";
 const displayFont = Newsreader({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
   variable: "--font-display-sub",
   display: "swap",
 });
