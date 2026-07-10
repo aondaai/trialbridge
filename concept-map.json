@@ -1,0 +1,737 @@
+{
+  "version": "1",
+  "contract": "§2.2 concept-set (ARQUITETURA_Texto-NCT_para_OMOP_com_DataSUS.md)",
+  "generatedFrom": [
+    "NCT03529110",
+    "NCT05920356"
+  ],
+  "dxPrefixes": {
+    "breast_cancer": [
+      "C50"
+    ],
+    "lung_cancer": [
+      "C33",
+      "C34"
+    ]
+  },
+  "entries": [
+    {
+      "criterionId": "c_age",
+      "field": "age",
+      "textOriginal": "Age >= 18 years.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Person",
+      "table": "person",
+      "vocabulary": "None",
+      "answerability": "datasus",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "gte",
+        "value": 18,
+        "unit": null
+      },
+      "confidence": 0.99,
+      "key": "age",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": false,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Person/person/None"
+    },
+    {
+      "criterionId": "c_dx",
+      "field": "diagnosis",
+      "textOriginal": "Histologically confirmed breast cancer.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Condition",
+      "table": "condition_occurrence",
+      "vocabulary": "SNOMED",
+      "answerability": "datasus",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "eq",
+        "value": "breast cancer",
+        "unit": null
+      },
+      "confidence": 0.96,
+      "key": "breast_cancer",
+      "conceptId": 0,
+      "sourceCode": "C50",
+      "needsMapping": true,
+      "icd10": {
+        "prefixes": [
+          "C50"
+        ],
+        "members": [
+          "C50"
+        ]
+      },
+      "anchoredBy": "lexical",
+      "matchedOn": "exact",
+      "needsReview": false,
+      "provenance": "lexical anchor -> CID-10 C50 (exact); SNOMED concept_id needs a vocabulary bundle"
+    },
+    {
+      "criterionId": "c_stage",
+      "field": "stage",
+      "textOriginal": "Unresectable and/or metastatic (stage IV) disease.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Observation",
+      "table": "observation",
+      "vocabulary": "SNOMED",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "in",
+        "value": [
+          "IV"
+        ],
+        "unit": null
+      },
+      "confidence": 0.9,
+      "key": "stage",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Observation/observation/SNOMED (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_her2",
+      "field": "her2_status",
+      "textOriginal": "HER2-positive (IHC 3+ or ISH-amplified).",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "in",
+        "value": [
+          "positive"
+        ],
+        "unit": null
+      },
+      "confidence": 0.82,
+      "key": "her2_status",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_ecog",
+      "field": "ecog",
+      "textOriginal": "ECOG performance status 0 or 1.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "lte",
+        "value": 1,
+        "unit": null
+      },
+      "confidence": 0.94,
+      "key": "ecog",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_prior",
+      "field": "prior_lines",
+      "textOriginal": "At least one prior line of therapy in the metastatic setting.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Drug",
+      "table": "drug_exposure",
+      "vocabulary": "RxNorm",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "gte",
+        "value": 1,
+        "unit": null
+      },
+      "confidence": 0.7,
+      "key": "prior_lines",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Drug/drug_exposure/RxNorm (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_organ_creat",
+      "field": "creatinine",
+      "textOriginal": "Adequate organ function: creatinine <= 1.5 mg/dL.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "lte",
+        "value": 1.5,
+        "unit": "mg/dL"
+      },
+      "confidence": 0.88,
+      "key": "creatinine",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_organ_hgb",
+      "field": "hemoglobin",
+      "textOriginal": "Adequate organ function: hemoglobin >= 9 g/dL.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "gte",
+        "value": 9,
+        "unit": "g/dL"
+      },
+      "confidence": 0.88,
+      "key": "hemoglobin",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_organ_plt",
+      "field": "platelets",
+      "textOriginal": "Adequate organ function: platelets >= 100 x10^9/L.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "gte",
+        "value": 100,
+        "unit": "10^9/L"
+      },
+      "confidence": 0.88,
+      "key": "platelets",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_organ_bili",
+      "field": "bilirubin",
+      "textOriginal": "Adequate organ function: total bilirubin <= 1.5 mg/dL.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "lte",
+        "value": 1.5,
+        "unit": "mg/dL"
+      },
+      "confidence": 0.88,
+      "key": "bilirubin",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_brain",
+      "field": "brain_metastases",
+      "textOriginal": "Active (untreated/symptomatic) brain metastases.",
+      "inclusion": false,
+      "assertion": "absent",
+      "domain": "Condition",
+      "table": "condition_occurrence",
+      "vocabulary": "SNOMED",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "eq",
+        "value": "present",
+        "unit": null
+      },
+      "confidence": 0.85,
+      "key": "brain_metastases",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Condition/condition_occurrence/SNOMED (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "c_lvef",
+      "field": "ejection_fraction",
+      "textOriginal": "Left ventricular ejection fraction < 50%.",
+      "inclusion": false,
+      "assertion": "absent",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "lt",
+        "value": 50,
+        "unit": "%"
+      },
+      "confidence": 0.8,
+      "key": "ejection_fraction",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_age",
+      "field": "age",
+      "textOriginal": "Age >= 18 years.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Person",
+      "table": "person",
+      "vocabulary": "None",
+      "answerability": "datasus",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "gte",
+        "value": 18,
+        "unit": null
+      },
+      "confidence": 0.99,
+      "key": "age",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": false,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Person/person/None"
+    },
+    {
+      "criterionId": "n_dx",
+      "field": "diagnosis",
+      "textOriginal": "Non-small-cell lung cancer (NSCLC).",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Condition",
+      "table": "condition_occurrence",
+      "vocabulary": "SNOMED",
+      "answerability": "datasus",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "eq",
+        "value": "lung cancer",
+        "unit": null
+      },
+      "confidence": 0.95,
+      "key": "lung_cancer",
+      "conceptId": 0,
+      "sourceCode": "C33",
+      "needsMapping": true,
+      "icd10": {
+        "prefixes": [
+          "C33",
+          "C34"
+        ],
+        "members": [
+          "C33",
+          "C34"
+        ]
+      },
+      "anchoredBy": "lexical",
+      "matchedOn": "exact",
+      "needsReview": false,
+      "provenance": "lexical anchor -> CID-10 C33,C34 (exact); SNOMED concept_id needs a vocabulary bundle"
+    },
+    {
+      "criterionId": "n_histology",
+      "field": "histology",
+      "textOriginal": "Nonsquamous histology.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Observation",
+      "table": "observation",
+      "vocabulary": "SNOMED",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "in",
+        "value": [
+          "nonsquamous"
+        ],
+        "unit": null
+      },
+      "confidence": 0.85,
+      "key": "histology",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Observation/observation/SNOMED (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_stage",
+      "field": "stage",
+      "textOriginal": "Stage IV (advanced/metastatic) disease.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Observation",
+      "table": "observation",
+      "vocabulary": "SNOMED",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "in",
+        "value": [
+          "IV"
+        ],
+        "unit": null
+      },
+      "confidence": 0.9,
+      "key": "stage",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Observation/observation/SNOMED (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_kras",
+      "field": "kras_g12c",
+      "textOriginal": "KRAS p.G12C mutation (central or central-confirmed).",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "in",
+        "value": [
+          "positive"
+        ],
+        "unit": null
+      },
+      "confidence": 0.9,
+      "key": "kras_g12c",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_pdl1",
+      "field": "pdl1_status",
+      "textOriginal": "PD-L1-negative (central or central-confirmed).",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "in",
+        "value": [
+          "negative"
+        ],
+        "unit": null
+      },
+      "confidence": 0.88,
+      "key": "pdl1_status",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_prior_tx",
+      "field": "prior_lines",
+      "textOriginal": "No prior systemic anticancer therapy in the metastatic/non-curable setting.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Drug",
+      "table": "drug_exposure",
+      "vocabulary": "RxNorm",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "lte",
+        "value": 0,
+        "unit": null
+      },
+      "confidence": 0.75,
+      "key": "prior_lines",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Drug/drug_exposure/RxNorm (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_ecog",
+      "field": "ecog",
+      "textOriginal": "ECOG performance status 0 or 1.",
+      "inclusion": true,
+      "assertion": "present",
+      "domain": "Measurement",
+      "table": "measurement",
+      "vocabulary": "LOINC",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "lte",
+        "value": 1,
+        "unit": null
+      },
+      "confidence": 0.9,
+      "key": "ecog",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Measurement/measurement/LOINC (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_brain",
+      "field": "brain_metastases",
+      "textOriginal": "Symptomatic or untreated brain metastases.",
+      "inclusion": false,
+      "assertion": "absent",
+      "domain": "Condition",
+      "table": "condition_occurrence",
+      "vocabulary": "SNOMED",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "eq",
+        "value": "present",
+        "unit": null
+      },
+      "confidence": 0.85,
+      "key": "brain_metastases",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Condition/condition_occurrence/SNOMED (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_mi",
+      "field": "mi_recent",
+      "textOriginal": "Myocardial infarction within 6 months, or unstable arrhythmia/angina.",
+      "inclusion": false,
+      "assertion": "absent",
+      "domain": "Condition",
+      "table": "condition_occurrence",
+      "vocabulary": "SNOMED",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "eq",
+        "value": "present",
+        "unit": null
+      },
+      "confidence": 0.85,
+      "key": "mi_recent",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Condition/condition_occurrence/SNOMED (concept_id needs a vocabulary bundle)"
+    },
+    {
+      "criterionId": "n_prior_kras_inhibitor",
+      "field": "prior_kras_inhibitor",
+      "textOriginal": "Prior treatment with a KRAS G12C inhibitor.",
+      "inclusion": false,
+      "assertion": "absent",
+      "domain": "Drug",
+      "table": "drug_exposure",
+      "vocabulary": "RxNorm",
+      "answerability": "depth",
+      "temporality": {
+        "window": "any",
+        "anchor": "index"
+      },
+      "valueConstraint": {
+        "operator": "eq",
+        "value": "present",
+        "unit": null
+      },
+      "confidence": 0.85,
+      "key": "prior_kras_inhibitor",
+      "conceptId": 0,
+      "sourceCode": null,
+      "needsMapping": true,
+      "icd10": null,
+      "anchoredBy": "verified",
+      "matchedOn": null,
+      "needsReview": false,
+      "provenance": "FIELD_CONCEPT_MAP: Drug/drug_exposure/RxNorm (concept_id needs a vocabulary bundle)"
+    }
+  ]
+}

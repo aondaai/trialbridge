@@ -13,6 +13,7 @@ import sys
 from trialbridge.data import DuckDBDataSUS, RealProprietary
 from trialbridge.estimator import estimate, national_total, rank_bottlenecks, observed_n_by_site
 from trialbridge.protocols import hero_protocol_real
+from trialbridge.concept_map import dx_cid_prefixes
 
 DATASUS_DIR = sys.argv[1] if len(sys.argv) > 1 else None
 PROPRIETARY_PARQUET = sys.argv[2] if len(sys.argv) > 2 else None
@@ -23,7 +24,8 @@ def main() -> None:
     protocol = hero_protocol_real()
     datasus = DuckDBDataSUS(
         parquet_dir=DATASUS_DIR,
-        dx_cid_prefixes={"breast_cancer": ["C50"]},
+        # DERIVED from the shared concept-map.json, not hand-typed.
+        dx_cid_prefixes=dx_cid_prefixes(),
     )
     proprietary = RealProprietary(parquet_paths=[PROPRIETARY_PARQUET])
 

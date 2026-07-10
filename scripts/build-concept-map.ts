@@ -11,11 +11,12 @@
  * Run: npm run build-concept-map
  */
 
+import { resolve } from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import {
   buildConceptMap,
   writeConceptMap,
-  conceptMapPath,
+  type ConceptMap,
   type ConceptMapEntry,
   type AnchorFallback,
   type ProtocolInput,
@@ -109,8 +110,19 @@ async function main(): Promise<void> {
     { nct: NSCLC_META.nct, criteria: NSCLC_CRITERIA },
   ];
   const fallback = await buildModelFallback(protocols);
-  const map = buildConceptMap(protocols, undefined, fallback);
-  writeConceptMap(map);
+  const map: ConceptMap = buildConceptMap(protocols, undefined, fallback);
+
+  // Write concept-map.json into every location a build context needs it, so
+  // both Docker images are self-contained (cwd here is the trialbridge package):
+  //  - trialbridge/concept-map.json          -> web image + TS/Vitest (cwd-relative)
+  //  - ../concept-map.json (project root)     -> dev estimator at outputs/... (parents[3])
+  //  - estimator/concept-map.json             -> estimator image build context (TB_CONCEPT_MAP)
+  const targets = [
+    resolve(process.cwd(), "concept-map.json"),
+    resolve(process.cwd(), "..", "concept-map.json"),
+    resolve(process.cwd(), "estimator", "concept-map.json"),
+  ];
+  for (const t of targets) writeConceptMap(map, t);
 
   printTable(map.entries);
   console.log("");
@@ -119,7 +131,8 @@ async function main(): Promise<void> {
   const review = map.entries.filter((e) => e.needsReview);
   console.log(`needsReview:    ${review.length}${review.length ? " -> " + review.map((e) => e.criterionId).join(", ") : ""}`);
   console.log(`generatedFrom:  ${map.generatedFrom.join(", ")}`);
-  console.log(`wrote:          ${conceptMapPath()}`);
+  console.log(`wrote:          ${targets.length} copies:`);
+  for (const t of targets) console.log(`                  ${t}`);
 }
 
 main().catch((err) => {

@@ -278,9 +278,14 @@ export function buildConceptMap(
 
 // ---- Shared concept-map.json location + IO (repo root) ----
 
-/** Repo root is one level above the trialbridge package (cwd under Vitest/Next). */
+/**
+ * concept-map.json lives inside the trialbridge package (cwd under Vitest, Next
+ * dev, and the web Docker image where WORKDIR=/app holds the package). This
+ * keeps it inside the deployable build context. TB_CONCEPT_MAP overrides it
+ * (the estimator image sets it explicitly).
+ */
 export function conceptMapPath(): string {
-  return process.env.TB_CONCEPT_MAP ?? resolve(process.cwd(), "..", "concept-map.json");
+  return process.env.TB_CONCEPT_MAP ?? resolve(process.cwd(), "concept-map.json");
 }
 
 export function writeConceptMap(map: ConceptMap, path = conceptMapPath()): void {

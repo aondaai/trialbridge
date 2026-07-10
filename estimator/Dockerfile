@@ -12,8 +12,11 @@ COPY . .
 
 # Sample data is baked in (see .dockerignore — omop_full is excluded). Point the
 # estimator at the in-image sample so no host bind mount is needed.
+# concept-map.json is baked in at the build-context root (/app); the shared
+# resolver (trialbridge/concept_map.py) reads it via TB_CONCEPT_MAP.
 ENV TB_DATASUS_DIR=/app/data/omop_sample \
-    TB_PROPRIETARY_GLOB=/app/data/proprietary_ha/*.parquet
+    TB_PROPRIETARY_GLOB=/app/data/proprietary_ha/*.parquet \
+    TB_CONCEPT_MAP=/app/concept-map.json
 
 EXPOSE 8421
 
