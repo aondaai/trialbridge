@@ -1,6 +1,6 @@
 [
   { "id": "F001", "phase": 0, "description": "Intake core: SourceAdapter/IntakeResult/ProtocolMeta/IntakeInput types + registry (detectBest/ingest) + ctgov adapter wrapping fetchProtocol, mapped onto ProtocolMeta. Original 19 tests stay green.", "file": "src/lib/intake/*", "passes": true },
-  { "id": "F002", "phase": 1, "description": "Envelope extractors: text passthrough + zip (PKZIP central-dir + zlib inflateRaw, zero-dep) + pdf (stream + FlateDecode + Tj/TJ). Tests.", "file": "src/lib/intake/envelope/*", "passes": false },
+  { "id": "F002", "phase": 1, "description": "Envelope extractors: text passthrough + zip (PKZIP central-dir + zlib inflateRaw, zero-dep) + pdf (stream + FlateDecode + Tj/TJ). Tests.", "file": "src/lib/intake/envelope/*", "passes": true },
   { "id": "F003", "phase": 1, "description": "locateEligibility: deterministic heuristic (Inclusion/Exclusion/Eligibility heading slice), offline-first, optional Claude upgrade behind env. Tests.", "file": "src/lib/intake/locateEligibility.ts", "passes": false },
   { "id": "F004", "phase": 1, "description": "Document adapter (envelope -> locate -> eligibilityText -> parse.ts) + born-digital protocol + synopsis fixtures. Tests.", "file": "src/lib/intake/adapters/document.ts", "passes": false },
   { "id": "F005", "phase": 2, "description": "FHIR EvidenceVariable adapter: map characteristics -> preParsedCriteria (skip LLM), trust high. Fixture + tests.", "file": "src/lib/intake/adapters/fhir.ts", "passes": false },
