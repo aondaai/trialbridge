@@ -14,6 +14,7 @@
     "generate-data": "./node_modules/.bin/tsx scripts/generate-data.ts",
     "db:seed": "./node_modules/.bin/tsx prisma/seed.ts",
     "demo": "./node_modules/.bin/tsx scripts/demo.ts",
+    "demo:intake": "./node_modules/.bin/tsx scripts/demo-intake.ts",
     "build-vocab-index": "./node_modules/.bin/tsx scripts/build-vocab-index.ts",
     "build-concept-map": "./node_modules/.bin/tsx scripts/build-concept-map.ts",
     "smoke": "./node_modules/.bin/tsx scripts/smoke.ts",
