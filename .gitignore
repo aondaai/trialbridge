@@ -40,6 +40,10 @@ yarn-error.log*
 # NOTE: data/vocab-index.json (the small derived index) IS committed on purpose.
 /data/vocab/
 
+# DATASUS-OMOP export mirror (~165 GiB) pulled by scripts/download-omop-sus.sh
+# from gs://omop-sus/exports/ihealth_omop_sus. Never commit this.
+/data/omop-sus/
+
 # Synthetic sample data written by `npm run generate-data` (a dev tool). The app
 # no longer reads these at runtime — persistence is the Prisma DB (prisma/dev.db),
 # which starts empty. Regenerate locally if you want sample rows to upload.
