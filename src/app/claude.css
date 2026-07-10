@@ -5,6 +5,13 @@
    Dark mode: set data-theme="dark" on <html> or any container.
    ========================================================================== */
 
+/* Substitute brand faces (proprietary Tiempos Headline / Styrene B / Berkeley
+   Mono are not shipped). Nearest Google Fonts, matching the design-system
+   tokens/typography.css handoff: Newsreader (display), Hanken Grotesk (body),
+   JetBrains Mono (data). Loaded + self-hosted via next/font in layout.tsx,
+   which exposes them as --font-display-sub / --font-body-sub / --font-mono-sub.
+   Swap the --cl-font-* stacks when the real files arrive. */
+
 /* --------------------------------------------------------------------------
    1. TOKENS
    -------------------------------------------------------------------------- */
@@ -36,9 +43,9 @@
   --cl-info-subtle: #E1E9F0;
 
   /* Typography */
-  --cl-font-display: 'Tiempos Headline', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-  --cl-font-body: 'Styrene B', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --cl-font-mono: 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --cl-font-display: 'Tiempos Headline', var(--font-display-sub), 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --cl-font-body: 'Styrene B', var(--font-body-sub), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --cl-font-mono: 'Berkeley Mono', var(--font-mono-sub), ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   --cl-text-xs: 12px;  --cl-text-sm: 14px;  --cl-text-md: 16px;
   --cl-text-lg: 18px;  --cl-text-xl: 22px;  --cl-text-2xl: 28px;
