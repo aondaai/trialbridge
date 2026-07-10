@@ -5,6 +5,30 @@
  * demo artifacts, not verbatim regulatory documents.
  */
 
+/**
+ * A cached EU Clinical Trials Register (EudraCT) record — registry text lane.
+ * EudraCT numbers look like YYYY-NNNNNN-CC. The EU register has no clean public
+ * JSON API (unlike CT.gov), so the live path is best-effort and this verified
+ * fixture is the honest fallback for a known id.
+ */
+export const EUCTR_FIXTURE = {
+  eudractNumber: "2019-000123-45",
+  title: "A Phase III trial of Drug Z in HER2-negative advanced gastric cancer",
+  sponsor: "European Oncology Consortium",
+  conditions: ["Advanced gastric cancer"],
+  eligibilityText: `Inclusion Criteria:
+- Age >= 18 years.
+- Histologically confirmed gastric adenocarcinoma.
+- Advanced or metastatic disease.
+- ECOG performance status 0 or 1.
+
+Exclusion Criteria:
+- HER2-positive disease.
+- Prior systemic therapy for advanced disease.
+- Left ventricular ejection fraction < 50%.`,
+  sourceUrl: "https://www.clinicaltrialsregister.eu/ctr-search/trial/2019-000123-45/results",
+} as const;
+
 /** A FHIR R5 EvidenceVariable for a HER2+ mBC 2nd-line trial (structured lane). */
 export const FHIR_EVIDENCE_VARIABLE = {
   resourceType: "EvidenceVariable",
