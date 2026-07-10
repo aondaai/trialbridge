@@ -25,8 +25,17 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(
+    --cl-font-body,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif
+  );
   line-height: 1.5;
 }
 
@@ -80,6 +89,17 @@ a {
   background: var(--panel-2);
 }
 
+/* ---------- console headings ---------- */
+/* Match the design-system console kit: serif display for page + card titles,
+   weight 500, tight tracking. Body copy stays grotesque (--cl-font-body). */
+.wrap h1 {
+  font-family: var(--cl-font-display, Georgia, "Times New Roman", serif);
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
 /* ---------- cards ---------- */
 .card {
   background: var(--panel);
@@ -90,7 +110,10 @@ a {
 }
 .card h2 {
   margin: 0 0 4px;
-  font-size: 17px;
+  font-family: var(--cl-font-display, Georgia, "Times New Roman", serif);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.01em;
 }
 .card .sub {
   color: var(--muted);
@@ -125,19 +148,22 @@ a {
   border-radius: 999px;
   border: 1px solid var(--border);
 }
+/* Subtle tints matching the design-system .tb-chip cohort chips: the saturated
+   cohort colors stay reserved for the cohort bar / dots (the data signal). */
 .chip.definite {
-  color: #062;
-  background: var(--definite);
+  color: #0f6b45;
+  background: var(--cl-success-subtle, #e8eddf);
   border-color: transparent;
 }
 .chip.possible {
-  color: #4a2c00;
-  background: var(--possible);
+  color: #7a4e0c;
+  background: var(--cl-warning-subtle, #f6ecd4);
   border-color: transparent;
 }
 .chip.excluded {
-  color: var(--text);
+  color: var(--muted);
   background: var(--panel-2);
+  border-color: transparent;
 }
 .dot {
   width: 9px;
@@ -177,10 +203,14 @@ a {
 }
 
 /* ---------- stat ---------- */
+/* Metrics are a first-class brand signal: serif display, tabular figures. */
 .stat {
+  font-family: var(--cl-font-display, Georgia, "Times New Roman", serif);
   font-size: 30px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .stat.small {
   font-size: 22px;
