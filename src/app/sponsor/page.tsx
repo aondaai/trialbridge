@@ -218,6 +218,37 @@ export default async function SponsorPage({
           </div>
         </div>
 
+        {/* Softening — hero moment */}
+        <div className="card">
+          <h2>Protocol softening — what loosening a criterion would do</h2>
+          <SofteningPanel softening={softening} heroHandle={consultation.heroBottleneckHandle} />
+        </div>
+
+        {/* Deliverable estimate — funnel + rate */}
+        <div className="card">
+          <h2>Deliverable estimate — not the raw count</h2>
+          <p className="sub">
+            A chart match is an upper bound. Discounted for the screen-to-enrol
+            funnel (×{feasibility.screenToEnroll}) and projected over an incident
+            enrolment window, capacity reads as a rate.
+          </p>
+          <div className="grid2">
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>Screening pool now (match ≠ enrollable)</div>
+              <div className="stat small">{feasibility.screeningPool}</div>
+            </div>
+            <div>
+              <div className="muted" style={{ fontSize: 13 }}>
+                ≈ enrollable over {feasibility.months} months
+              </div>
+              <div className="stat" style={{ color: "var(--brand)" }}>~{feasibility.enrollableEstimate}</div>
+              <div className="muted" style={{ fontSize: 12 }}>
+                incl. ~{feasibility.incidentOverWindow} incident patients across the window
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Regional breakdown — responding sites grouped by Brazilian macro-region */}
         <div className="card">
           <h2>Breakdown by region (Brazil)</h2>
@@ -263,37 +294,6 @@ export default async function SponsorPage({
               from more than one macro-region are live.
             </p>
           )}
-        </div>
-
-        {/* Deliverable estimate — funnel + rate */}
-        <div className="card">
-          <h2>Deliverable estimate — not the raw count</h2>
-          <p className="sub">
-            A chart match is an upper bound. Discounted for the screen-to-enrol
-            funnel (×{feasibility.screenToEnroll}) and projected over an incident
-            enrolment window, capacity reads as a rate.
-          </p>
-          <div className="grid2">
-            <div>
-              <div className="muted" style={{ fontSize: 13 }}>Screening pool now (match ≠ enrollable)</div>
-              <div className="stat small">{feasibility.screeningPool}</div>
-            </div>
-            <div>
-              <div className="muted" style={{ fontSize: 13 }}>
-                ≈ enrollable over {feasibility.months} months
-              </div>
-              <div className="stat" style={{ color: "var(--brand)" }}>~{feasibility.enrollableEstimate}</div>
-              <div className="muted" style={{ fontSize: 12 }}>
-                incl. ~{feasibility.incidentOverWindow} incident patients across the window
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Softening — hero moment */}
-        <div className="card">
-          <h2>Protocol softening — what loosening a criterion would do</h2>
-          <SofteningPanel softening={softening} heroHandle={consultation.heroBottleneckHandle} />
         </div>
 
         {/* Modeled-prevalence funnel — only for protocols with not-evaluable gating criteria */}
