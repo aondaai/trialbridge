@@ -6,7 +6,7 @@
   { "id": "F005", "phase": 2, "description": "FHIR EvidenceVariable adapter: map characteristics -> preParsedCriteria (skip LLM), trust high. Fixture + tests.", "file": "src/lib/intake/adapters/fhir.ts", "passes": true },
   { "id": "F006", "phase": 3, "description": "EU CTR registry adapter (EudraCT id) with live-optional fetch + cached fixture fallback (ctgov discipline). Tests.", "file": "src/lib/intake/adapters/euctr.ts", "passes": true },
   { "id": "F007", "phase": 1, "description": "scripts/demo-intake.ts + npm demo:intake: run every registered adapter over its cached fixture, print sourceId | registry | trust | criteria count.", "file": "scripts/demo-intake.ts", "passes": true },
-  { "id": "F008", "phase": 4, "description": "Long tail: eCTD .zip adapter (reuse zip envelope, find Module 5 protocol). Tests.", "file": "src/lib/intake/adapters/ectd.ts", "passes": false },
-  { "id": "F009", "phase": 4, "description": "Long tail: XLSX eligibility-matrix adapter (reuse zip envelope, sheet XML -> rows). Tests.", "file": "src/lib/intake/adapters/xlsx.ts", "passes": false },
-  { "id": "F010", "phase": 4, "description": "Long tail: ATLAS/OHDSI cohort JSON adapter -> preParsedCriteria. Tests.", "file": "src/lib/intake/adapters/atlas.ts", "passes": false }
+  { "id": "F008", "phase": 4, "description": "Long tail: eCTD .zip adapter (reuse zip envelope, find Module 5 protocol). Tests.", "file": "src/lib/intake/adapters/ectd.ts", "passes": true },
+  { "id": "F009", "phase": 4, "description": "Long tail: XLSX eligibility-matrix adapter (reuse zip envelope, sheet XML -> rows). Tests.", "file": "src/lib/intake/adapters/xlsx.ts", "passes": true },
+  { "id": "F010", "phase": 4, "description": "Long tail: ATLAS/OHDSI cohort JSON adapter -> preParsedCriteria. Tests.", "file": "src/lib/intake/adapters/atlas.ts", "passes": true }
 ]

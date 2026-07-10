@@ -97,6 +97,46 @@ export function makeDocx(paragraphs: string[]): Uint8Array {
   ]);
 }
 
+function colLetter(i: number): string {
+  let s = "";
+  let n = i + 1;
+  while (n > 0) {
+    const r = (n - 1) % 26;
+    s = String.fromCharCode(65 + r) + s;
+    n = Math.floor((n - 1) / 26);
+  }
+  return s;
+}
+
+/** Build a minimal real XLSX with `rows` as inline-string cells on Sheet1. */
+export function makeXlsx(rows: string[][]): Uint8Array {
+  const sheetData = rows
+    .map((row, r) => {
+      const cells = row
+        .map((v, c) => `<c r="${colLetter(c)}${r + 1}" t="inlineStr"><is><t>${escapeXml(v)}</t></is></c>`)
+        .join("");
+      return `<row r="${r + 1}">${cells}</row>`;
+    })
+    .join("");
+  const sheet = `<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${sheetData}</sheetData></worksheet>`;
+  const workbook = `<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheets><sheet name="Sheet1" sheetId="1"/></sheets></workbook>`;
+  const contentTypes = `<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>`;
+  return makeZip([
+    { name: "[Content_Types].xml", data: contentTypes },
+    { name: "xl/workbook.xml", data: workbook },
+    { name: "xl/worksheets/sheet1.xml", data: sheet },
+  ]);
+}
+
+/** Build a minimal eCTD-like package: an index.xml backbone + a Module 5 protocol PDF. */
+export function makeEctd(protocolText: string): Uint8Array {
+  const index = `<?xml version="1.0"?><ectd:ectd xmlns:ectd="http://www.ich.org/ectd"><m5/></ectd:ectd>`;
+  return makeZip([
+    { name: "index.xml", data: index },
+    { name: "m5/53-clin-stud-rep/535-rep-effic-safety-stud/protocol.pdf", data: makePdf(protocolText) },
+  ]);
+}
+
 /** Build a minimal PDF whose content stream carries `text`, one Tj per line. */
 export function makePdf(text: string, compress = true): Uint8Array {
   const lines = text.split("\n");

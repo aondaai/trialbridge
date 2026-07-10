@@ -16,7 +16,9 @@ import { defaultRegistry } from "@/lib/intake";
 import type { IntakeInput, IntakeResult } from "@/lib/intake";
 import { parseCriteria } from "@/lib/parse";
 import { HERO_META } from "@/data/hero-protocol";
-import { FHIR_EVIDENCE_VARIABLE, EUCTR_FIXTURE } from "@/data/intakeFixtures";
+import { FHIR_EVIDENCE_VARIABLE, EUCTR_FIXTURE, ATLAS_COHORT } from "@/data/intakeFixtures";
+// Dev-only fixture builders (scripts/ and tests/ are both dev tooling, not shipped).
+import { makeEctd, makeXlsx } from "../tests/helpers/fixtures";
 
 /** A multi-section protocol document (exercises the envelope + eligibility locator). */
 const PROTOCOL_DOC = `PROTOCOL ONC-2026-07 — A Phase III Study
@@ -45,11 +47,21 @@ interface DemoCase {
   input: IntakeInput;
 }
 
+const ELIG_MATRIX = [
+  ["kind", "field", "operator", "value", "unit"],
+  ["inclusion", "age", ">=", "18", "years"],
+  ["inclusion", "her2_status", "eq", "positive", ""],
+  ["exclusion", "ejection_fraction", "<", "50", "%"],
+];
+
 const CASES: DemoCase[] = [
   { label: "ClinicalTrials.gov (NCT id)", input: { kind: "id", id: HERO_META.nct } },
   { label: "Protocol document (PDF/DOCX/text)", input: { kind: "text", text: PROTOCOL_DOC, filename: "protocol.txt" } },
   { label: "FHIR EvidenceVariable (structured)", input: { kind: "json", data: FHIR_EVIDENCE_VARIABLE } },
   { label: "EU CTR (EudraCT id)", input: { kind: "id", id: EUCTR_FIXTURE.eudractNumber } },
+  { label: "eCTD package (Module 5 protocol)", input: { kind: "file", filename: "submission.zip", bytes: makeEctd(PROTOCOL_DOC) } },
+  { label: "XLSX eligibility matrix", input: { kind: "file", filename: "elig.xlsx", bytes: makeXlsx(ELIG_MATRIX) } },
+  { label: "ATLAS cohort JSON", input: { kind: "json", data: ATLAS_COHORT, filename: "cohort.json" } },
 ];
 
 async function criteriaCount(result: IntakeResult): Promise<{ n: number; how: string }> {
