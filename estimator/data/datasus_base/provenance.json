@@ -1,0 +1,51 @@
+{
+  "origin": "estimated",
+  "asset": "datasus_enriched_base",
+  "source": "DataSUS OMOP (omop_full)",
+  "reconstructible_from": "Asset 1 (omop_full) + this script",
+  "as_of": "2026-07-09",
+  "min_cell": 5,
+  "dx_cid_prefixes": {
+    "breast_cancer": [
+      "C50"
+    ],
+    "lung_cancer": [
+      "C33",
+      "C34"
+    ]
+  },
+  "coverage_ufs": [
+    "AC",
+    "AL",
+    "AM",
+    "AP",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MG",
+    "MS",
+    "MT",
+    "PA",
+    "PB",
+    "PE",
+    "PI",
+    "PR",
+    "RJ",
+    "RN",
+    "RO",
+    "RR",
+    "RS",
+    "SC",
+    "SE",
+    "SP",
+    "TO"
+  ],
+  "national_base_cohort": {
+    "breast_cancer": 394255,
+    "lung_cancer": 91675
+  },
+  "strata": 519
+}

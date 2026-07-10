@@ -90,6 +90,35 @@ class BaseCohortSource:
         raise NotImplementedError
 
 
+class MaterializedDataSUS(BaseCohortSource):
+    """Reads the pre-materialized DataSUS base cohort (Asset 3's derived base).
+
+    Built by scripts/materialize_datasus.py from the full OMOP export (Asset 1).
+    Small (~KB), fast, ships in the image — the query layer reads this instead of
+    scanning 163GB live. It is COUNT-only (aggregates, never patient rows) and
+    carries provenance (source, as_of, coverage UFs) so every number it feeds can
+    be labelled honestly. Reconstructible: re-run the materializer to refresh it.
+    """
+
+    def __init__(self, base_dir: str):
+        import json
+        from pathlib import Path
+
+        base = Path(base_dir)
+        with (base / "records.json").open() as f:
+            self._records = [BaseRecord(**r) for r in json.load(f)]
+        with (base / "incidence.json").open() as f:
+            self._incidence = json.load(f)
+        with (base / "provenance.json").open() as f:
+            self.provenance = json.load(f)
+
+    def records(self) -> List[BaseRecord]:
+        return self._records
+
+    def monthly_incidence_by_region(self, dx: str) -> Dict[str, float]:
+        return self._incidence.get(dx, {})
+
+
 class ProprietarySource:
     def patients(self) -> List[dict]:
         raise NotImplementedError
