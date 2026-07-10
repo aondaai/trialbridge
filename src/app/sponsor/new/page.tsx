@@ -165,7 +165,7 @@ export default function NewConsultationPage() {
         </p>
 
         <div className="card">
-          <h2>0 · Fetch from ClinicalTrials.gov (optional)</h2>
+          <h2>Step 1 · Fetch from ClinicalTrials.gov (optional)</h2>
           <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
             Pull the eligibility text straight from a real NCT record instead of pasting it.
           </p>
@@ -192,7 +192,7 @@ export default function NewConsultationPage() {
         </div>
 
         <div className="card">
-          <h2>1 · Protocol text</h2>
+          <h2>Step 2 · Protocol text</h2>
           <textarea
             value={text}
             onChange={(e) => { setText(e.target.value); setTextMatchesNct(false); }}
@@ -225,7 +225,7 @@ export default function NewConsultationPage() {
         {result && (
           <>
             <div className="card">
-              <h2>2 · Verify parsed criteria</h2>
+              <h2>Step 3 · Verify parsed criteria</h2>
               <div className="privacy" style={{ marginBottom: 12 }}>
                 <span className="lock">{result.source === "claude" ? "🤖" : "📦"}</span>
                 <div>
@@ -287,7 +287,7 @@ export default function NewConsultationPage() {
             </div>
 
             <div className="card">
-              <h2>2b · OMOP mapping preview</h2>
+              <h2>Step 3b · OMOP mapping preview</h2>
               <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
                 Codes each criterion to an OMOP CDM domain/table + vocabulary — the shape a
                 future matcher needs to query real OMOP databases (DataSUS, DoctorAssistant
@@ -336,7 +336,7 @@ export default function NewConsultationPage() {
             </div>
 
             <div className="card">
-              <h2>3 · Post</h2>
+              <h2>Step 4 · Post</h2>
               <div className="grid2">
                 <label style={{ fontSize: 13 }}>
                   <div className="muted">Title</div>
