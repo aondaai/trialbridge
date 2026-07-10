@@ -113,7 +113,7 @@ export default function Landing() {
                 <span aria-hidden="true">{isDark ? "☀️" : "🌙"}</span>
               </button>
               <Link href="/start" className="cl-btn cl-btn--primary tb-nav__cta">
-                Entrar no app
+                Open the app
               </Link>
               <button
                 type="button"
@@ -144,8 +144,8 @@ export default function Landing() {
             <a href="#faq" onClick={closeMobileMenu}>
               FAQ
             </a>
-            <Link href="/sponsor" className="cl-btn cl-btn--primary" onClick={closeMobileMenu}>
-              Run a feasibility check
+            <Link href="/start" className="cl-btn cl-btn--primary" onClick={closeMobileMenu}>
+              Open the app
             </Link>
           </nav>
         </div>

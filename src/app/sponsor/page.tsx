@@ -36,11 +36,11 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
             <div>
               <div className="muted" style={{ fontSize: 13 }}>Estimated eligible (national)</div>
               <div className="stat" style={{ color: "var(--brand)" }}>
-                {Math.round(national.estimatedN).toLocaleString("pt-BR")}
+                {Math.round(national.estimatedN).toLocaleString("en-US")}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
-                95% CI {Math.round(national.ciLo).toLocaleString("pt-BR")}–
-                {Math.round(national.ciHi).toLocaleString("pt-BR")}
+                95% CI {Math.round(national.ciLo).toLocaleString("en-US")}–
+                {Math.round(national.ciHi).toLocaleString("en-US")}
               </div>
             </div>
             <div>
@@ -48,10 +48,10 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
                 Observed (direct count, {national.sitesWithData} sites with real data)
               </div>
               <div className="stat small" style={{ color: "var(--definite)" }}>
-                {national.observedTotal.toLocaleString("pt-BR")}
+                {national.observedTotal.toLocaleString("en-US")}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
-                Base cohort (DataSUS): {national.baseCohort.toLocaleString("pt-BR")}
+                Base cohort (DataSUS): {national.baseCohort.toLocaleString("en-US")}
                 {national.monthsToFill != null && ` · ≈ ${national.monthsToFill} mo to fill`}
               </div>
             </div>
