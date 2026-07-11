@@ -83,7 +83,7 @@ export function EngineReport({ report }: { report: Report }) {
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginTop: 12 }}>
           <HeadlineTile label="Projected enrollment" metric={snap.headlineMetrics.projectedPatientsPerMonthMetric} />
-          <HeadlineTile label="Time to FPI (score)" metric={snap.headlineMetrics.timeToFpiMetric} />
+          <HeadlineTile label="Time to FPI" metric={snap.headlineMetrics.timeToFpiMetric} />
           <HeadlineTile label="Cost / patient" metric={snap.headlineMetrics.costPerPatientMetric} />
           <HeadlineTile label="Execution risk index" metric={snap.headlineMetrics.riskIndexMetric} />
         </div>

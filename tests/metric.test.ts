@@ -117,6 +117,14 @@ describe("assertProvenanced — the report provenance gate (§8, §14.4)", () =>
     const ok = { siteCount: 3, city: "São Paulo", scoreMetric: modeled("s", 1) };
     expect(assertProvenanced(ok)).toBe(1);
   });
+
+  it("allows an intentionally-absent (null/undefined) metric slot but still rejects a bare number there", () => {
+    // null/undefined in a metric slot = "no value here" → renders as "—", passes.
+    expect(() => assertProvenanced({ detailMetric: null })).not.toThrow();
+    expect(() => assertProvenanced({ detailMetric: undefined })).not.toThrow();
+    // but a bare number in the same slot is still a violation.
+    expect(() => assertProvenanced({ detailMetric: 5 })).toThrow(ProvenanceGateError);
+  });
 });
 
 describe("buildProvenanceIndex — the Risk Register roll-up (§8)", () => {

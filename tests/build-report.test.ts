@@ -56,4 +56,10 @@ describe("buildReport — resolver bridges existing data to the engine", () => {
     const b = buildReport(consultation, [site("a", 40, 20)]);
     expect(a).toEqual(b);
   });
+
+  it("months=0 is clamped so ppm never becomes Infinity (review #5)", () => {
+    const report = buildReport(consultation, [site("a", 40, 20)], { months: 0 });
+    const ppm = report.funnel.projectedPatientsPerMonthMetric.value as number;
+    expect(Number.isFinite(ppm)).toBe(true);
+  });
 });

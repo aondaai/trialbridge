@@ -250,6 +250,10 @@ export function assertProvenanced(node: unknown, path = "$"): number {
 
   const walk = (value: unknown, p: string, inMetricSlot: boolean): void => {
     if (inMetricSlot) {
+      // An optional metric slot may be intentionally absent (null/undefined) — that
+      // renders as "—", not as a mis-labelled number, so it passes the gate. What the
+      // gate forbids is a BARE value (number/string/plain object) in a metric slot.
+      if (value == null) return;
       if (!isMetric(value)) throw new ProvenanceGateError(p, value);
       validated += 1;
       return; // a Metric's own internals aren't re-walked
@@ -301,9 +305,16 @@ export function buildProvenanceIndex(node: unknown): ProvenanceIndex {
     [Confidence.LOW]: 0,
   };
   let total = 0;
+  // Count each Metric ONCE by object identity. The report graph deliberately shares
+  // Metric references (e.g. the decision snapshot re-points at the country composite
+  // and the top sites' scores), so a positional walk would double-count them and
+  // inflate the "mix" shown to the sponsor.
+  const seen = new Set<object>();
 
   const walk = (value: unknown): void => {
     if (isMetric(value)) {
+      if (seen.has(value)) return;
+      seen.add(value);
       total += 1;
       bySeal[value.provenance] += 1;
       byConfidence[value.confidence] += 1;
@@ -314,6 +325,8 @@ export function buildProvenanceIndex(node: unknown): ProvenanceIndex {
       return;
     }
     if (value && typeof value === "object") {
+      if (seen.has(value)) return; // guard against shared/cyclic non-metric nodes too
+      seen.add(value);
       Object.values(value as Record<string, unknown>).forEach(walk);
     }
   };
