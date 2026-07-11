@@ -1,0 +1,221 @@
+MRN,Dx,Age (yrs),Sex,Perf Status,Stage,HER-2 Status,Prior Lines,Creatinine (mg/dL),Hemoglobin (g/L),Platelets
+site-a-p001,,42,,1,Stage II,,1,1.05,126,134
+site-a-p002,Breast cancer,66,,1,Stage III,neg,0,1.37,106,257
+site-a-p003,Breast cancer,58,,2,Stage IV,neg,2,1.09,97,222
+site-a-p004,Breast cancer,68,,3,Stage IV,,1,0.57,119,118
+site-a-p005,Breast cancer,65,,1,Stage IV,,2,1.34,,142
+site-a-p006,Breast cancer,53,,1,Stage IV,,0,0.4,134,281
+site-a-p007,Breast cancer,63,,1,Stage IV,neg,,,129,248
+site-a-p008,,72,,0,Stage III,,0,1.24,137,178
+site-a-p009,Breast cancer,83,,2,Stage IV,,1,1.27,114,234
+site-a-p010,Breast cancer,44,,3,Stage IV,,2,1.02,101,168
+site-a-p011,Breast cancer,66,,2,Stage III,,0,,143,167
+site-a-p012,Breast cancer,49,,1,Stage III,neg,0,0.79,127,231
+site-a-p013,Breast cancer,76,,2,Stage III,neg,2,0.95,160,285
+site-a-p014,Breast cancer,53,,0,Stage IV,neg,2,0.87,141,209
+site-a-p015,,66,,0,Stage II,,1,0.4,143,332
+site-a-p016,Breast cancer,55,,0,Stage IV,,1,0.85,159,221
+site-a-p017,Breast cancer,40,,0,Stage III,neg,2,1.13,115,144
+site-a-p018,Breast cancer,53,,2,Stage IV,,2,0.65,126,258
+site-a-p019,Breast cancer,66,,1,Stage III,3+,0,0.81,134,246
+site-a-p020,Breast cancer,61,,,Stage IV,,0,0.99,160,150
+site-a-p021,Breast cancer,51,,0,Stage IV,,3,,109,240
+site-a-p022,,68,,0,Stage II,neg,0,0.94,147,129
+site-a-p023,Breast cancer,43,,0,Stage IV,,0,1.04,,320
+site-a-p024,Breast cancer,67,,0,Stage III,3+,0,,,
+site-a-p025,Breast cancer,55,,1,Stage IV,neg,1,0.84,122,207
+site-a-p026,Breast cancer,61,,0,Stage I,,0,0.83,121,344
+site-a-p027,Breast cancer,61,,0,Stage III,3+,1,0.4,129,245
+site-a-p028,Breast cancer,58,,0,Stage IV,neg,1,0.88,132,270
+site-a-p029,,47,,0,Stage III,neg,1,,73,170
+site-a-p030,Breast cancer,73,,1,Stage IV,neg,,0.88,,287
+site-a-p031,Breast cancer,48,,3,Stage I,neg,0,0.98,114,365
+site-a-p032,Breast cancer,56,,1,Stage IV,3+,4,0.87,135,329
+site-a-p033,Breast cancer,58,,1,Stage IV,,2,,113,196
+site-a-p034,Breast cancer,49,,2,Stage IV,,1,0.96,121,157
+site-a-p035,Breast cancer,65,,1,Stage III,neg,1,0.9,126,226
+site-a-p036,,76,,1,Stage II,neg,1,0.41,115,389
+site-a-p037,Breast cancer,55,,1,Stage IV,,2,0.75,86,214
+site-a-p038,Breast cancer,76,,,Stage IV,,0,,110,224
+site-a-p039,Breast cancer,66,,1,Stage IV,,1,1.05,79,60
+site-a-p040,Breast cancer,78,,2,Stage II,,,1.63,146,204
+site-a-p041,Breast cancer,47,,,Stage IV,,1,0.95,,118
+site-a-p042,Breast cancer,66,,1,Stage IV,neg,1,0.65,128,191
+site-a-p043,,60,,2,Stage III,neg,1,0.74,,185
+site-a-p044,Breast cancer,62,,,Stage II,,0,0.79,,280
+site-a-p045,Breast cancer,64,,1,Stage IV,,0,0.4,127,336
+site-a-p046,Breast cancer,47,,0,Stage IV,,4,1.61,122,120
+site-a-p047,Breast cancer,76,,,Stage IV,,0,0.71,134,234
+site-a-p048,Breast cancer,63,,3,Stage IV,neg,2,1.29,113,166
+site-a-p049,Breast cancer,63,,2,Stage IV,neg,,1,97,208
+site-a-p050,,64,,1,Stage IV,,2,1.02,146,160
+site-a-p051,Breast cancer,65,,,Stage IV,,0,1.18,111,229
+site-a-p052,Breast cancer,76,,0,Stage IV,neg,2,0.52,,222
+site-a-p053,Breast cancer,56,,1,Stage III,,0,1.17,144,
+site-a-p054,Breast cancer,66,,,Stage II,,0,0.4,99,227
+site-a-p055,Breast cancer,52,,1,Stage IV,,3,,86,
+site-a-p056,Breast cancer,40,,2,Stage II,,0,1.48,113,199
+site-a-p057,,50,,,Stage IV,,,1.35,83,195
+site-a-p058,Breast cancer,52,,,Stage IV,,,0.64,90,253
+site-a-p059,Breast cancer,73,,3,Stage I,,0,0.85,107,352
+site-a-p060,Breast cancer,60,,1,Stage IV,,2,1.19,98,209
+site-a-p061,Breast cancer,69,,,Stage IV,,0,0.91,,169
+site-a-p062,Breast cancer,77,,1,Stage IV,3+,2,,94,268
+site-a-p063,Breast cancer,44,,0,Stage I,neg,0,1.19,115,193
+site-a-p064,,47,,2,Stage IV,neg,3,1.25,84,189
+site-a-p065,Breast cancer,82,,0,Stage III,,0,0.59,108,206
+site-a-p066,Breast cancer,43,,0,Stage IV,neg,2,1.42,117,117
+site-a-p067,Breast cancer,75,,1,Stage III,neg,0,1.59,134,256
+site-a-p068,Breast cancer,60,,1,Stage IV,neg,1,1.02,93,223
+site-a-p069,Breast cancer,61,,0,Stage IV,,2,0.52,128,248
+site-a-p070,Breast cancer,73,,0,Stage IV,,2,0.87,155,
+site-a-p071,,81,,2,Stage IV,,2,1.43,160,
+site-a-p072,Breast cancer,30,,1,Stage I,3+,0,,108,320
+site-a-p073,Breast cancer,69,,0,Stage IV,,4,1.04,100,263
+site-a-p074,Breast cancer,51,,1,Stage IV,neg,3,0.8,133,266
+site-a-p075,Breast cancer,66,,0,Stage IV,,1,0.4,94,324
+site-a-p076,Breast cancer,63,,0,Stage I,neg,0,0.48,,246
+site-a-p077,Breast cancer,62,,1,Stage IV,neg,3,0.66,125,330
+site-a-p078,,64,,0,Stage III,neg,1,0.87,108,284
+site-a-p079,Breast cancer,48,,1,Stage III,3+,1,1.06,94,315
+site-a-p080,Breast cancer,54,,1,Stage IV,,1,0.93,158,210
+site-a-p081,Breast cancer,54,,2,Stage IV,,2,0.76,120,
+site-a-p082,Breast cancer,56,,0,Stage IV,,2,0.79,147,195
+site-a-p083,Breast cancer,53,,0,Stage IV,neg,3,,114,257
+site-a-p084,Breast cancer,62,,1,Stage IV,neg,4,0.93,,242
+site-a-p085,,63,,0,Stage IV,,1,1.35,139,
+site-a-p086,Breast cancer,50,,1,Stage IV,,1,0.89,,190
+site-a-p087,Breast cancer,61,,0,Stage III,,1,0.69,115,138
+site-a-p088,Breast cancer,77,,0,Stage IV,neg,0,1.1,159,250
+site-a-p089,Breast cancer,42,,0,Stage IV,,1,1.08,101,
+site-a-p090,Breast cancer,38,,1,Stage III,neg,2,1.05,113,
+site-a-p091,Breast cancer,48,,0,Stage IV,,3,0.88,96,360
+site-a-p092,,44,,0,Stage IV,,1,0.94,125,163
+site-a-p093,Breast cancer,66,,1,Stage II,neg,0,1.56,148,
+site-a-p094,Breast cancer,53,,1,Stage IV,,3,1.18,122,275
+site-a-p095,Breast cancer,71,,2,Stage IV,neg,0,1.09,,205
+site-a-p096,Breast cancer,56,,2,Stage IV,,1,1.31,135,252
+site-a-p097,Breast cancer,45,,0,Stage IV,3+,0,0.4,143,209
+site-a-p098,Breast cancer,67,,2,Stage IV,neg,1,0.79,159,369
+site-a-p099,,66,,0,Stage IV,,2,0.6,136,363
+site-a-p100,Breast cancer,46,,0,Stage IV,neg,1,0.69,101,117
+site-a-p101,Breast cancer,63,,1,Stage IV,3+,2,0.8,110,285
+site-a-p102,Breast cancer,60,,,Stage IV,,0,0.79,143,213
+site-a-p103,Breast cancer,67,,1,Stage III,,1,0.91,115,108
+site-a-p104,Breast cancer,60,,,Stage IV,,0,0.62,160,
+site-a-p105,Breast cancer,32,,1,Stage IV,,,,147,282
+site-a-p106,,71,,,Stage III,,0,1.14,99,77
+site-a-p107,Breast cancer,69,,,Stage IV,,0,0.82,134,227
+site-a-p108,Breast cancer,40,,1,Stage IV,neg,1,0.81,126,
+site-a-p109,Breast cancer,69,,,Stage III,,0,0.96,132,192
+site-a-p110,Breast cancer,61,,2,Stage II,,,0.93,126,268
+site-a-p111,Breast cancer,67,,1,Stage III,3+,0,0.65,128,353
+site-a-p112,Breast cancer,79,,1,Stage IV,,4,0.85,132,211
+site-a-p113,,58,,1,Stage IV,neg,0,,92,274
+site-a-p114,Breast cancer,57,,1,Stage IV,,4,,,
+site-a-p115,Breast cancer,46,,2,Stage IV,,1,,121,281
+site-a-p116,Breast cancer,82,,1,Stage III,neg,1,,160,301
+site-a-p117,Breast cancer,54,,3,Stage IV,,1,1.34,123,169
+site-a-p118,Breast cancer,47,,1,Stage IV,3+,4,1.26,124,314
+site-a-p119,Breast cancer,41,,1,Stage III,,0,1.06,122,
+site-a-p120,,41,,1,Stage IV,,2,0.7,,302
+site-a-p121,Breast cancer,62,,0,Stage II,neg,0,1.09,118,223
+site-a-p122,Breast cancer,69,,1,Stage III,neg,1,0.85,155,278
+site-a-p123,Breast cancer,51,,0,Stage IV,neg,1,0.47,120,279
+site-a-p124,Breast cancer,45,,3,Stage IV,,2,,145,229
+site-a-p125,Breast cancer,53,,0,Stage IV,neg,1,,,195
+site-a-p126,Breast cancer,60,,2,Stage III,,2,0.77,141,166
+site-a-p127,,75,,0,Stage IV,neg,1,0.86,106,192
+site-a-p128,Breast cancer,67,,,Stage III,,0,0.8,116,257
+site-a-p129,Breast cancer,36,,1,Stage I,,0,1.4,147,352
+site-a-p130,Breast cancer,56,,1,Stage IV,neg,1,0.89,130,283
+site-a-p131,Breast cancer,60,,,Stage III,,0,0.42,100,221
+site-a-p132,Breast cancer,45,,0,Stage III,neg,1,0.92,107,185
+site-a-p133,Breast cancer,57,,2,Stage III,,0,,126,328
+site-a-p134,,63,,1,Stage IV,neg,2,0.4,134,163
+site-a-p135,Breast cancer,60,,0,Stage IV,,2,,125,114
+site-a-p136,Breast cancer,67,,3,Stage III,neg,0,1.26,112,
+site-a-p137,Breast cancer,49,,1,Stage III,neg,2,,108,
+site-a-p138,Breast cancer,55,,,Stage IV,,,0.51,159,288
+site-a-p139,Breast cancer,61,,1,Stage IV,3+,1,0.65,,
+site-a-p140,Breast cancer,63,,0,Stage IV,neg,0,1.22,138,288
+site-a-p141,,80,,0,Stage IV,,0,0.87,104,270
+site-a-p142,Breast cancer,45,,1,Stage I,,0,1.03,109,231
+site-a-p143,Breast cancer,57,,,Stage III,,0,0.65,107,
+site-a-p144,Breast cancer,58,,1,Stage II,neg,1,0.68,,180
+site-a-p145,Breast cancer,68,,1,Stage IV,,2,0.67,72,181
+site-a-p146,Breast cancer,56,,1,Stage II,,0,0.53,118,100
+site-a-p147,Breast cancer,71,,1,Stage IV,,1,,131,279
+site-a-p148,,48,,0,Stage IV,neg,3,1.05,132,290
+site-a-p149,Breast cancer,56,,1,Stage IV,,2,0.62,93,288
+site-a-p150,Breast cancer,61,,1,Stage II,3+,0,0.67,,
+site-a-p151,Breast cancer,55,,,Stage IV,,2,1.08,123,161
+site-a-p152,Breast cancer,66,,,Stage III,,0,0.4,140,240
+site-a-p153,Breast cancer,62,,0,Stage IV,,0,0.72,141,
+site-a-p154,Breast cancer,54,,0,Stage I,neg,0,0.97,,266
+site-a-p155,,71,,2,Stage IV,,2,1.28,128,107
+site-a-p156,Breast cancer,61,,1,Stage II,,0,,124,296
+site-a-p157,Breast cancer,63,,0,Stage III,neg,0,0.92,107,245
+site-a-p158,Breast cancer,60,,2,Stage IV,,3,1.5,133,274
+site-a-p159,Breast cancer,60,,1,Stage III,neg,1,0.42,117,
+site-a-p160,Breast cancer,50,,0,Stage III,neg,0,1.01,159,304
+site-a-p161,Breast cancer,57,,,Stage III,,0,0.63,123,228
+site-a-p162,,75,,1,Stage IV,,0,1.62,139,188
+site-a-p163,Breast cancer,60,,0,Stage IV,,1,0.87,139,212
+site-a-p164,Breast cancer,64,,1,Stage III,,,,94,102
+site-a-p165,Breast cancer,55,,1,Stage III,neg,0,1.06,,369
+site-a-p166,Breast cancer,58,,0,Stage IV,,0,1.25,146,255
+site-a-p167,Breast cancer,40,,0,Stage IV,neg,3,0.93,138,288
+site-a-p168,Breast cancer,60,,1,Stage IV,neg,2,,95,
+site-a-p169,,50,,0,Stage I,,0,1.33,77,164
+site-a-p170,Breast cancer,35,,1,Stage I,,0,0.4,117,228
+site-a-p171,Breast cancer,65,,1,Stage III,neg,2,1.43,121,223
+site-a-p172,Breast cancer,54,,1,Stage IV,,1,0.74,118,223
+site-a-p173,Breast cancer,43,,0,Stage IV,,3,,109,186
+site-a-p174,Breast cancer,50,,1,Stage II,,0,,120,223
+site-a-p175,Breast cancer,39,,0,Stage III,,2,0.4,72,325
+site-a-p176,,53,,1,Stage IV,,0,1.27,138,290
+site-a-p177,Breast cancer,63,,0,Stage II,,1,,160,171
+site-a-p178,Breast cancer,71,,2,Stage IV,neg,0,0.79,130,135
+site-a-p179,Breast cancer,65,,1,Stage III,,1,0.6,128,270
+site-a-p180,Breast cancer,86,,0,Stage IV,neg,3,0.88,,162
+site-a-p181,Breast cancer,42,,0,Stage IV,neg,2,0.44,105,121
+site-a-p182,Breast cancer,52,,2,Stage IV,neg,2,1.15,131,
+site-a-p183,,86,,0,Stage III,,0,0.4,,324
+site-a-p184,Breast cancer,58,,0,Stage I,,1,1.09,134,280
+site-a-p185,Breast cancer,57,,0,Stage IV,neg,2,0.61,127,167
+site-a-p186,Breast cancer,58,,2,Stage III,3+,0,0.56,,
+site-a-p187,Breast cancer,58,,,Stage II,,,0.8,98,310
+site-a-p188,Breast cancer,55,,3,Stage IV,neg,1,1.22,134,278
+site-a-p189,Breast cancer,28,,1,Stage IV,,2,0.86,,119
+site-a-p190,,51,,1,Stage I,,0,0.4,152,268
+site-a-p191,Breast cancer,50,,0,Stage II,,1,0.53,,246
+site-a-p192,Breast cancer,48,,1,Stage III,neg,0,1.3,,240
+site-a-p193,Breast cancer,52,,2,Stage IV,neg,1,,,276
+site-a-p194,Breast cancer,63,,,Stage IV,,0,1.28,109,309
+site-a-p195,Breast cancer,54,,1,Stage II,3+,0,1,76,244
+site-a-p196,Breast cancer,65,,0,Stage III,3+,0,,,343
+site-a-p197,,39,,0,Stage IV,neg,2,0.74,,212
+site-a-p198,Breast cancer,67,,1,Stage IV,neg,4,1.01,120,242
+site-a-p199,Breast cancer,59,,,Stage IV,,0,1.07,106,405
+site-a-p200,Breast cancer,76,,0,Stage IV,3+,1,0.44,112,170
+site-a-p201,Breast cancer,47,,,Stage III,,0,0.94,125,212
+site-a-p202,Breast cancer,70,,0,Stage IV,,1,1.08,151,254
+site-a-p203,Breast cancer,53,,0,Stage III,,1,1.49,121,252
+site-a-p204,,67,,1,Stage III,neg,0,0.71,160,185
+site-a-p205,Breast cancer,53,,0,Stage IV,3+,1,1.11,141,226
+site-a-p206,Breast cancer,83,,1,Stage IV,neg,2,,130,190
+site-a-p207,Breast cancer,63,,1,Stage IV,,2,,104,239
+site-a-p208,Breast cancer,66,,0,Stage III,,0,0.4,126,254
+site-a-p209,Breast cancer,52,,1,Stage III,,0,1.42,88,274
+site-a-p210,Breast cancer,56,,1,Stage IV,,2,0.48,124,
+site-a-p211,,57,,0,Stage IV,neg,2,0.4,101,164
+site-a-p212,Breast cancer,86,,2,Stage III,,2,1.39,143,230
+site-a-p213,Breast cancer,54,,,Stage IV,,0,1.79,144,256
+site-a-p214,Breast cancer,68,,1,Stage IV,,1,1.26,76,
+site-a-p215,Breast cancer,63,,0,Stage IV,,1,0.96,145,255
+site-a-p216,Breast cancer,48,,2,Stage II,,0,1.47,113,83
+site-a-p217,Breast cancer,78,,,Stage IV,,0,0.67,112,213
+site-a-p218,,64,,1,Stage I,neg,0,0.86,147,
+site-a-p219,Breast cancer,39,,2,Stage III,neg,0,1.02,115,
+site-a-p220,Breast cancer,62,,1,Stage III,,1,1.02,102,177

@@ -12,6 +12,7 @@
     "test": "./node_modules/.bin/vitest run",
     "test:watch": "./node_modules/.bin/vitest",
     "generate-data": "./node_modules/.bin/tsx scripts/generate-data.ts",
+    "generate-messy-csv": "./node_modules/.bin/tsx scripts/generate-messy-csv.ts",
     "db:seed": "./node_modules/.bin/tsx prisma/seed.ts",
     "demo": "./node_modules/.bin/tsx scripts/demo.ts",
     "demo:intake": "./node_modules/.bin/tsx scripts/demo-intake.ts",
