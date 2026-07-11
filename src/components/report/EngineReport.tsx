@@ -236,17 +236,21 @@ function SiteRankings({ sites }: { sites: SiteScore[] }) {
                 <th>Site</th>
                 <th>City / UF</th>
                 <th>Score</th>
+                <th className="num">Infra-fit</th>
                 <th>Confidence</th>
                 <th>Flags</th>
               </tr>
             </thead>
             <tbody>
-              {sites.map((s, i) => (
+              {sites.map((s, i) => {
+                const infra = s.components.find((c) => c.key === "infrastructure_fit");
+                return (
                 <tr key={s.cnes}>
                   <td>{i + 1}</td>
                   <td><strong>{s.name}</strong></td>
                   <td>{s.city}{s.uf ? ` / ${s.uf}` : ""}</td>
                   <td><MetricChip metric={s.compositeMetric} strong /></td>
+                  <td className="num">{infra ? `${Math.round(infra.score0100)}%` : "—"}</td>
                   <td style={{ textTransform: "capitalize" }}>{s.confidence}</td>
                   <td>
                     {s.hardFlags.length === 0 ? (
@@ -272,7 +276,8 @@ function SiteRankings({ sites }: { sites: SiteScore[] }) {
                     )}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>

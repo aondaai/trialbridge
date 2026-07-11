@@ -56,3 +56,4 @@ yarn-error.log*
 /.claude/worktrees/
 /data/kol-enrichment.json
 /data/site-directory.json
+/data/site-infra.json

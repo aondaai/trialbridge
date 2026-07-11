@@ -14,6 +14,7 @@ import { applyEnrichment } from "@/lib/kol/enrich";
 import { enrichmentsForNames } from "@/lib/kol/enrichmentStore";
 import { loadDirectory } from "@/lib/sites/loadDirectory";
 import { crossReferenceInvestigators } from "@/lib/sites/crossref";
+import { infraForCnes } from "@/lib/sites/infraStore";
 
 export const dynamic = "force-dynamic";
 
@@ -96,7 +97,14 @@ export default async function ScorecardPage({
         criteria: consultation.criteria,
       },
       evaluatedSites,
-      { runId: consultation.id, competition, kolInvestigators, directorySites: directory },
+      {
+        runId: consultation.id,
+        competition,
+        kolInvestigators,
+        directorySites: directory,
+        // Real infra (Part B) for the oncology sites, from the precomputed store.
+        siteInfraByCnes: infraForCnes(directory.filter((s) => s.oncology).map((s) => s.cnes)),
+      },
     );
 
     return (
