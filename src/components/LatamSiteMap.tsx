@@ -35,6 +35,7 @@ export default function LatamSiteMap() {
   const [enabled, setEnabled] = useState<Set<string>>(
     new Set(COUNTRIES.map((c) => c.iso2)),
   );
+  const [showDormant, setShowDormant] = useState(false);
 
   useEffect(() => {
     fetch("/data/latam-sites.json")
@@ -49,8 +50,13 @@ export default function LatamSiteMap() {
   }, []);
 
   const visible = useMemo(
-    () => sites.filter((s) => enabled.has(s.country)),
-    [sites, enabled],
+    () =>
+      sites.filter(
+        (s) =>
+          enabled.has(s.country) &&
+          (showDormant || s.activity_status === "active"),
+      ),
+    [sites, enabled, showDormant],
   );
 
   function toggle(iso2: string) {
@@ -76,6 +82,14 @@ export default function LatamSiteMap() {
               {c.label}
             </label>
           ))}
+          <label className="map-filter">
+            <input
+              type="checkbox"
+              checked={showDormant}
+              onChange={() => setShowDormant((v) => !v)}
+            />
+            include dormant
+          </label>
         </div>
         <div className="map-legend">
           <span className="map-count">{visible.length.toLocaleString()} sites</span>

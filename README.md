@@ -134,8 +134,8 @@ say exactly that much and no more.
 
 ## LatAm Site Map
 
-`/map` renders ~22.6k identifiable clinical-trial sites across Brazil, Mexico, Chile,
-and Argentina (ClinicalTrials.gov registry data; city-level coordinates), colored
+`/map` renders ~8,486 sites with active trials across Brazil, Mexico, Chile,
+and Argentina by default (≈22.6k all-time identifiable sites via the 'include dormant' toggle) (ClinicalTrials.gov registry data; city-level coordinates), colored
 by activity status with per-country filters. The payload
 (`public/data/latam-sites.json`) is generated from the SiteMapTool pipeline
 (github.com/aondaai/trialbridge branch `feat/latam-site-map` holds the full
