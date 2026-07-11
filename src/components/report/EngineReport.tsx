@@ -127,6 +127,9 @@ export function EngineReport({ report }: { report: Report }) {
       {/* §5 Site Rankings */}
       <SiteRankings sites={siteRankings} />
 
+      {/* §7 KOL / reference-physician map */}
+      <KolMapCard report={report} />
+
       {/* §8 Risk Register */}
       <RiskRegisterCard report={report} />
     </div>
@@ -268,6 +271,45 @@ function SiteRankings({ sites }: { sites: SiteScore[] }) {
                       ))
                     )}
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function KolMapCard({ report }: { report: Report }) {
+  const physicians = report.kolMap?.physicians ?? [];
+  return (
+    <div className="card">
+      <h2>Reference physicians / KOL map</h2>
+      {physicians.length === 0 ? (
+        <p className="muted">
+          KOL scoring is live (trial experience · publications · society roles · CNES link), but the map
+          populates once the investigator connector (CT.gov <code>overallOfficials</code> + PubMed/ORCID) is
+          wired — R9. No physicians are shown rather than fabricated.
+        </p>
+      ) : (
+        <div className="table-scroll">
+          <table className="data">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Physician</th>
+                <th>Region</th>
+                <th>KOL score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {physicians.map((p, i) => (
+                <tr key={`${p.name}-${i}`}>
+                  <td>{i + 1}</td>
+                  <td><strong>{p.name}</strong></td>
+                  <td>{p.regionCode}</td>
+                  <td><MetricChip metric={p.scoreMetric} strong /></td>
                 </tr>
               ))}
             </tbody>
