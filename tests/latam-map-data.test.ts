@@ -54,4 +54,9 @@ describe("latam-sites.json map payload", () => {
       expect(s.activity_status === "active").toBe(s.active_trial_count > 0);
     }
   });
+
+  it("contains no sponsor-placeholder site names", () => {
+    const noise = /(^local institution|^research site$|^research site \d+$|investigati(ve|onal) site$)/i;
+    expect(sites.filter((s) => noise.test(s.name))).toHaveLength(0);
+  });
 });
