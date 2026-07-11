@@ -90,23 +90,29 @@ export function resolveProfileField(
 ): Metric<string | number | null> {
   const opts = { asOf: asOf ?? null };
   const metricKey = `profile.${key}`;
+  // A stored-but-empty string is a MISSING answer, not a HIGH-confidence blank — degrade to
+  // `unavailable` (null + LOW) so the DQ completeness flag reads it as missing, not "pass".
+  const text = (v: string, conf: Confidence) =>
+    v && v.trim()
+      ? siteDeclared(metricKey, v, conf, opts)
+      : unavailable(metricKey, Provenance.SITE_DECLARED, `profile.${key} not on file`, opts);
   switch (key) {
     case "institution_name":
-      return siteDeclared(metricKey, profile.legalName || null, Confidence.HIGH, opts);
+      return text(profile.legalName, Confidence.HIGH);
     case "address":
-      return siteDeclared(metricKey, profile.address || null, Confidence.HIGH, opts);
+      return text(profile.address, Confidence.HIGH);
     case "email":
-      return siteDeclared(metricKey, profile.email || null, Confidence.HIGH, opts);
+      return text(profile.email, Confidence.HIGH);
     case "phone":
-      return siteDeclared(metricKey, profile.phone || null, Confidence.HIGH, opts);
+      return text(profile.phone, Confidence.HIGH);
     case "website":
-      return siteDeclared(metricKey, profile.website || null, Confidence.HIGH, opts);
+      return text(profile.website, Confidence.HIGH);
     case "anonymization_level":
-      return siteDeclared(metricKey, profile.anonymizationLevel || null, Confidence.HIGH, opts);
+      return text(profile.anonymizationLevel, Confidence.HIGH);
     case "lgpd_basis":
-      return siteDeclared(metricKey, profile.lgpdBasis || null, Confidence.MEDIUM, opts);
+      return text(profile.lgpdBasis, Confidence.MEDIUM);
     case "ethics_committee":
-      return siteDeclared(metricKey, profile.ethicsCommittee || null, Confidence.MEDIUM, opts);
+      return text(profile.ethicsCommittee, Confidence.MEDIUM);
     case "contracting_days":
       return profile.contractingDaysEst == null
         ? unavailable(metricKey, Provenance.SITE_DECLARED, "contracting estimate not on file", opts)

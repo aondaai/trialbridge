@@ -87,7 +87,8 @@ model Response {
 // Feasibility Autofill module (docs/feasibility-autofill-reconciliation.md, F0).
 // SQLite-flavored: enums and jsonb from the spec are stored as String (JSON where
 // noted), matching the existing Patient.data convention. Multi-tenant isolation is
-// by siteId on every top-level entity; request-owned rows inherit it via requestId.
+// by siteId, denormalized onto EVERY row (top-level and request-owned) so a per-site
+// scope is an indexable WHERE clause, not a join-only invariant (code-review hardening).
 // The privacy invariant holds: CohortDefinition stores a COUNT, never patient rows.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -111,6 +112,8 @@ model InstitutionProfile {
   version            Int      @default(1)
   updatedAt          DateTime @default(now())
 
+  /// One profile row per (site, version); the binding reads the latest version.
+  @@unique([siteId, version])
   @@index([siteId])
 }
 
@@ -122,6 +125,7 @@ model InstitutionTeam {
   present Boolean @default(false)
   notes   String  @default("")
 
+  @@unique([siteId, role])
   @@index([siteId])
 }
 
@@ -197,6 +201,8 @@ model FeasibilityRequest {
 model FormField {
   id        String  @id @default(cuid())
   requestId String
+  /// Denormalized tenant key — makes per-site isolation an indexable WHERE, not a join-only invariant.
+  siteId    String
   section   String
   label     String
   /// checkbox | yes_no_partial | text | number | matrix_cell
@@ -209,12 +215,15 @@ model FormField {
   orderIdx  Int     @default(0)
 
   @@index([requestId])
+  @@index([siteId])
 }
 
 /// A proposed/approved answer for a FormField — carries a serialized Metric as provenance.
 model FieldAnswer {
   id         String   @id @default(cuid())
   fieldId    String
+  /// Denormalized tenant key (see FormField.siteId).
+  siteId     String
   /// JSON answer value.
   value      String   @default("null")
   /// JSON-serialized Metric (src/lib/metric.ts) — the mandatory provenance seal.
@@ -230,12 +239,15 @@ model FieldAnswer {
   updatedAt  DateTime @default(now())
 
   @@index([fieldId])
+  @@index([siteId])
 }
 
 /// Archetype C — a materialized cohort count for a request. COUNT only, never rows.
 model CohortDefinition {
   id          String   @id @default(cuid())
   requestId   String
+  /// Denormalized tenant key (see FormField.siteId).
+  siteId      String
   /// JSON criteria set.
   criteria    String   @default("[]")
   /// JSON compiled SQL / OMOP cohort spec.
@@ -245,6 +257,7 @@ model CohortDefinition {
   generatedAt DateTime @default(now())
 
   @@index([requestId])
+  @@index([siteId])
 }
 
 /// Archetype D — RAG memory. Approved narrative answers, indexed for retrieval.

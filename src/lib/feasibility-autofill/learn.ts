@@ -60,7 +60,9 @@ export function indexApprovedNarrative(
   if (answer.status !== "approved") return null;
   if (!answer.answerText.trim()) return null;
   return {
-    id: `${answer.siteId}:${normalize(answer.label).replace(/\s+/g, "_")}:${approvedAt}`,
+    // Stable on (site, label) — NOT the timestamp — so re-approving the same field UPDATES the
+    // one exemplar (persist via upsert) instead of minting near-duplicates that skew retrieval.
+    id: `${answer.siteId}:${normalize(answer.label).replace(/\s+/g, "_")}`,
     siteId: answer.siteId,
     section: answer.section,
     label: answer.label,

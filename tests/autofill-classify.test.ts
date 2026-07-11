@@ -60,6 +60,15 @@ describe("F1-2 · concept mapping ladder", () => {
     expect(["synonym", "code"]).toContain(c.method);
   });
 
+  it("does not misclassify a contract/process number as a lab result (LOINC gate)", () => {
+    // "12345-6" matches the LOINC shape but the label has no lab context → not lab_result.
+    const c = classifyField({ section: "Contratação e Prazos", label: "Processo administrativo 12345-6" });
+    expect(c.concept).not.toBe("lab_result");
+    // With a lab cue present, a LOINC-shaped code IS a lab result.
+    const lab = classifyField({ section: "Variáveis", label: "Exame LOINC 13457-9 no soro" });
+    expect(lab.concept).toBe("lab_result");
+  });
+
   it("flags an unknown B-field as unmapped — never guesses", () => {
     const c = classifyField({ section: "Matriz de Variáveis", label: "Fenótipo genômico raro XYZ" });
     expect(c.archetype).toBe("B");

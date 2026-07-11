@@ -39,16 +39,22 @@ interface Seed {
   }>;
 }
 
-/** Map the workbook's free-text completude ("Alta" / ">99,9%" / "[…]") to (value?, qual). */
+/** Map the workbook's free-text completude ("Alta" / ">99,9%" / "99.9%" / "[…]") to (value?, qual). */
 function completeness(raw: string): { value: number | null; qual: string } {
   const t = raw.toLowerCase();
   const pct = t.match(/([\d.,]+)\s*%/);
-  const value = pct ? Number(pct[1].replace(".", "").replace(",", ".")) / 100 : null;
+  let value: number | null = null;
+  if (pct) {
+    // Normalize a Brazilian ("99,9") or period ("99.9") decimal to a JS number, then to a
+    // fraction. Only the LAST separator is the decimal point; earlier ones are grouping.
+    const raw2 = pct[1].replace(/\.(?=\d{3}\b)/g, "").replace(",", ".");
+    const pctNum = Number(raw2);
+    value = Number.isFinite(pctNum) ? pctNum / 100 : null;
+  }
   let qual = "moderate";
   if (t.includes("alta") || (value !== null && value >= 0.9)) qual = "high";
   else if (t.includes("baixa")) qual = "low";
-  else if (t.includes("m") && (t.includes("dia") || t.includes("moder"))) qual = "moderate";
-  return { value: value !== null && value > 1 ? value / 100 : value, qual };
+  return { value, qual };
 }
 
 async function main() {
@@ -97,14 +103,10 @@ async function main() {
     const { value, qual } = completeness(row.completenessRaw);
     await prisma.capabilityCatalog.upsert({
       where: { dataSourceId_conceptId: { dataSourceId: DEMO_DS_ID, conceptId: row.conceptId } },
-      update: {
-        available: row.available,
-        identificationMethod: row.identificationMethod,
-        sourceField: row.sourceField,
-        completenessValue: value,
-        completenessQual: qual,
-        notes: row.notes,
-      },
+      // Idempotent WITHOUT clobbering: the capability catalog is the crown-jewel repository a
+      // coordinator curates through the app. Re-seeding must not revert those edits, so an
+      // existing row is left untouched; only new rows are created from the workbook defaults.
+      update: {},
       create: {
         siteId: DEMO_SITE_ID,
         dataSourceId: DEMO_DS_ID,

@@ -79,12 +79,27 @@ export async function runCohortPreview(
 
   const preview = toCohortPreview(resolveCohort(patients, criteria));
 
-  // Defense-in-depth: the preview must contain no patient identifier.
-  const serialized = JSON.stringify(preview);
-  for (const p of patients) {
-    if (p.id && serialized.includes(p.id)) throw new PatientDataLeakError(p.id);
+  // Defense-in-depth: no patient identifier may appear as a VALUE in the aggregate payload.
+  // Exact leaf-value equality (not substring) — so a numeric MRN like "5" can't false-match
+  // inside "15" and reject a legitimate preview, while a genuinely leaked id-as-value is caught.
+  // Compare only STRING leaves: Patient.id is a string, aggregate counts are numbers, so an
+  // id-as-value leak is a string match — and a numeric count that merely equals a numeric id
+  // string ("n":5 vs id "5") is not a leak and must not false-trip the guard.
+  const ids = new Set(patients.map((p) => p.id).filter(Boolean));
+  for (const leaf of leafValues(preview)) {
+    if (typeof leaf === "string" && ids.has(leaf)) throw new PatientDataLeakError(leaf);
   }
   return preview;
+}
+
+/** Yield every primitive leaf value of a nested structure (for the leak scan). */
+function* leafValues(node: unknown): Generator<string | number | boolean> {
+  if (node === null || node === undefined) return;
+  if (typeof node === "object") {
+    for (const v of Object.values(node as Record<string, unknown>)) yield* leafValues(v);
+  } else if (typeof node === "string" || typeof node === "number" || typeof node === "boolean") {
+    yield node;
+  }
 }
 
 /** The MCP tool descriptor (name + JSON-schema input), shared by the server + docs. */

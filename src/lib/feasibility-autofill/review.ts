@@ -39,14 +39,25 @@ export class NarrativeAutoApproveError extends Error {
   }
 }
 
+/** Reserved actor names that denote automation, not a human — barred from approving D. */
+const AUTOMATED_ACTORS = new Set(["system", "cron", "pipeline", "bot", "llm", "agent", "orchestrator", "mca"]);
+
+function isHumanActor(actor: string): boolean {
+  const a = actor.trim().toLowerCase();
+  return a.length > 0 && !AUTOMATED_ACTORS.has(a);
+}
+
 /**
  * Explicit single approve, always by a named human actor. Works for any archetype
- * INCLUDING D — this is precisely the human sign-off D requires. Throws if no actor is
- * supplied (a D answer can never be approved anonymously/automatically).
+ * INCLUDING D — this is precisely the human sign-off D requires. For D the actor must be a
+ * HUMAN: an empty or reserved-automated name (cron/system/agent/…) is refused, so the LLM's
+ * own pipeline can never launder a draft to `approved`.
  */
 export function approveAnswer(a: ReviewAnswer, actor: string): ReviewAnswer {
+  if (a.archetype === "D" && !isHumanActor(actor)) {
+    throw new NarrativeAutoApproveError(a.fieldId);
+  }
   if (!actor || !actor.trim()) {
-    if (a.archetype === "D") throw new NarrativeAutoApproveError(a.fieldId);
     throw new Error(`approveAnswer: an actor is required to approve "${a.fieldId}"`);
   }
   return { ...a, status: "approved", reviewerId: actor, version: a.version + 1 };

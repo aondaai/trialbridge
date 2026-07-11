@@ -13,7 +13,19 @@ export interface FieldDiff {
   to: unknown;
 }
 
-/** Shallow diff of two records — only changed keys appear. */
+/** Order-insensitive JSON compare (key insertion order must not read as a change). */
+function jsonEq(a: unknown, b: unknown): boolean {
+  return stableStringify(a) === stableStringify(b);
+}
+
+function stableStringify(v: unknown): string {
+  if (v === null || typeof v !== "object") return JSON.stringify(v) ?? "null";
+  if (Array.isArray(v)) return `[${v.map(stableStringify).join(",")}]`;
+  const obj = v as Record<string, unknown>;
+  return `{${Object.keys(obj).sort().map((k) => `${JSON.stringify(k)}:${stableStringify(obj[k])}`).join(",")}}`;
+}
+
+/** Shallow diff of two records — only changed keys appear (order-insensitive). */
 export function diffObjects(
   before: Record<string, unknown>,
   after: Record<string, unknown>,
@@ -21,7 +33,7 @@ export function diffObjects(
   const out: Record<string, FieldDiff> = {};
   const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
   for (const k of keys) {
-    if (JSON.stringify(before[k]) !== JSON.stringify(after[k])) {
+    if (!jsonEq(before[k], after[k])) {
       out[k] = { from: before[k], to: after[k] };
     }
   }
@@ -50,8 +62,8 @@ export function makeAuditEntry(params: {
   after?: Record<string, unknown>;
   at: string;
 }): AuditEntry {
-  const diff =
-    params.before && params.after ? diffObjects(params.before, params.after) : {};
+  // A create (after only) or delete (before only) still records the values, not an empty diff.
+  const diff = diffObjects(params.before ?? {}, params.after ?? {});
   return {
     siteId: params.siteId ?? null,
     entity: params.entity,

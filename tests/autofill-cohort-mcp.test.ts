@@ -91,4 +91,11 @@ describe("M0 · MCP stdio dispatch", () => {
     );
     expect((r as { error: { code: number } }).error.code).toBe(-32601);
   });
+
+  it("a null / malformed request returns an error instead of crashing", async () => {
+    const r = await dispatch(null as never, loader);
+    expect((r as { error: { code: number } }).error.code).toBe(-32600);
+    const r2 = await dispatch({ jsonrpc: "2.0", id: 9 } as never, loader); // no method
+    expect((r2 as { error: { code: number } }).error.code).toBe(-32600);
+  });
 });

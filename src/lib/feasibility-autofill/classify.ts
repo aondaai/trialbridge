@@ -89,8 +89,12 @@ const CODE_PATTERNS: Array<{ re: RegExp; concept: string }> = [
   { re: /\bK5[01]\b/i, concept: "ibd" },
   { re: /\bE78\b/i, concept: "dyslipidemia" },
   { re: /\bI21\b/i, concept: "myocardial_infarction" },
-  { re: /\b\d{4,5}-\d\b/, concept: "lab_result" }, // LOINC
 ];
+
+/** A LOINC code (NNNN[N]-N) only counts when the label is lab-ish — otherwise a year-range,
+ *  process number, or phone fragment ("2024-1", "12345-6") would false-match as a lab result. */
+const LOINC_RE = /\b\d{4,5}-\d\b/;
+const LAB_CONTEXT = /\bloinc\b|\blab|\bexame|colesterol|\bldl\b|\bhdl\b|hba1c|\bpcr\b|resultado/;
 
 /** Rung 1 — synonym hit; longest (most specific) synonym wins (matchers are pre-sorted). */
 function synonymMatch(label: string): string | null {
@@ -102,6 +106,7 @@ function synonymMatch(label: string): string | null {
 /** Rung 2 — vocabulary code in the label. */
 function codeMatch(label: string): string | null {
   for (const { re, concept } of CODE_PATTERNS) if (re.test(label)) return concept;
+  if (LOINC_RE.test(label) && LAB_CONTEXT.test(normalize(label))) return "lab_result";
   return null;
 }
 

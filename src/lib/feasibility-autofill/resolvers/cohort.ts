@@ -70,9 +70,11 @@ export function resolveCohort(
     {
       unit: "patients",
       asOf: asOf ?? null,
+      // Note is a sponsor-facing provenance field — never disclose raw sub-counts, which
+      // can each be a small cell even when their sum clears the threshold. Suppress them too.
       note: isSuppressed
         ? `candidate count <${MIN_CELL} suppressed for privacy`
-        : `definite=${counts.definite}+possible=${counts.possible} of ${counts.total} evaluated`,
+        : `definite=${suppress(counts.definite)}, possible=${suppress(counts.possible)} (aggregate)`,
     },
   );
 

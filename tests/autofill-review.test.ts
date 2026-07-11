@@ -57,6 +57,14 @@ describe("F4-3 · review HITL — D is never auto-approved", () => {
     expect(() => approveAnswer(mk({ archetype: "D" }), "")).toThrow(NarrativeAutoApproveError);
   });
 
+  it("a reserved automated actor cannot approve D (cron/system/agent are not human)", () => {
+    for (const bot of ["system", "cron", "agent", "orchestrator", "MCA"]) {
+      expect(() => approveAnswer(mk({ archetype: "D" }), bot)).toThrow(NarrativeAutoApproveError);
+    }
+    // …but an automated actor may still approve a deterministic A/B/C answer.
+    expect(approveAnswer(mk({ archetype: "B" }), "cron").status).toBe("approved");
+  });
+
   it("editing sets status=edited and bumps version (needs re-approval to ship)", () => {
     const edited = editAnswer(mk({ status: "proposed" }), "camila");
     expect(edited.status).toBe("edited");

@@ -36,6 +36,11 @@ export async function dispatch(
   req: JsonRpcRequest,
   loadPatients: PatientLoader,
 ): Promise<JsonRpcResponse | null> {
+  // `null` and non-objects are valid JSON but not valid requests — reject cleanly rather
+  // than dereferencing (a bare `null\n` must not crash the site-boundary server).
+  if (typeof req !== "object" || req === null || typeof (req as JsonRpcRequest).method !== "string") {
+    return { jsonrpc: "2.0", id: null, error: { code: -32600, message: "invalid request" } };
+  }
   const id = req.id ?? null;
   switch (req.method) {
     case "initialize":
@@ -105,8 +110,16 @@ export function serve(loadPatients: PatientLoader): void {
       );
       return;
     }
-    void dispatch(req, loadPatients).then((resp) => {
-      if (resp) process.stdout.write(JSON.stringify(resp) + "\n");
-    });
+    void dispatch(req, loadPatients)
+      .then((resp) => {
+        if (resp) process.stdout.write(JSON.stringify(resp) + "\n");
+      })
+      .catch((err: unknown) => {
+        // Never let a handler rejection take down the boundary server.
+        const id = (req as { id?: string | number | null })?.id ?? null;
+        process.stdout.write(
+          JSON.stringify({ jsonrpc: "2.0", id, error: { code: -32603, message: `internal error: ${(err as Error).message}` } }) + "\n",
+        );
+      });
   });
 }

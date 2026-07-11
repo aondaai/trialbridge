@@ -56,6 +56,21 @@ describe("F5-2 · audit + versioning", () => {
     expect(nextVersion(1)).toBe(2);
     expect(nextVersion(7)).toBe(8);
   });
+
+  it("a create (after only) records the created values, not an empty diff", () => {
+    const e = makeAuditEntry({
+      entity: "FieldAnswer", entityId: "fa2", action: "create", actor: "camila",
+      after: { status: "proposed", value: "yes" }, at: "2026-07-11T00:00:00Z",
+    });
+    const diff = JSON.parse(e.diff);
+    expect(diff.status).toEqual({ from: undefined, to: "proposed" });
+    expect(diff.value).toEqual({ from: undefined, to: "yes" });
+  });
+
+  it("diffObjects is insensitive to key order", () => {
+    const d = diffObjects({ a: 1, b: 2 } as Record<string, unknown>, { b: 2, a: 1 } as Record<string, unknown>);
+    expect(d).toEqual({});
+  });
 });
 
 describe("F5-3 · learning loop", () => {
