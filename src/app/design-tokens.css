@@ -1,0 +1,29 @@
+/* ==========================================================================
+   TrialBridge — Clinical-domain tokens (from the TrialBridge Design System)
+   The tri-state cohort triad and the evidence-provenance seals — the signature
+   data signals the base --cl-* palette (claude.css) doesn't cover. Kept in the
+   app's own file so the design-system source stays the single point of truth.
+   ========================================================================== */
+:root {
+  /* Clinical cohort (tri-state matcher) */
+  --tb-definite: #1f9d6b; /* passes all criteria */
+  --tb-possible: #d98a2b; /* eligible but has unknowns */
+  --tb-excluded: #b8b7b0; /* excluded */
+
+  /* Evidence provenance (MetricChip seals) — muted, ordered strongest → directional */
+  --tb-prov-peer: var(--cl-success); /* peer-reviewed — sage */
+  --tb-prov-peer-subtle: var(--cl-success-subtle);
+  --tb-prov-registry: var(--cl-info); /* registry / gov — steel */
+  --tb-prov-registry-subtle: var(--cl-info-subtle);
+  --tb-prov-declared: #7c5e99; /* site-declared — plum */
+  --tb-prov-declared-subtle: #ece4f2;
+  --tb-prov-modeled: var(--cl-warning); /* TrialBridge-computed — ochre */
+  --tb-prov-modeled-subtle: var(--cl-warning-subtle);
+  --tb-prov-vendor: var(--cl-text-secondary); /* vendor benchmark — slate */
+  --tb-prov-vendor-subtle: var(--cl-surface-2);
+}
+
+[data-theme="dark"] {
+  --tb-prov-declared: #a98fc4;
+  --tb-prov-declared-subtle: #3a3044;
+}

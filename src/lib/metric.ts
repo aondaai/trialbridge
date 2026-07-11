@@ -46,13 +46,54 @@ export enum Confidence {
   LOW = "low",
 }
 
-/** Appendix B: seal → UI colour + human label. Shared with the frontend MetricChip. */
-export const SEAL_UI: Record<Provenance, { color: string; label: string }> = {
-  [Provenance.PEER_REVIEWED]: { color: "#2E7D32", label: "Peer-reviewed" }, // green, strongest
-  [Provenance.REGISTRY_GOV]: { color: "#1565C0", label: "Registry / Gov" }, // blue, official
-  [Provenance.SITE_DECLARED]: { color: "#6A1B9A", label: "Site-declared" }, // purple, marketplace-unique
-  [Provenance.MODELED]: { color: "#E08A2B", label: "Modeled (TrialBridge)" }, // amber, computed
-  [Provenance.VENDOR]: { color: "#757575", label: "Vendor benchmark" }, // gray, directional
+/**
+ * Appendix B: seal → UI treatment. Shared with the frontend MetricChip / sealed pill.
+ * Colours are the TrialBridge Design System's *muted* provenance palette (warm-paper
+ * calm, not saturated), exposed as CSS custom properties so the seals track light/dark
+ * theme; `color`/`subtle` also carry raw hex fallbacks for print + non-token contexts.
+ * `glyph` encodes confidence class visually on the seal (● firm · ◐ directional · ○ soft).
+ */
+export const SEAL_UI: Record<
+  Provenance,
+  { color: string; colorHex: string; subtle: string; label: string }
+> = {
+  [Provenance.PEER_REVIEWED]: {
+    color: "var(--tb-prov-peer, #5E7350)",
+    colorHex: "#5E7350",
+    subtle: "var(--tb-prov-peer-subtle, #E8EDDF)",
+    label: "Peer-reviewed",
+  },
+  [Provenance.REGISTRY_GOV]: {
+    color: "var(--tb-prov-registry, #4C6E91)",
+    colorHex: "#4C6E91",
+    subtle: "var(--tb-prov-registry-subtle, #E1E9F0)",
+    label: "Registry / gov",
+  },
+  [Provenance.SITE_DECLARED]: {
+    color: "var(--tb-prov-declared, #7C5E99)",
+    colorHex: "#7C5E99",
+    subtle: "var(--tb-prov-declared-subtle, #ECE4F2)",
+    label: "Site-declared",
+  },
+  [Provenance.MODELED]: {
+    color: "var(--tb-prov-modeled, #B58019)",
+    colorHex: "#B58019",
+    subtle: "var(--tb-prov-modeled-subtle, #F6ECD4)",
+    label: "Modeled",
+  },
+  [Provenance.VENDOR]: {
+    color: "var(--tb-prov-vendor, #6E6D66)",
+    colorHex: "#6E6D66",
+    subtle: "var(--tb-prov-vendor-subtle, #F0EEE6)",
+    label: "Vendor benchmark",
+  },
+};
+
+/** Confidence → seal glyph (design system): filled = firm, half = directional, hollow = soft. */
+export const CONFIDENCE_GLYPH: Record<Confidence, string> = {
+  [Confidence.HIGH]: "●",
+  [Confidence.MEDIUM]: "◐",
+  [Confidence.LOW]: "○",
 };
 
 /** Strength order for sorting a provenance index (0 = strongest). */
