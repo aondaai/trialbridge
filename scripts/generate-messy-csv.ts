@@ -24,7 +24,7 @@ patients.forEach((p, i) => {
     p.id,
     i % 7 === 0 ? "" : "Breast cancer",               // scattered blank diagnosis
     p.age ?? "",
-    p.sex === "female" ? "F" : p.sex === "male" ? "M" : "",
+    p.sex ?? "",
     p.ecog ?? "",
     p.stage ? `Stage ${p.stage}` : "",
     p.biomarkers.her2_status === "positive" ? "3+" : p.biomarkers.her2_status === "negative" ? "neg" : "",
