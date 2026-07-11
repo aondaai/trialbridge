@@ -101,7 +101,10 @@ export function kolScore(inv: KolInvestigatorInput): KolScore {
 
   const signalMetrics: Metric[] = [
     modeled("kol.signal.trials", sig.trialsCount, Confidence.MEDIUM, { unit: "trials", sourceRefs: [{ label: "ClinicalTrials.gov overallOfficials" }] }),
-    modeled("kol.signal.pubs", sig.pubsCountTa, Confidence.MEDIUM, { unit: "publications", sourceRefs: [{ label: "PubMed E-utilities / ORCID" }] }),
+    modeled("kol.signal.pubs", sig.pubsCountTa, Confidence.MEDIUM, {
+      unit: "publications",
+      note: "Deep-web-researched (Parallel Task API) when KOL enrichment is on; 0 from CT.gov alone — not a direct PubMed/ORCID query.",
+    }),
     modeled("kol.signal.society", Math.round(sSociety), Confidence.MEDIUM, { unit: "score_0_100", note: sig.societyRoles.join(", ") || "no curated society role" }),
   ];
 

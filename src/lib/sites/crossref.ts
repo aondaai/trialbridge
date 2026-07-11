@@ -24,12 +24,15 @@ export function crossReferenceInvestigators(
   const investigators = inputs.map((inv) => {
     const match = matchAffiliation(inv.affiliation, directory);
     if (!match) return inv;
-    linked++;
+    const cnes = match.cnes ?? inv.cnes ?? null;
+    if (cnes) linked++; // only count a CNES-backed link
     return {
       ...inv,
-      cnes: match.cnes ?? inv.cnes ?? null,
+      cnes,
       regionCode: match.region ?? inv.regionCode,
-      signals: { ...inv.signals, hasCnesLink: true },
+      // A "CNES link" requires an actual CNES — an ACESSE match (CNES-less) corrects the
+      // region but must not flip the institution signal to a confirmed registered site.
+      signals: { ...inv.signals, hasCnesLink: cnes ? true : inv.signals.hasCnesLink },
     };
   });
   return { investigators, stats: { total: inputs.length, linked } };

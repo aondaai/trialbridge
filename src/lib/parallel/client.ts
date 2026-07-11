@@ -84,7 +84,9 @@ export function parseTaskResult(json: unknown): TaskResult {
     run?: { run_id?: string; status?: string };
     output?: { content?: Record<string, unknown>; basis?: unknown[] };
   };
-  const status = j.run?.status === "completed" ? "completed" : j.run?.status === "failed" ? "failed" : "completed";
+  // Only an explicit "completed" is treated as success — an unknown/missing/partial status
+  // must NOT be sealed as complete (a caller could otherwise surface an in-flight result).
+  const status = j.run?.status === "completed" ? "completed" : "failed";
   const basis: BasisEntry[] = Array.isArray(j.output?.basis)
     ? (j.output!.basis as Record<string, unknown>[]).map((b) => ({
         field: String(b.field ?? ""),
