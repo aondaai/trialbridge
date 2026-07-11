@@ -59,7 +59,10 @@ export function directorySiteToSiteInput(site: DirectorySite, ctx: SiteInputCont
       realInfra.gcpPharmacy,
     ].filter(Boolean).length;
   } else {
-    requiredEquipment = 4;
+    // Equipment UNVERIFIED — give only PARTIAL credit from the self-reported capability
+    // flags (max 4 of 6), so a real deep-web-researched, well-equipped site (up to 100%)
+    // ranks ABOVE an un-researched one, not below it. Full verification is `enrich-sites`.
+    requiredEquipment = 6;
     present = [site.centralLabExams, site.centralLabImaging, site.oncology, site.edcExperience].filter(Boolean).length;
   }
 

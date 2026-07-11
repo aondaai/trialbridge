@@ -64,6 +64,6 @@ describe("directorySiteToSiteInput uses REAL infra when available", () => {
   });
   it("falls back to the capability-flag proxy without infra", () => {
     const si = directorySiteToSiteInput(site, { profile: "onc_ph3", competingByRegion: {} });
-    expect(si.requiredEquipment).toBe(4); // proxy scale
+    expect(si.requiredEquipment).toBe(6); // partial-credit proxy denominator (unverified equipment)
   });
 });
