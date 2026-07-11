@@ -29,7 +29,7 @@ import {
   BR_MACROREGION_POPULATION,
   RegionSDInput,
 } from "@/lib/supplydemand/ratios";
-import { buildKolMap } from "@/lib/kol/score";
+import { buildKolMap, KolInvestigatorInput } from "@/lib/kol/score";
 import type { CompetitionData } from "@/lib/ctgov/competition";
 
 export interface BuildReportOptions {
@@ -43,6 +43,25 @@ export interface BuildReportOptions {
   /** Real CT.gov competition data (R9). When source==="live", replaces the modeled
    *  competing-trials placeholders and populates the KOL map from real investigators. */
   competition?: CompetitionData;
+  /** Deep-web-enriched KOL investigators (Parallel pipe). When provided, drives the
+   *  §7 KOL map instead of the CT.gov trial-experience-only derivation. */
+  kolInvestigators?: KolInvestigatorInput[];
+}
+
+/** Map CT.gov investigators → trial-experience-only KOL inputs (pre-enrichment). */
+export function ctgovToKolInputs(competition: CompetitionData): KolInvestigatorInput[] {
+  return competition.investigators.slice(0, 25).map((inv) => ({
+    name: inv.name,
+    regionCode: inv.regionCode,
+    affiliation: inv.affiliation,
+    signals: {
+      trialsCount: inv.trialsCount,
+      pubsCountTa: 0,
+      societyRoles: [],
+      guidelineAuthor: false,
+      hasCnesLink: false,
+    },
+  }));
 }
 
 export interface ConsultationLike {
@@ -104,25 +123,16 @@ export function buildReport(
   const supplyDemand =
     sdInputs.length > 0 ? toSupplyDemandSummary(computeSupplyDemand(sdInputs, { asOf })) : undefined;
 
-  // §7 KOL map from real CT.gov investigators (partial signal: trial experience only;
-  // pubs/society need PubMed/ORCID — a later slice). Empty until competition is live.
-  const kolMap =
-    competitionLive && competitionLive.investigators.length > 0
-      ? buildKolMap(
-          competitionLive.investigators.slice(0, 25).map((inv) => ({
-            name: inv.name,
-            regionCode: inv.regionCode,
-            affiliation: inv.affiliation,
-            signals: {
-              trialsCount: inv.trialsCount,
-              pubsCountTa: 0,
-              societyRoles: [],
-              guidelineAuthor: false,
-              hasCnesLink: false,
-            },
-          })),
-        )
-      : undefined;
+  // §7 KOL map. Prefer deep-web-enriched investigators (Parallel pipe) when supplied;
+  // otherwise derive from CT.gov with trial experience only (pubs/society need the
+  // enrichment). Empty until competition is live.
+  const kolInputs =
+    opts.kolInvestigators && opts.kolInvestigators.length > 0
+      ? opts.kolInvestigators
+      : competitionLive
+        ? ctgovToKolInputs(competitionLive)
+        : [];
+  const kolMap = kolInputs.length > 0 ? buildKolMap(kolInputs) : undefined;
 
   return assemble({
     context: {

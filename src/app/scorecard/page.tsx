@@ -7,9 +7,11 @@ import { estimateFeasibility } from "@/lib/feasibility";
 import { HERO_META } from "@/data/hero-protocol";
 import { TopBar, CohortBar, CohortLegend } from "@/components/ui";
 import { PrintButton } from "@/components/PrintButton";
-import { buildReport } from "@/lib/report/buildReport";
+import { buildReport, ctgovToKolInputs } from "@/lib/report/buildReport";
 import { EngineReport } from "@/components/report/EngineReport";
 import { fetchCompetition } from "@/lib/ctgov/competition";
+import { parallelEnabled } from "@/lib/parallel/client";
+import { enrichInvestigators, applyEnrichment } from "@/lib/kol/enrich";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +67,22 @@ export default async function ScorecardPage({
     const allSites = await loadAllSites();
     const evaluatedSites = allSites.map((ds) => evaluateDataset(ds, consultation.criteria));
     // R9: real competition + investigators from ClinicalTrials.gov (degrades gracefully).
-    const competition = await fetchCompetition(conditionQuery(consultation.title));
+    const condition = conditionQuery(consultation.title);
+    const competition = await fetchCompetition(condition);
+
+    // Deep-web KOL enrichment via the Parallel pipe — publications, society roles,
+    // guideline authorship for the top investigators, researched concurrently. No-op
+    // when PARALLEL_API_KEY is absent (KOL stays trial-experience-only).
+    let kolInvestigators = competition.source === "live" ? ctgovToKolInputs(competition) : [];
+    if (parallelEnabled() && kolInvestigators.length > 0) {
+      const top = kolInvestigators.slice(0, 6);
+      const enrichments = await enrichInvestigators(
+        top.map((k) => ({ name: k.name, affiliation: k.affiliation, therapeuticArea: condition })),
+        { concurrency: 3 },
+      );
+      kolInvestigators = applyEnrichment(kolInvestigators, enrichments);
+    }
+
     const report = buildReport(
       {
         id: consultation.id,
@@ -75,7 +92,7 @@ export default async function ScorecardPage({
         criteria: consultation.criteria,
       },
       evaluatedSites,
-      { runId: consultation.id, competition },
+      { runId: consultation.id, competition, kolInvestigators },
     );
 
     return (
