@@ -92,11 +92,14 @@ function buildDecisionSnapshot(
   }));
 
   const top = ranked[0];
-  // Four headline numbers (product spec §3.1). Fall back to national funnel where no site.
-  const projectedPpm =
-    top?.headlineMetrics.enrollmentRateMetric ?? funnel.projectedPatientsPerMonthMetric;
+  // Four headline numbers (product spec §3.1). These are PROGRAM-level, so the
+  // enrollment headline is always the national funnel rate (not one site's), keeping
+  // the denominator consistent whether or not sites are scored.
+  const projectedPpm = funnel.projectedPatientsPerMonthMetric;
+  // Time to FPI is a day count (the startup_fpi component's days metric), not its
+  // 0..100 sub-score — so the slot's unit is always "days".
   const timeToFpi =
-    firstMetric(top, "startup_fpi") ??
+    componentMetricByUnit(top, "startup_fpi", "days") ??
     modeled("report.time_to_fpi", null, Confidence.LOW, { unit: "days", note: "No site scored." });
   const costPerPatient = modeled("report.cost_per_patient", null, Confidence.LOW, {
     unit: "usd",
@@ -160,8 +163,14 @@ function computeRiskIndex(country: CountryScorecard, ranked: SiteScore[]): numbe
   return Math.round(Math.max(0, Math.min(100, risk)));
 }
 
-function firstMetric(site: SiteScore | undefined, componentKey: string): Metric | null {
+/** Pull a component's contributing metric that carries a given unit (e.g. the days
+ *  metric of startup_fpi), so a headline slot surfaces the real quantity, not the score. */
+function componentMetricByUnit(
+  site: SiteScore | undefined,
+  componentKey: string,
+  unit: string,
+): Metric | null {
   if (!site) return null;
   const c = site.components.find((x) => x.key === componentKey);
-  return c?.scoreMetric ?? null;
+  return c?.metrics.find((m) => m.unit === unit) ?? null;
 }

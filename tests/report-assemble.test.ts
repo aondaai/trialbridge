@@ -139,4 +139,46 @@ describe("assemble — the provenance gate rejects a bare number in a metric slo
     expect(scen.amendmentCostAvoidedMetric.provenance).toBe(Provenance.PEER_REVIEWED);
     expect(scen.amendmentCostAvoidedMetric.value).toBe(535000);
   });
+
+  it("a hard flag with an explicit null detailMetric does NOT throw the gate (review #4)", () => {
+    const country = scoreCountry(brazilCountryInput({ nationalEligiblePool: 5000, targetSampleSize: 200 }));
+    country.hardFlags.push({ key: "adi_7875", label: "ADI 7875 pending", severity: "demote", detailMetric: null });
+    expect(() => assemble(input({ country }))).not.toThrow();
+  });
+});
+
+describe("assemble — review fixes are observable", () => {
+  it("provenance index counts each shared Metric ONCE, not per-position (review #1)", () => {
+    const r = assemble(input());
+    // The decision snapshot re-points at country + site metrics; the total must equal
+    // the distinct-metric count, so re-counting can't inflate it.
+    const seen = new Set<unknown>();
+    let distinct = 0;
+    const walk = (v: unknown): void => {
+      if (v && typeof v === "object") {
+        if ((v as { provenance?: string }).provenance && "value" in (v as object)) {
+          if (!seen.has(v)) { seen.add(v); distinct += 1; }
+          return;
+        }
+        if (seen.has(v)) return;
+        seen.add(v);
+        Object.values(v as Record<string, unknown>).forEach(walk);
+      }
+    };
+    // Walk the same target the assembler indexes (everything except the register).
+    walk({ decisionSnapshot: r.decisionSnapshot, funnel: r.funnel, softening: r.softening, country: r.country, siteRankings: r.siteRankings });
+    expect(r.riskRegister.provenanceIndex.total).toBe(distinct);
+  });
+
+  it("the 'projected enrollment' headline is the NATIONAL funnel rate, not one site's (review #2)", () => {
+    const r = assemble(input());
+    expect(r.decisionSnapshot.headlineMetrics.projectedPatientsPerMonthMetric).toBe(
+      r.funnel.projectedPatientsPerMonthMetric,
+    );
+  });
+
+  it("the 'time to FPI' headline carries days, not a 0..100 score (review #3)", () => {
+    const r = assemble(input());
+    expect(r.decisionSnapshot.headlineMetrics.timeToFpiMetric.unit).toBe("days");
+  });
 });

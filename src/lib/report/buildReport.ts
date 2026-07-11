@@ -48,7 +48,7 @@ export function buildReport(
   sites: EvaluatedSite[],
   opts: BuildReportOptions = {},
 ): Report {
-  const months = opts.months ?? 6;
+  const months = Math.max(1, Math.floor(opts.months ?? 6)); // guard: never divide ppm by 0
   const profile = opts.profile ?? "onc_ph3";
   const phase = opts.phase ?? "III";
   const targetSampleSize = opts.targetSampleSize ?? 200;
