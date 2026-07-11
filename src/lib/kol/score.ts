@@ -178,6 +178,7 @@ export function buildKolMap(investigators: KolInvestigatorInput[]): KolMapSummar
         name: s.name,
         regionCode: s.regionCode,
         affiliation: inv?.affiliation ?? null,
+        cnes: inv?.cnes ?? null,
         pubsCountTa: inv?.signals.pubsCountTa,
         societyRoles: inv?.signals.societyRoles,
         citations: inv?.enrichmentCitations,

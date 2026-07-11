@@ -97,6 +97,8 @@ export interface KolRefSummary {
   regionCode: string;
   /** Real institutional affiliation (CT.gov) — the precise fact; region is best-effort. */
   affiliation?: string | null;
+  /** CNES code, when the affiliation matched a directory site (cross-reference). */
+  cnes?: string | null;
   /** Deep-web-researched signals (Parallel), when enrichment ran. */
   pubsCountTa?: number;
   societyRoles?: string[];

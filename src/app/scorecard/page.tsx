@@ -12,6 +12,8 @@ import { EngineReport } from "@/components/report/EngineReport";
 import { fetchCompetition } from "@/lib/ctgov/competition";
 import { applyEnrichment } from "@/lib/kol/enrich";
 import { enrichmentsForNames } from "@/lib/kol/enrichmentStore";
+import { loadDirectory } from "@/lib/sites/loadDirectory";
+import { crossReferenceInvestigators } from "@/lib/sites/crossref";
 
 export const dynamic = "force-dynamic";
 
@@ -76,6 +78,10 @@ export default async function ScorecardPage({
     // without a precomputed entry stay trial-experience-only.
     let kolInvestigators = competition.source === "live" ? ctgovToKolInputs(competition) : [];
     if (kolInvestigators.length > 0) {
+      // Cross-reference affiliations against the ABRACRO/ACESSE directory → real CNES,
+      // accurate region, and a confirmed institutional link (lifts the KOL score).
+      kolInvestigators = crossReferenceInvestigators(kolInvestigators, loadDirectory()).investigators;
+      // Apply precomputed deep-web enrichment (pubs/society/guideline), if present.
       const enrichments = enrichmentsForNames(kolInvestigators.map((k) => k.name));
       kolInvestigators = applyEnrichment(kolInvestigators, enrichments);
     }
