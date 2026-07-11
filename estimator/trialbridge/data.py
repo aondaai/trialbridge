@@ -452,3 +452,82 @@ class SyntheticDataSUS(BaseCohortSource):
                         if c > 0:
                             recs.append(BaseRecord(site, region, dx, age, sex, c))
         return recs
+
+
+class FullProprietary:
+    """Full iHealth proprietary base (Asset 2, ~6.68M patients / 35 hospitals) as an
+    aggregate FINDING source: distinct patients per (dx, age_band, sex, hospital).
+
+    Source: document-level parquet at `parquet_ihealth/*.parquet` — one row per clinical
+    document with `unique_patient_id, hospital, gender, birth_year, primary_icd, texto…`.
+    It carries the RAW NLP text + entity COUNTS, NOT extracted depth values (HER2/ECOG):
+    depth is the per-disease extraction (see RealProprietary / proprietary_ha). So this
+    source answers CHECKABLE-level finding (dx via primary_icd, sex via gender, age via
+    birth_year) — never depth criteria.
+
+    Encoding quirks handled (verified 2026-07-10): gender is 'FEMALE'/'MALE'/'UNKNOWN'
+    (mapped to F/M, UNKNOWN dropped); birth_year has a few dirty values (1, 9201) so it
+    is bounded to [min_birth_year, reference_year-18]. Each patient sits in exactly one
+    hospital (verified 0 cross-hospital), so distinct-patient counts sum cleanly to a
+    national total. `site` = hospital; `region` is set to the hospital too (no UF column
+    in this base).
+    """
+
+    def __init__(self, parquet_glob: str, dx_cid_prefixes: Dict[str, List[str]],
+                 reference_year: int = 2025, min_birth_year: int = 1900,
+                 min_cell: int = 5):
+        self.parquet_glob = parquet_glob
+        self.dx_cid_prefixes = dx_cid_prefixes
+        self.reference_year = reference_year
+        self.min_birth_year = min_birth_year
+        self.min_cell = min_cell
+        self._cache: List[BaseRecord] | None = None
+
+    def records(self) -> List[BaseRecord]:
+        if self._cache is not None:
+            return self._cache
+        self._cache = self._query()
+        return self._cache
+
+    def _query(self) -> List[BaseRecord]:
+        import duckdb
+
+        con = duckdb.connect()
+        con.execute("PRAGMA threads=4")
+        dx_cases = " ".join(
+            f"WHEN primary_icd LIKE '{prefix}%' THEN '{dx}'"
+            for dx, prefixes in self.dx_cid_prefixes.items()
+            for prefix in prefixes
+        )
+        ref = self.reference_year
+        max_birth = ref - 18  # birth_year <= this => age >= 18
+        age_band = f"""
+            CASE
+                WHEN ({ref} - birth_year) <= 39 THEN '18-39'
+                WHEN ({ref} - birth_year) <= 49 THEN '40-49'
+                WHEN ({ref} - birth_year) <= 59 THEN '50-59'
+                WHEN ({ref} - birth_year) <= 69 THEN '60-69'
+                ELSE '70+'
+            END
+        """
+        sql = f"""
+            SELECT hospital AS site,
+                   CASE {dx_cases} END AS dx,
+                   {age_band} AS age_band,
+                   CASE gender WHEN 'FEMALE' THEN 'F' WHEN 'MALE' THEN 'M' END AS sex,
+                   count(DISTINCT unique_patient_id) AS n
+            FROM read_parquet('{self.parquet_glob}')
+            WHERE CASE {dx_cases} END IS NOT NULL
+              AND gender IN ('FEMALE', 'MALE')
+              AND birth_year BETWEEN {self.min_birth_year} AND {max_birth}
+            GROUP BY 1, 2, 3, 4
+        """
+        rows = con.execute(sql).fetchall()
+        con.close()
+        # Small-cell suppression (same P0 protection as DuckDBDataSUS): drop strata below
+        # min_cell so materialized aggregates never expose a near-identifiable single patient.
+        return [
+            BaseRecord(site=site, region=site, dx=dx, age_band=ab, sex=sex, count=int(n))
+            for site, dx, ab, sex, n in rows
+            if ab is not None and n >= self.min_cell
+        ]

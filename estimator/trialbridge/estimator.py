@@ -17,12 +17,15 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, TYPE_CHECKING
 
 from .data import BaseCohortSource, BaseRecord, ProprietarySource, Stratum
 from .enrichment import EnrichmentModel, FittedRates
 from .schema import Protocol
 from .stats import Z
+
+if TYPE_CHECKING:
+    from .coverage import CalibratedCoverage
 
 
 @dataclass
@@ -34,6 +37,8 @@ class SiteEstimate:
     ci_lo: float
     ci_hi: float
     eff_n: int                # min proprietary stratum sample backing this estimate
+    model_version: str = ""   # imputation model that produced est_eligible (§5.2/§7.3)
+    covered: bool = True      # region is in the calibrated coverage set (§5.3)
 
     def __str__(self) -> str:
         return (f"{self.site:<10} {self.region:<3} base={self.base_cohort:>6}  "
@@ -60,8 +65,16 @@ def estimate(protocol: Protocol,
              datasus: BaseCohortSource,
              proprietary: ProprietarySource,
              exclude_depth_ids: set[str] | None = None,
-             shrink_alpha: float = 20.0) -> List[SiteEstimate]:
-    """Full trial->site feasibility estimate."""
+             shrink_alpha: float = 20.0,
+             coverage: "CalibratedCoverage | None" = None,
+             model_version: str = "") -> List[SiteEstimate]:
+    """Full trial->site feasibility estimate.
+
+    coverage: if provided, each SiteEstimate.covered = coverage.is_covered(region);
+    the emission layer suppresses Estimated N for covered=False regions (strategy §5.3).
+    When None, every estimate is covered (back-compat). model_version stamps which
+    imputation model produced est_eligible.
+    """
     records = datasus.records()
     base = _base_by_stratum(records, protocol)
     site_region = _base_by_stratum.site_region  # type: ignore
@@ -82,22 +95,36 @@ def estimate(protocol: Protocol,
             if count > 0:
                 min_n = min(min_n, rate.raw_n)
         half = Z * math.sqrt(var)
+        region = site_region.get(site, "?")
         results.append(SiteEstimate(
-            site=site, region=site_region.get(site, "?"),
+            site=site, region=region,
             base_cohort=sum(strata.values()),
             est_eligible=est, ci_lo=max(0.0, est - half), ci_hi=est + half,
             eff_n=(0 if min_n == 10**9 else min_n),
+            model_version=model_version,
+            covered=(True if coverage is None else coverage.is_covered(region)),
         ))
     results.sort(key=lambda s: s.est_eligible, reverse=True)
     return results
 
 
-def national_total(estimates: List[SiteEstimate]) -> Tuple[float, float, float]:
-    est = sum(s.est_eligible for s in estimates)
+def national_total(estimates: List[SiteEstimate],
+                   covered_only: bool = False) -> Tuple[float, float, float]:
+    rows = [s for s in estimates if s.covered] if covered_only else estimates
+    est = sum(s.est_eligible for s in rows)
     # independent-site approximation for the aggregate interval
-    var = sum(((s.ci_hi - s.est_eligible) / Z) ** 2 for s in estimates)
+    var = sum(((s.ci_hi - s.est_eligible) / Z) ** 2 for s in rows)
     half = Z * math.sqrt(var)
     return est, max(0.0, est - half), est + half
+
+
+def covered_only(estimates: List[SiteEstimate]) -> List[SiteEstimate]:
+    """Estimates whose region is in the calibrated coverage set (§5.3).
+
+    Market-sizing must sum only these; uncovered regions keep their exact base_cohort
+    (Ativo 1) but must not contribute an Estimated N.
+    """
+    return [e for e in estimates if e.covered]
 
 
 @dataclass
