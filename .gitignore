@@ -51,3 +51,6 @@ yarn-error.log*
 /data/consultations.json
 /data/responses.json
 /data/index.json
+
+# git worktrees for isolated agent work
+/.claude/worktrees/

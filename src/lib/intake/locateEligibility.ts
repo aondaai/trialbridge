@@ -33,9 +33,16 @@ const START_RE =
 /** The exclusion heading (used to know we've captured both halves). */
 const EXCLUSION_RE = /(?:^|\n)[ \t>*#\-]*(?:key\s+)?exclusion\s+criteria\b/i;
 
-/** Section titles that mean "eligibility is over" — cut the capture here. */
+/**
+ * Section titles that mean "eligibility is over" — cut the capture here.
+ * Guarded so an EXCLUSION bullet that merely starts with one of these words
+ * (e.g. "- Treatment with any investigational agent within 28 days") is NOT
+ * mistaken for the next section: the line must NOT begin with a bullet marker,
+ * and the heading text must be short (≤24 trailing chars before the newline) —
+ * a real heading like "Study Design", not a full sentence.
+ */
 const SECTION_END_RE =
-  /\n[ \t]*(?:\d+(?:\.\d+)*\.?\s+)?(study\s+design|trial\s+design|treatments?|interventions?|objectives?|endpoints?|outcome\s+measures?|statistical|sample\s+size|assessments?|schedule\s+of|study\s+procedures?|discontinuation|withdrawal|references?|appendix|investigational\s+plan|dosing|randomi[sz]ation)\b/i;
+  /\n[ \t]*(?:\d+(?:\.\d+)*\.?\s+)?(?:study\s+design|trial\s+design|treatment\s+plan|interventions?|objectives?|endpoints?|outcome\s+measures?|statistical|sample\s+size|assessments?|schedule\s+of|study\s+procedures?|discontinuation|withdrawal|references?|appendix|investigational\s+plan|dosing\s+and\s+administration|randomi[sz]ation)\b[^\n]{0,24}\n/i;
 
 /** Deterministic, offline eligibility locator. */
 export function locateEligibilityHeuristic(fullText: string): LocatedEligibility {
