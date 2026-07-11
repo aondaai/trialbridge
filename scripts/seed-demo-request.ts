@@ -7,11 +7,10 @@
  */
 
 import { prisma } from "../src/lib/db";
-import { loadSite } from "../src/lib/data/sites";
 import { CANONICAL_SECTIONS } from "../src/lib/feasibility-autofill/canonicalTemplate";
 import { parseFormText } from "../src/lib/feasibility-autofill/ingest";
-import { resolveCohort, toCohortPreview } from "../src/lib/feasibility-autofill/resolvers/cohort";
-import { orchestrateAutofill, type OrchestratorDeps } from "../src/lib/feasibility-autofill/mcp/orchestrator";
+import { orchestrateAutofill } from "../src/lib/feasibility-autofill/mcp/orchestrator";
+import { buildInProcessDeps } from "../src/lib/feasibility-autofill/inProcessDeps";
 import { persistAutofill } from "../src/lib/feasibility-autofill/persist";
 import type { Criterion, Patient } from "../src/lib/matcher/types";
 
@@ -58,28 +57,7 @@ async function main() {
   const text = CANONICAL_SECTIONS.map((s) => `${s.idx}. ${s.name}\n${s.content.split(",")[0]}?`).join("\n\n");
   const fields = parseFormText(text).fields;
 
-  const deps: OrchestratorDeps = {
-    loadProfile: async (siteId) => {
-      const p = await prisma.institutionProfile.findFirst({ where: { siteId }, orderBy: { version: "desc" } });
-      return p ? { legalName: p.legalName, address: p.address, email: p.email, phone: p.phone, website: p.website, anonymizationLevel: p.anonymizationLevel, lgpdBasis: p.lgpdBasis, ethicsCommittee: p.ethicsCommittee, contractingDaysEst: p.contractingDaysEst, acceptsEsignature: p.acceptsEsignature, materials: p.materials } : null;
-    },
-    loadCapability: async (siteId, concept) => {
-      const r = await prisma.capabilityCatalog.findFirst({ where: { siteId, conceptId: concept }, orderBy: { lastValidatedAt: "desc" } });
-      return r ? { conceptId: r.conceptId, available: r.available, identificationMethod: r.identificationMethod, sourceField: r.sourceField, completenessValue: r.completenessValue, completenessQual: r.completenessQual, notes: r.notes } : null;
-    },
-    cohortPreview: async (siteId, criteria) => {
-      const ds = await loadSite(siteId);
-      if (!ds) throw new Error(`unknown site ${siteId}`);
-      return toCohortPreview(resolveCohort(ds.patients, criteria, ASOF));
-    },
-    loadPriors: async (siteId) => {
-      const rows = await prisma.priorFormAnswer.findMany({ where: { siteId } });
-      return rows.map((r) => ({ id: r.id, section: r.section, label: r.label, conceptId: r.conceptId, answerText: r.answerText }));
-    },
-    asOf: ASOF,
-  };
-
-  const result = await orchestrateAutofill({ siteId: SITE, fields, criteria: CRITERIA }, deps);
+  const result = await orchestrateAutofill({ siteId: SITE, fields, criteria: CRITERIA }, buildInProcessDeps(ASOF));
   await persistAutofill(REQ_ID, SITE, result);
 
   console.log(`[seed-demo-request] ok — request ${REQ_ID}: ${result.answers.length} answers, cohort n=${result.cohort?.n ?? "n/a"}, ${PATIENTS.length} demo patients`);

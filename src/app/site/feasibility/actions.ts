@@ -16,6 +16,11 @@ import {
 } from "@/lib/feasibility-autofill/review";
 import { makeAuditEntry } from "@/lib/feasibility-autofill/audit";
 import type { Archetype } from "@/lib/feasibility-autofill/fixtures/questionBankLabels";
+import { orchestrateAutofill } from "@/lib/feasibility-autofill/mcp/orchestrator";
+import { buildInProcessDeps } from "@/lib/feasibility-autofill/inProcessDeps";
+import { persistAnswers } from "@/lib/feasibility-autofill/persist";
+import type { CellType, FormFieldDraft } from "@/lib/feasibility-autofill/ingest";
+import type { Criterion } from "@/lib/matcher/types";
 
 const ACTOR = "camila"; // the site coordinator (a human — required for approving D)
 const NOW = () => new Date().toISOString();
@@ -43,6 +48,23 @@ async function writeAudit(entityId: string, action: string, siteId: string, befo
     before: before as Record<string, unknown>, after: after as Record<string, unknown>, at: NOW(),
   });
   await prisma.auditLog.create({ data: { siteId: e.siteId, entity: e.entity, entityId: e.entityId, action: e.action, actor: e.actor, diff: e.diff } });
+}
+
+/** US-2: run the orchestrator on a received request (in-process deps, no key) and persist answers. */
+export async function runAutofill(formData: FormData): Promise<void> {
+  const requestId = String(formData.get("requestId"));
+  const request = await prisma.feasibilityRequest.findUnique({ where: { id: requestId } });
+  if (!request) return;
+  const fields = await prisma.formField.findMany({ where: { requestId }, orderBy: { orderIdx: "asc" } });
+  const drafts: FormFieldDraft[] = fields.map((f) => ({
+    section: f.section, label: f.label, cellType: f.cellType as CellType, archetypeHint: f.archetype as Archetype, orderIdx: f.orderIdx,
+  }));
+  const criteria = safeParse(request.criteria) as Criterion[] | null;
+  const deps = buildInProcessDeps(NOW());
+  const result = await orchestrateAutofill({ siteId: request.siteId, fields: drafts, criteria: criteria ?? [] }, deps);
+  await persistAnswers(requestId, request.siteId, result);
+  await prisma.feasibilityRequest.update({ where: { id: requestId }, data: { status: "filled" } });
+  revalidatePath("/site/feasibility");
 }
 
 export async function approveField(formData: FormData): Promise<void> {

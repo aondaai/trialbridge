@@ -28,35 +28,56 @@ export interface RenderAnswer {
   critique?: { grounded: boolean; issues: string[] };
 }
 
-/** Persist an orchestrator result as this request's FormFields + FieldAnswers (idempotent). */
-export async function persistAutofill(requestId: string, siteId: string, result: AutofillResult): Promise<void> {
-  // Replace prior fields for the request so a re-run is clean.
+/** A parsed-but-unanswered field, as produced by intake (ingest). */
+export interface IntakeFieldInput {
+  section: string;
+  label: string;
+  cellType: string;
+  archetype: Archetype;
+  conceptId?: string | null;
+  orderIdx: number;
+}
+
+/** US-1: persist a request's parsed fields (no answers yet). Replaces any prior fields. */
+export async function persistIntakeFields(requestId: string, siteId: string, fields: IntakeFieldInput[]): Promise<void> {
   const prior = await prisma.formField.findMany({ where: { requestId }, select: { id: true } });
   const priorIds = prior.map((f) => f.id);
   if (priorIds.length) {
     await prisma.fieldAnswer.deleteMany({ where: { fieldId: { in: priorIds } } });
     await prisma.formField.deleteMany({ where: { requestId } });
   }
+  for (const f of fields) {
+    await prisma.formField.create({
+      data: { requestId, siteId, section: f.section, label: f.label, cellType: f.cellType, archetype: f.archetype, conceptId: f.conceptId ?? null, orderIdx: f.orderIdx },
+    });
+  }
+}
+
+/**
+ * US-2: attach an orchestrator run's answers to a request's fields (matched by orderIdx). Creates
+ * a field if one doesn't exist for that index (so the seed can call persistAutofill directly), and
+ * updates the field's classified archetype/concept + the D draft/critique in sourceRef.
+ */
+export async function persistAnswers(requestId: string, siteId: string, result: AutofillResult): Promise<void> {
+  const existing = await prisma.formField.findMany({ where: { requestId } });
+  const byIdx = new Map(existing.map((f) => [f.orderIdx, f]));
 
   for (const a of result.answers) {
+    const idx = Number(a.fieldId) || 0;
     const dq = computeDQ({ archetype: a.archetype, value: a.metric.value, confidence: a.metric.confidence });
     const sourceRef = JSON.stringify({
       narrativeDraft: a.narrative?.draft ?? null,
       critique: a.critique ? { grounded: a.critique.grounded, issues: a.critique.issues } : null,
     });
-    const field = await prisma.formField.create({
-      data: {
-        requestId,
-        siteId,
-        section: a.section,
-        label: a.label,
-        cellType: "text",
-        archetype: a.archetype,
-        conceptId: a.concept ?? null,
-        sourceRef,
-        orderIdx: Number(a.fieldId) || 0,
-      },
-    });
+    let field = byIdx.get(idx);
+    if (!field) {
+      field = await prisma.formField.create({
+        data: { requestId, siteId, section: a.section, label: a.label, cellType: "text", archetype: a.archetype, conceptId: a.concept ?? null, sourceRef, orderIdx: idx },
+      });
+    } else {
+      await prisma.formField.update({ where: { id: field.id }, data: { archetype: a.archetype, conceptId: a.concept ?? null, sourceRef } });
+      await prisma.fieldAnswer.deleteMany({ where: { fieldId: field.id } });
+    }
     await prisma.fieldAnswer.create({
       data: {
         fieldId: field.id,
@@ -69,6 +90,11 @@ export async function persistAutofill(requestId: string, siteId: string, result:
       },
     });
   }
+}
+
+/** Convenience: persist a full run (fields + answers) — used by the seed and the autofill action. */
+export async function persistAutofill(requestId: string, siteId: string, result: AutofillResult): Promise<void> {
+  await persistAnswers(requestId, siteId, result);
 }
 
 /** Load a request's persisted answers into a render-ready shape, ordered by field. */
