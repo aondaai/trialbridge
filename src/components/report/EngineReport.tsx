@@ -56,6 +56,18 @@ const DIM_LABEL: Record<string, string> = {
   logistics: "Operational friction / logistics",
 };
 
+const COMP_LABEL: Record<string, string> = {
+  eligible_pool: "Eligible pool",
+  predicted_enrollment: "Predicted enrollment",
+  enrollment_history: "Enrollment history",
+  competition: "Local competition",
+  infrastructure_fit: "Infrastructure fit",
+  kol_strength: "KOL strength",
+  startup_fpi: "Startup / FPI",
+  data_quality: "Data quality",
+  staff_capacity: "Staff capacity",
+};
+
 function locationOf(s: { city?: string | null; uf?: string | null }): string {
   return [s.city, s.uf].filter(Boolean).join(", ");
 }
@@ -188,6 +200,9 @@ export function EngineReport({ report }: { report: Report }) {
 
       {/* ── §5 Site rankings ──────────────────────────────────── */}
       <RankingsSection sites={siteRankings} />
+
+      {/* ── §6 Site deep-dive ─────────────────────────────────── */}
+      <DeepDiveSection sites={report.siteDeepDives} />
 
       {/* ── §7 KOL map ────────────────────────────────────────── */}
       <KolSection report={report} />
@@ -397,6 +412,139 @@ function ConfidencePill({ conf }: { conf: "high" | "medium" | "low" }) {
     low: { bg: "var(--cl-surface-2)", fg: "var(--cl-text-muted)" },
   }[conf];
   return <span style={{ ...mono, fontSize: 11, padding: "2px 8px", borderRadius: 5, background: map.bg, color: map.fg }}>{conf}</span>;
+}
+
+// ── §6 Site deep-dive ────────────────────────────────────────────────────────────
+const DEEPDIVE_AXES: { key: string; label: string }[] = [
+  { key: "eligible_pool", label: "Pool" },
+  { key: "predicted_enrollment", label: "Enroll" },
+  { key: "enrollment_history", label: "History" },
+  { key: "competition", label: "Compet." },
+  { key: "infrastructure_fit", label: "Infra" },
+  { key: "kol_strength", label: "KOL" },
+  { key: "startup_fpi", label: "Startup" },
+  { key: "data_quality", label: "Data" },
+  { key: "staff_capacity", label: "Staff" },
+];
+
+/** Nine-axis radar of a site's component scores (design template §6). Pure SVG. */
+function SiteRadar({ radar }: { radar: Record<string, number> }) {
+  const cx = 170, cy = 138, R = 100, n = DEEPDIVE_AXES.length;
+  const pt = (i: number, r: number): [number, number] => {
+    const ang = (-90 + (360 / n) * i) * (Math.PI / 180);
+    return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
+  };
+  const poly = DEEPDIVE_AXES.map((a, i) => {
+    const v = Math.max(0, Math.min(100, radar[a.key] ?? 0));
+    const [x, y] = pt(i, (v / 100) * R);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  return (
+    <svg viewBox="0 0 340 290" style={{ width: "100%", height: "auto" }} role="img" aria-label="Nine-component site score radar">
+      {[25, 50, 75, 100].map((r) => (
+        <circle key={r} cx={cx} cy={cy} r={r} fill="none" stroke="var(--cl-border)" strokeDasharray="3 3" />
+      ))}
+      {DEEPDIVE_AXES.map((a, i) => {
+        const [x, y] = pt(i, R);
+        return <line key={a.key} x1={cx} y1={cy} x2={x} y2={y} stroke="var(--cl-border)" />;
+      })}
+      <polygon points={poly} fill="rgba(217,119,87,0.22)" stroke="var(--cl-accent)" strokeWidth={1.5} />
+      {DEEPDIVE_AXES.map((a, i) => {
+        const [lx, ly] = pt(i, R + 20);
+        const anchor = Math.abs(lx - cx) < 8 ? "middle" : lx > cx ? "start" : "end";
+        return (
+          <text key={a.key} x={lx.toFixed(0)} y={(ly + 3).toFixed(0)} textAnchor={anchor} fontSize={10} fill="var(--cl-text-secondary)">
+            {a.label} {Math.round(radar[a.key] ?? 0)}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
+
+function DeepDiveSection({ sites }: { sites: SiteScore[] }) {
+  if (!sites || sites.length === 0) return null;
+  return (
+    <section style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <SectionHead no="06" kicker="Site layer" title="Site deep-dive"
+        sub="The nine-component breakdown behind the top-ranked sites — the same scores that drive §5, opened up with each component's evidence seal." />
+      {sites.slice(0, 2).map((s, i) => <DeepDiveCard key={s.cnes} site={s} rank={i + 1} />)}
+    </section>
+  );
+}
+
+function DeepDiveCard({ site, rank }: { site: SiteScore; rank: number }) {
+  const weakest = [...site.components].sort((a, b) => a.score0100 - b.score0100)[0];
+  const loc = [site.city, site.uf].filter(Boolean).join(", ");
+  return (
+    <div style={{ ...card, padding: "24px 26px", display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <p style={{ ...eyebrow, margin: "0 0 4px" }}>Rank {rank}</p>
+          <h3 style={{ margin: 0, fontFamily: "var(--cl-font-display)", fontWeight: 500, fontSize: 21 }}>{site.name}</h3>
+          <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--cl-text-secondary)" }}>
+            {loc || "—"}{site.cnes && <span style={{ ...mono, fontSize: 12 }}> · CNES {site.cnes}</span>}
+          </p>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <ConfidencePill conf={site.confidence} />
+          <span style={{ ...mono, fontSize: 26, fontWeight: 700, color: "var(--cl-accent-active)" }}>{Math.round(site.composite * 10) / 10}</span>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 26, alignItems: "flex-start" }}>
+        {/* Radar */}
+        <div style={{ width: 300, maxWidth: "100%" }}>
+          <SiteRadar radar={site.radar} />
+          <p style={{ margin: "6px 0 0", fontSize: 11.5, color: "var(--cl-text-muted)", lineHeight: 1.5 }}>
+            Weakest component: <strong style={{ color: "var(--cl-text)" }}>{COMP_LABEL[weakest.key] ?? weakest.key}</strong> ({Math.round(weakest.score0100)}/100).
+          </p>
+        </div>
+
+        {/* Component breakdown + headline metrics */}
+        <div style={{ flex: 1, minWidth: 300, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div>
+            <p style={{ ...eyebrow, margin: "0 0 10px" }}>Component scores</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              {site.components.map((c) => (
+                <div key={c.key} style={{ display: "grid", gridTemplateColumns: "1fr 34px 90px", gap: 10, alignItems: "center" }}>
+                  <span style={{ fontSize: 12.5 }}>{COMP_LABEL[c.key] ?? c.key}</span>
+                  <span style={{ ...mono, fontSize: 12.5, textAlign: "right", fontWeight: 600 }}>{Math.round(c.score0100)}</span>
+                  <div style={{ height: 6, borderRadius: 999, background: "var(--cl-surface-2)", overflow: "hidden" }}>
+                    <div style={{ width: `${Math.max(0, Math.min(100, c.score0100))}%`, height: "100%", borderRadius: 999, background: scoreColor(c.score0100) }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p style={{ ...eyebrow, margin: "0 0 10px" }}>Headline metrics</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <LabeledSeal label="Enrollment" metric={site.headlineMetrics.enrollmentRateMetric} />
+              <LabeledSeal label="Screen-fail" metric={site.headlineMetrics.screenFailMetric} />
+              <LabeledSeal label="Retention" metric={site.headlineMetrics.retentionMetric} />
+            </div>
+          </div>
+          {site.hardFlags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {site.hardFlags.map((f) => (
+                <span key={f.key} title={f.detailMetric?.note ?? f.label} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 6, background: "var(--cl-danger-subtle)", color: "var(--cl-danger)" }}>{f.label}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LabeledSeal({ label, metric }: { label: string; metric: Metric }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11.5 }}>
+      <span style={{ color: "var(--cl-text-muted)" }}>{label}</span>
+      <SealPill metric={metric} />
+    </span>
+  );
 }
 
 function KolSection({ report }: { report: Report }) {
