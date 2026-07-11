@@ -2,7 +2,7 @@
   "name": "trialbridge",
   "version": "0.1.0",
   "private": true,
-  "description": "TrialBridge (Elegivel) — two-sided clinical-trial site-feasibility tool. Deterministic matcher, protocol softening, counts-not-rows aggregation.",
+  "description": "TrialBridge (Elegivel) \u2014 two-sided clinical-trial site-feasibility tool. Deterministic matcher, protocol softening, counts-not-rows aggregation.",
   "comment": "Scripts call bins by explicit relative path: the project path contains a colon, which corrupts npm's PATH injection and breaks bare-name lookup.",
   "scripts": {
     "dev": "./node_modules/.bin/next dev",
@@ -20,7 +20,10 @@
     "build-latam-map-data": "./node_modules/.bin/tsx scripts/build-latam-map-data.ts",
     "smoke": "./node_modules/.bin/tsx scripts/smoke.ts",
     "db:push": "./node_modules/.bin/prisma db push",
-    "postinstall": "./node_modules/.bin/prisma generate"
+    "postinstall": "./node_modules/.bin/prisma generate",
+    "enrich-kols": "./node_modules/.bin/tsx scripts/enrich-kols.ts",
+    "import-sites": "./node_modules/.bin/tsx scripts/import-sites.ts",
+    "enrich-sites": "./node_modules/.bin/tsx scripts/enrich-sites.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

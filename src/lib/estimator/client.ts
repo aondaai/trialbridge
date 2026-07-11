@@ -42,11 +42,22 @@ function estimatorHeaders(): Record<string, string> {
 }
 
 export interface RegionEstimate {
+  /** 2-letter UF code (SP, MG, …) — the estimator reports at state granularity. */
   region: string;
   estimatedN: number;
   ciLo: number;
   ciHi: number;
   baseCohort: number;
+  /** Eligible patients arriving per month in this UF (incidence × eligibility), when reported. */
+  monthlyEligible: number | null;
+}
+
+/** A protocol-softening lever measured over the real base cohort. */
+export interface EstimatorBottleneck {
+  criterionId: string;
+  text: string;
+  /** Additional base-cohort patients admitted if this criterion is relaxed. */
+  gain: number;
 }
 
 export interface NationalEstimate {
@@ -63,6 +74,10 @@ export interface NationalEstimate {
   sitesWithData: number;
   /** Which DataSUS base produced this (for the honest UI label). */
   dataSource: string;
+  /** Dataset date of the DataSUS base, when the estimator reports it. */
+  asOf: string | null;
+  /** Criterion-relaxation gains over the real base cohort (softening levers). */
+  bottlenecks: EstimatorBottleneck[];
 }
 
 interface RawEstimate {
@@ -73,13 +88,19 @@ interface RawEstimate {
   national_base_cohort: number;
   by_region?: {
     region: string;
-    estimated_n: number;
+    // Materialized bases report `est_eligible`; older builds reported `estimated_n`.
+    est_eligible?: number;
+    estimated_n?: number;
     ci_lo: number;
     ci_hi: number;
     base_cohort: number;
   }[];
   national_months_to_fill?: number | null;
   observed_by_site?: { site: string; n_patients: number; observed_n: number }[];
+  bottlenecks?: { criterion_id: string; text: string; gain: number }[];
+  fill_speed_by_region?: { region: string; monthly_eligible: number }[];
+  datasus_source?: string;
+  datasus_as_of?: string;
 }
 
 async function withTimeout(url: string, init?: RequestInit): Promise<Response> {
@@ -108,6 +129,9 @@ export async function fetchNationalEstimate(): Promise<NationalEstimate | null> 
     if (!res.ok) return null;
     const d = (await res.json()) as RawEstimate;
     const observed = d.observed_by_site ?? [];
+    const monthlyByUf = new Map(
+      (d.fill_speed_by_region ?? []).map((r) => [r.region, r.monthly_eligible]),
+    );
     return {
       protocolId: d.protocol_id,
       estimatedN: d.national_estimated_n,
@@ -116,15 +140,24 @@ export async function fetchNationalEstimate(): Promise<NationalEstimate | null> 
       baseCohort: d.national_base_cohort,
       byRegion: (d.by_region ?? []).map((r) => ({
         region: r.region,
-        estimatedN: r.estimated_n,
+        estimatedN: r.est_eligible ?? r.estimated_n ?? 0,
         ciLo: r.ci_lo,
         ciHi: r.ci_hi,
         baseCohort: r.base_cohort,
+        monthlyEligible: monthlyByUf.get(r.region) ?? null,
       })),
       monthsToFill: d.national_months_to_fill ?? null,
       observedTotal: observed.reduce((s, o) => s + o.observed_n, 0),
       sitesWithData: observed.length,
-      dataSource: process.env.TB_DATASUS_LABEL ?? "DataSUS/OMOP (omop_sample)",
+      // Prefer the service's own label (the materialized bases report which base
+      // actually answered) over the deploy-time env hint.
+      dataSource: d.datasus_source ?? process.env.TB_DATASUS_LABEL ?? "DataSUS/OMOP (omop_sample)",
+      asOf: d.datasus_as_of ?? null,
+      bottlenecks: (d.bottlenecks ?? []).map((b) => ({
+        criterionId: b.criterion_id,
+        text: b.text,
+        gain: b.gain,
+      })),
     };
   } catch {
     return null;
