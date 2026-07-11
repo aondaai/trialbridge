@@ -23,6 +23,12 @@ import type { EvaluatedSite } from "@/lib/service";
 import { estimateFeasibility } from "@/lib/feasibility";
 import { rankBottlenecks } from "@/lib/matcher/soften";
 import type { Criterion } from "@/lib/matcher/types";
+import {
+  computeSupplyDemand,
+  toSupplyDemandSummary,
+  BR_MACROREGION_POPULATION,
+  RegionSDInput,
+} from "@/lib/supplydemand/ratios";
 
 export interface BuildReportOptions {
   runId?: string;
@@ -86,6 +92,12 @@ export function buildReport(
     scoreSite(toSiteInput(site, feas.enrollableEstimate / months, profile)),
   );
 
+  // §4 Supply vs. demand, by macro-region (eligible pool from the funnel; competing
+  // trials are a MODELED placeholder until CT.gov/ReBEC is wired — R9).
+  const sdInputs = buildRegionSDInputs(sites);
+  const supplyDemand =
+    sdInputs.length > 0 ? toSupplyDemandSummary(computeSupplyDemand(sdInputs, { asOf })) : undefined;
+
   return assemble({
     context: {
       runId: opts.runId ?? "run_preview",
@@ -100,6 +112,7 @@ export function buildReport(
     softening,
     country,
     sites: siteScores,
+    supplyDemand,
     assumptions: [
       "Site capture rate over the eligible pool (conservative screen-to-enrol default).",
       "Competition, CNES infrastructure, KOL and startup signals are MODELED placeholders until the CT.gov / CNES / PubMed connectors are wired (R7–R9) — sites carry LOW confidence accordingly.",
@@ -174,6 +187,26 @@ function buildSoftening(
       },
     ],
   };
+}
+
+/**
+ * Aggregate evaluated sites into per-macro-region supply/demand inputs. Eligible
+ * pool is real (summed from the funnel); population is IBGE; competing trials is a
+ * MODELED placeholder (flat per region) until the CT.gov/ReBEC connector lands (R9).
+ */
+function buildRegionSDInputs(sites: EvaluatedSite[]): RegionSDInput[] {
+  const byRegion = new Map<string, number>();
+  for (const s of sites) {
+    const pool = s.counts.definite + s.counts.possible;
+    byRegion.set(s.meta.region, (byRegion.get(s.meta.region) ?? 0) + pool);
+  }
+  return Array.from(byRegion.entries()).map(([region, pool]) => ({
+    regionCode: region,
+    regionName: region,
+    eligiblePool: pool,
+    competingTrials: 4, // modeled placeholder (competingTrialsProvenance defaults to "modeled")
+    population: BR_MACROREGION_POPULATION[region] ?? 20_000_000,
+  }));
 }
 
 /** Map an existing EvaluatedSite → the engine's SiteInput (honest modeled placeholders). */
