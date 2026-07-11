@@ -48,8 +48,8 @@ export function buildSearchRequest(objective: string, opts: SearchOptions = {}) 
   const body: Record<string, unknown> = {
     objective,
     search_queries: opts.searchQueries ?? [objective],
+    processor: opts.processor ?? "pro", // max-power search tier by default
   };
-  if (opts.processor) body.processor = opts.processor;
   if (opts.maxResults != null) body.max_results = opts.maxResults;
   if (opts.maxCharsPerResult != null) body.max_chars_per_result = opts.maxCharsPerResult;
   return body;

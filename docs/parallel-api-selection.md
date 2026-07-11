@@ -19,7 +19,8 @@ Task processor tiers (cost/quality/latency): Enrichment `lite`(~2 fields) · `ba
 
 | Need | Best API | Why |
 |---|---|---|
-| **KOL enrichment** — pubs, society roles, guideline authorship per physician (R8) | **Task API · Enrichment · `base`** | 3 structured fields with citations. `base` (~5 fields) is the right tier — `core` was 5× slower for no benefit. **Precompute** it (below), don't call it in a render. |
+| **KOL enrichment** — pubs, society roles, guideline authorship per physician (R8) | **Task API · Enrichment · `ultra-fast`** | Max power: ultra = advanced multi-source deep research (most complete + best-verified), in its speed-optimized `-fast` variant (~1–10 min vs 5–25 min). **Precomputed** off the request path, so latency isn't user-facing. (`MAX_PROCESSOR` in `parallel/client.ts`.) |
+| **Site infra enrichment** — CACON/UNACON, PET-CT, linac, MRI, ICU, GCP pharmacy (Part B) | **Task API · Enrichment · `ultra-fast`** | Same — deep, cited equipment/accreditation research, precomputed. |
 | **Batch-enrich many KOLs/sites** | **Task Group API** | Purpose-built for concurrent entity enrichment (replaces our hand-rolled `pooledMap` at scale); cookbook's "enqueue → fetch → merge with retry". |
 | **Fast grounding inside a request** — a quick fact, a site's page, "recent news on X" | **Search API** (added, `src/lib/parallel/search.ts`) | Seconds, synchronous, cited excerpts. The right tool whenever we must resolve *during* a page render. |
 | **Read one known page** (a site's site, a guideline PDF) | **Extract API** | Handles JS-rendered pages + PDFs → markdown. Natural follow-up to a Search hit. |

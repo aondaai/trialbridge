@@ -13,6 +13,7 @@ describe("Search API — request/response (pure)", () => {
     expect(buildSearchRequest("KOL breast cancer Brazil")).toEqual({
       objective: "KOL breast cancer Brazil",
       search_queries: ["KOL breast cancer Brazil"],
+      processor: "pro", // max-power default
     });
     expect(buildSearchRequest("x", { searchQueries: ["a", "b"], processor: "pro", maxResults: 5, maxCharsPerResult: 800 })).toEqual({
       objective: "x",

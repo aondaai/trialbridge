@@ -13,7 +13,7 @@
 
 import { Confidence, SourceRef, rollUpConfidence } from "@/lib/metric";
 import { deepSearchMany } from "@/lib/parallel/deepSearch";
-import { parallelEnabled, TaskResult, ParallelConfidence, Processor } from "@/lib/parallel/client";
+import { parallelEnabled, TaskResult, ParallelConfidence, Processor, MAX_PROCESSOR } from "@/lib/parallel/client";
 
 /** The equipment/accreditation fields we research per site. */
 export const SITE_INFRA_SCHEMA = {
@@ -103,10 +103,12 @@ export async function enrichSites(
 ): Promise<Map<string, SiteInfraEnrichment>> {
   if (!parallelEnabled() || subjects.length === 0) return new Map();
   const results = await deepSearchMany(subjects.map(infraInput), SITE_INFRA_SCHEMA, {
-    processor: opts.processor ?? "base",
+    // Max power: ultra-fast deep research → the most complete, best-verified equipment /
+    // accreditation findings (with citations). Precomputed, off the request path.
+    processor: opts.processor ?? MAX_PROCESSOR,
     concurrency: opts.concurrency ?? 4,
-    pollMs: 3000,
-    maxPolls: 30,
+    pollMs: 5000,
+    maxPolls: 150,
   });
   const map = new Map<string, SiteInfraEnrichment>();
   subjects.forEach((s, i) => map.set(s.cnes, parseInfra(s.cnes, results[i])));

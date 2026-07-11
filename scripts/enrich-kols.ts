@@ -42,7 +42,7 @@ async function main() {
 
   const enrichments = await enrichInvestigators(
     inputs.map((k) => ({ name: k.name, affiliation: k.affiliation, therapeuticArea: condition })),
-    { concurrency: 4, processor: "base" },
+    { concurrency: 4 }, // max-power processor (ultra-fast) is the default
   );
 
   let ok = 0;
