@@ -21,6 +21,7 @@ import { buildInProcessDeps } from "@/lib/feasibility-autofill/inProcessDeps";
 import { persistAnswers } from "@/lib/feasibility-autofill/persist";
 import type { CellType, FormFieldDraft } from "@/lib/feasibility-autofill/ingest";
 import type { Criterion } from "@/lib/matcher/types";
+import { loadLearnedSynonyms, persistLearnedSynonym, persistApprovedNarrative } from "@/lib/feasibility-autofill/learnPersist";
 
 const ACTOR = "camila"; // the site coordinator (a human — required for approving D)
 const NOW = () => new Date().toISOString();
@@ -60,8 +61,9 @@ export async function runAutofill(formData: FormData): Promise<void> {
     section: f.section, label: f.label, cellType: f.cellType as CellType, archetypeHint: f.archetype as Archetype, orderIdx: f.orderIdx,
   }));
   const criteria = safeParse(request.criteria) as Criterion[] | null;
+  const learnedSynonyms = await loadLearnedSynonyms(); // US-6: the KB improves each run
   const deps = buildInProcessDeps(NOW());
-  const result = await orchestrateAutofill({ siteId: request.siteId, fields: drafts, criteria: criteria ?? [] }, deps);
+  const result = await orchestrateAutofill({ siteId: request.siteId, fields: drafts, criteria: criteria ?? [], learnedSynonyms }, deps);
   await persistAnswers(requestId, request.siteId, result);
   await prisma.feasibilityRequest.update({ where: { id: requestId }, data: { status: "filled" } });
   revalidatePath("/site/feasibility");
@@ -74,6 +76,29 @@ export async function approveField(formData: FormData): Promise<void> {
   const next = approveAnswer(loaded.ra, ACTOR); // throws if D + non-human — never here (ACTOR is human)
   await prisma.fieldAnswer.update({ where: { id: faId }, data: { status: next.status, reviewerId: next.reviewerId, version: next.version } });
   await writeAudit(faId, "approve", loaded.fa.siteId, { status: loaded.ra.status }, { status: next.status });
+
+  // US-6 learn: an APPROVED D answer becomes a prior-form exemplar for future drafts.
+  if (loaded.ff.archetype === "D") {
+    const ref = safeParse(loaded.ff.sourceRef ?? "null") as { narrativeDraft?: string | null } | null;
+    if (ref?.narrativeDraft) {
+      await persistApprovedNarrative(
+        { siteId: loaded.fa.siteId, section: loaded.ff.section, label: loaded.ff.label, answerText: ref.narrativeDraft, status: "approved" },
+        NOW(),
+      );
+    }
+  }
+  revalidatePath("/site/feasibility");
+}
+
+/** US-6: map an unmapped field to a concept — persists the phrasing as a learned synonym. */
+export async function mapConcept(formData: FormData): Promise<void> {
+  const faId = String(formData.get("fieldId"));
+  const conceptId = String(formData.get("conceptId") || "").trim();
+  const loaded = await toReviewAnswer(faId);
+  if (!loaded || !conceptId) return;
+  await persistLearnedSynonym(conceptId, loaded.ff.label);
+  await prisma.formField.update({ where: { id: loaded.ff.id }, data: { conceptId } });
+  await writeAudit(faId, "map-concept", loaded.fa.siteId, { conceptId: loaded.ff.conceptId }, { conceptId });
   revalidatePath("/site/feasibility");
 }
 

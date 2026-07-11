@@ -63,16 +63,19 @@ function escapeRe(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+type Matcher = { concept: string; len: number; test: (n: string) => boolean };
+
 /**
- * Precompiled synonym matchers. A multi-word synonym matches as a substring; a single
- * token matches on WORD BOUNDARIES, so a 2–3 letter synonym ("mi", "dii", "ic") can't
+ * Build synonym matchers from a concept→terms map. A multi-word synonym matches as a substring;
+ * a single token matches on WORD BOUNDARIES, so a 2–3 letter synonym ("mi", "dii", "ic") can't
  * shadow-match inside a longer word ("genômico"). Longer synonyms win ties (more specific).
  */
-const SYNONYM_MATCHERS: Array<{ concept: string; len: number; test: (n: string) => boolean }> = (() => {
-  const out: Array<{ concept: string; len: number; test: (n: string) => boolean }> = [];
-  for (const [concept, syns] of Object.entries(CONCEPT_SYNONYMS)) {
+function buildMatchers(map: Record<string, string[]>): Matcher[] {
+  const out: Matcher[] = [];
+  for (const [concept, syns] of Object.entries(map)) {
     for (const s of syns) {
       const norm = normalize(s);
+      if (!norm) continue;
       if (norm.includes(" ")) {
         out.push({ concept, len: norm.length, test: (n) => n.includes(norm) });
       } else {
@@ -82,7 +85,10 @@ const SYNONYM_MATCHERS: Array<{ concept: string; len: number; test: (n: string) 
     }
   }
   return out.sort((a, b) => b.len - a.len); // longest first
-})();
+}
+
+/** The built-in matchers (seed + lexicon). Learned synonyms (US-6) merge on top per call. */
+const SYNONYM_MATCHERS: Matcher[] = buildMatchers(CONCEPT_SYNONYMS);
 
 /** Vocabulary code patterns → concept, tried on the raw label (rung 2). */
 const CODE_PATTERNS: Array<{ re: RegExp; concept: string }> = [
@@ -96,9 +102,10 @@ const CODE_PATTERNS: Array<{ re: RegExp; concept: string }> = [
 const LOINC_RE = /\b\d{4,5}-\d\b/;
 const LAB_CONTEXT = /\bloinc\b|\blab|\bexame|colesterol|\bldl\b|\bhdl\b|hba1c|\bpcr\b|resultado/;
 
-/** Rung 1 — synonym hit; longest (most specific) synonym wins (matchers are pre-sorted). */
-function synonymMatch(label: string): string | null {
+/** Rung 1 — synonym hit; longest (most specific) synonym wins. Learned synonyms are tried first. */
+function synonymMatch(label: string, learned?: Matcher[]): string | null {
   const n = normalize(label);
+  if (learned) for (const m of learned) if (m.test(n)) return m.concept;
   for (const m of SYNONYM_MATCHERS) if (m.test(n)) return m.concept;
   return null;
 }
@@ -159,8 +166,9 @@ function classifyArchetype(input: FieldInput, concept: string | null): Archetype
  * Classify a single field (deterministic rungs 1–2 + section rules). The Claude
  * shortlist rung is applied by `classifyWithShortlist`, keeping this path pure/offline.
  */
-export function classifyField(input: FieldInput): Classification {
-  const synonym = synonymMatch(input.label);
+export function classifyField(input: FieldInput, learnedSynonyms?: Record<string, string[]>): Classification {
+  const learned = learnedSynonyms ? buildMatchers(learnedSynonyms) : undefined;
+  const synonym = synonymMatch(input.label, learned);
   const concept = synonym ?? codeMatch(input.label);
   const method: ClassifyMethod = synonym ? "synonym" : concept ? "code" : "section";
   const archetype = classifyArchetype(input, concept);

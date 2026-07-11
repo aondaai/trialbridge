@@ -48,6 +48,8 @@ export interface AutofillRequest {
   fields: FormFieldDraft[];
   /** The parsed inclusion/exclusion criteria (drives the single C cohort count). */
   criteria: Criterion[];
+  /** US-6: learned concept→synonyms merged into the classifier (from the KB). */
+  learnedSynonyms?: Record<string, string[]>;
 }
 
 /** Injected dependencies — the MCA agent wires these to real MCP/DB/Claude. */
@@ -96,7 +98,7 @@ export async function orchestrateAutofill(
 
   // Compute the C cohort once, only if some field routes to C. A failing cohort tool (site
   // offline, no patient DB) degrades C to "unavailable" — it must not sink the whole form.
-  const classified = request.fields.map((f) => ({ field: f, cls: classifyField({ section: f.section, label: f.label, cellType: f.cellType }) }));
+  const classified = request.fields.map((f) => ({ field: f, cls: classifyField({ section: f.section, label: f.label, cellType: f.cellType }, request.learnedSynonyms) }));
   const needsCohort = classified.some((c) => c.cls.archetype === "C");
   let cohort: CohortPreview | null = null;
   let cohortError: string | null = null;

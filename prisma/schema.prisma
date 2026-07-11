@@ -276,6 +276,22 @@ model PriorFormAnswer {
   @@index([siteId])
 }
 
+/// Learned concept synonym (US-6) — a human concept mapping persisted so the classifier catches
+/// the phrasing next time. Ontology-global (not site-scoped). Grows the PT-BR synonym layer.
+model ConceptSynonym {
+  id        String   @id @default(cuid())
+  conceptId String
+  /// Normalized (accent-folded, lowercased) term the classifier matches on.
+  term      String
+  lang      String   @default("pt-BR")
+  /// seed | human | form
+  source    String   @default("human")
+  createdAt DateTime @default(now())
+
+  @@unique([conceptId, term])
+  @@index([conceptId])
+}
+
 /// Governance — every mutating action writes an audit row with an actor + diff.
 model AuditLog {
   id       String   @id @default(cuid())
