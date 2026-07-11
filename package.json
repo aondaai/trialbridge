@@ -16,6 +16,7 @@
     "db:seed": "./node_modules/.bin/tsx prisma/seed.ts",
     "db:seed-autofill": "./node_modules/.bin/tsx scripts/seed-autofill.ts",
     "mcp:cohort": "./node_modules/.bin/tsx scripts/mcp-cohort-server.ts",
+    "autofill:run": "./node_modules/.bin/tsx scripts/autofill-run.ts",
     "demo": "./node_modules/.bin/tsx scripts/demo.ts",
     "demo:intake": "./node_modules/.bin/tsx scripts/demo-intake.ts",
     "build-vocab-index": "./node_modules/.bin/tsx scripts/build-vocab-index.ts",

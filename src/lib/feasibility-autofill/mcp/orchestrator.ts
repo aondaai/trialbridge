@@ -90,10 +90,19 @@ export async function orchestrateAutofill(
   const profile = await deps.loadProfile(request.siteId);
   const priors = await deps.loadPriors(request.siteId);
 
-  // Compute the C cohort once, only if some field routes to C.
+  // Compute the C cohort once, only if some field routes to C. A failing cohort tool (site
+  // offline, no patient DB) degrades C to "unavailable" — it must not sink the whole form.
   const classified = request.fields.map((f) => ({ field: f, cls: classifyField({ section: f.section, label: f.label, cellType: f.cellType }) }));
   const needsCohort = classified.some((c) => c.cls.archetype === "C");
-  const cohort = needsCohort ? await deps.cohortPreview(request.siteId, request.criteria) : null;
+  let cohort: CohortPreview | null = null;
+  let cohortError: string | null = null;
+  if (needsCohort) {
+    try {
+      cohort = await deps.cohortPreview(request.siteId, request.criteria);
+    } catch (err) {
+      cohortError = (err as Error).message;
+    }
+  }
 
   const answers: OrchestratedAnswer[] = [];
   for (const { field, cls } of classified) {
@@ -112,7 +121,13 @@ export async function orchestrateAutofill(
       const metric = modeled<number | string | null>("cohort.candidates", cohort?.n ?? null, cohort && !cohort.suppressed ? Confidence.HIGH : Confidence.LOW, {
         unit: "patients",
         asOf,
-        note: cohort ? (cohort.suppressed ? "suppressed <5" : "from cohort.preview (site MCP tool)") : "no cohort",
+        note: cohort
+          ? cohort.suppressed
+            ? "suppressed <5"
+            : "from cohort.preview (site MCP tool)"
+          : cohortError
+            ? `cohort unavailable: ${cohortError}`
+            : "no cohort",
       });
       answers.push({ ...base, metric });
     } else {

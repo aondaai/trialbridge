@@ -8,14 +8,16 @@ const FIELDS: FormFieldDraft[] = [
 ];
 const STUDY: StudyRequest = { fields: FIELDS, criteria: [{ id: "c1", kind: "inclusion", field: "age", operator: "gte", value: 18, rawText: "≥18", confidence: 1 }] };
 
-/** Per-site deps whose cohort count is keyed by site (site-c is suppressed, site-x throws). */
+/** Per-site deps. site-c is suppressed; site-x's profile DB is hard-down (a real site failure). */
 function depsFor(siteId: string): OrchestratorDeps {
   const counts: Record<string, number | "<5"> = { "site-a": 40, "site-b": 12, "site-c": "<5" };
   return {
-    loadProfile: async () => null,
+    loadProfile: async (id) => {
+      if (id === "site-x") throw new Error("site DB offline");
+      return null;
+    },
     loadCapability: async () => null,
     cohortPreview: async (id) => {
-      if (id === "site-x") throw new Error("site MCP tool offline");
       const n = counts[id] ?? 0;
       return { n, suppressed: n === "<5", perCriterionDelta: [] };
     },
@@ -33,7 +35,7 @@ describe("M3 · network fan-out across sites", () => {
     expect(r.summary.suppressedSites).toBe(1);
   });
 
-  it("isolates a failing site — the sweep still completes", async () => {
+  it("isolates a hard-failing site — the sweep still completes", async () => {
     const r = await fanOutAutofill(STUDY, ["site-a", "site-x", "site-b"], depsFor);
     expect(r.summary.succeeded).toBe(2);
     expect(r.summary.failed).toBe(1);
@@ -42,6 +44,21 @@ describe("M3 · network fan-out across sites", () => {
     expect(failed.error).toMatch(/offline/);
     // the healthy sites still counted
     expect(r.summary.totalCandidates).toBe(52);
+  });
+
+  it("a site with an offline COHORT tool still succeeds (A/B/D), just uncounted", async () => {
+    const depsColdCohort = (siteId: string): OrchestratorDeps => ({
+      ...depsFor(siteId),
+      cohortPreview: async () => { throw new Error("cohort MCP tool offline"); },
+    });
+    const r = await fanOutAutofill(STUDY, ["site-a"], depsColdCohort);
+    // The cohort failure degrades C to unavailable but does NOT fail the whole site.
+    expect(r.summary.succeeded).toBe(1);
+    expect(r.summary.failed).toBe(0);
+    expect(r.summary.countedSites).toBe(0); // no precise count contributed
+    const c = r.perSite[0].result!.answers.find((a) => a.archetype === "C")!;
+    expect(c.metric.value).toBeNull();
+    expect(c.metric.note).toMatch(/cohort unavailable/);
   });
 
   it("respects the concurrency cap and still processes all sites", async () => {
