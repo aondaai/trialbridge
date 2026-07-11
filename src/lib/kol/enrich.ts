@@ -11,7 +11,7 @@
 
 import { Confidence, SourceRef, rollUpConfidence } from "@/lib/metric";
 import { deepSearchMany } from "@/lib/parallel/deepSearch";
-import { parallelEnabled, TaskResult, ParallelConfidence, Processor } from "@/lib/parallel/client";
+import { parallelEnabled, TaskResult, ParallelConfidence, Processor, MAX_PROCESSOR } from "@/lib/parallel/client";
 import type { KolInvestigatorInput, KolSignals } from "@/lib/kol/score";
 
 /** JSON Schema the Task API fills for one physician. */
@@ -120,13 +120,13 @@ export async function enrichInvestigators(
   if (misses.length === 0) return map;
 
   const results = await deepSearchMany(misses.map(enrichInput), KOL_OUTPUT_SCHEMA, {
-    // `base` (~5 fields) is the right Enrichment tier for our 3-field KOL schema and is
-    // ~5× faster than `core` (~10 fields) — the difference between a usable synchronous
-    // render and a 2-minute hang. Bump to `core`/`pro` only if we add many more fields.
-    processor: opts.processor ?? "base",
+    // Max power: ultra-fast = the most thorough multi-source deep research (most complete,
+    // best-verified publication/society/guideline findings) at the fastest high-tier
+    // latency. Precomputed, so its ~1–10 min/physician is off the request path.
+    processor: opts.processor ?? MAX_PROCESSOR,
     concurrency: opts.concurrency ?? 4,
-    pollMs: opts.pollMs ?? 3000,
-    maxPolls: opts.maxPolls ?? 30,
+    pollMs: opts.pollMs ?? 5000,
+    maxPolls: opts.maxPolls ?? 150,
   });
   misses.forEach((s, i) => {
     const e = parseEnrichment(s.name, results[i]);

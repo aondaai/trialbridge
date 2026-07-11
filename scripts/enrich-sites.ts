@@ -37,7 +37,7 @@ async function main() {
 
   console.log(`[enrich-sites] researching infra for ${chosen.length} sites…`);
   const subjects = chosen.map((s) => ({ cnes: s.cnes!, name: s.name, city: s.city, uf: s.uf }));
-  const enrichments = await enrichSites(subjects, { concurrency: 4, processor: "base" });
+  const enrichments = await enrichSites(subjects, { concurrency: 4 }); // max-power (ultra-fast) default
 
   let ok = 0;
   for (const s of chosen) {

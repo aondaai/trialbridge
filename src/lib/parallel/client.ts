@@ -18,8 +18,18 @@
  * behaviour is deterministic given the poll budget.
  */
 
-export type Processor = "lite" | "base" | "core" | "pro" | "ultra";
+export type Processor =
+  | "lite" | "base" | "core" | "core2x" | "pro" | "ultra" | "ultra2x" | "ultra4x" | "ultra8x"
+  | "lite-fast" | "base-fast" | "core-fast" | "core2x-fast" | "pro-fast"
+  | "ultra-fast" | "ultra2x-fast" | "ultra4x-fast" | "ultra8x-fast";
 export type ParallelConfidence = "high" | "medium" | "low";
+
+/**
+ * Max-power default: the most thorough tier (ultra = advanced multi-source deep research,
+ * the most complete/verified results) in its speed-optimized "-fast" variant (~1–10 min
+ * vs 5–25 min, ~2–5× faster while maintaining accuracy). Used for all enrichment queries.
+ */
+export const MAX_PROCESSOR: Processor = "ultra-fast";
 
 export interface BasisCitation {
   url?: string | null;
@@ -54,7 +64,9 @@ export interface RunTaskOptions {
   sleepImpl?: (ms: number) => Promise<void>;
 }
 
-const DEFAULTS = { processor: "core" as Processor, pollMs: 2500, maxPolls: 24, createTimeoutMs: 15000 };
+// Poll budget sized for the max tier: ultra-fast runs ~1–10 min, so allow up to ~13 min
+// (5s × 150). Precompute runs off the request path, so the wall-clock is not user-facing.
+const DEFAULTS = { processor: MAX_PROCESSOR, pollMs: 5000, maxPolls: 150, createTimeoutMs: 20000 };
 
 /** Read the Parallel config from the environment. */
 export function parallelConfig(): { apiKey: string | null; baseUrl: string } {
