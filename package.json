@@ -17,6 +17,7 @@
     "demo:intake": "./node_modules/.bin/tsx scripts/demo-intake.ts",
     "build-vocab-index": "./node_modules/.bin/tsx scripts/build-vocab-index.ts",
     "build-concept-map": "./node_modules/.bin/tsx scripts/build-concept-map.ts",
+    "build-latam-map-data": "./node_modules/.bin/tsx scripts/build-latam-map-data.ts",
     "smoke": "./node_modules/.bin/tsx scripts/smoke.ts",
     "db:push": "./node_modules/.bin/prisma db push",
     "postinstall": "./node_modules/.bin/prisma generate"
@@ -27,11 +28,14 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
     "@prisma/client": "^6.1.0",
+    "leaflet": "^1.9.4",
     "next": "^15.1.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
