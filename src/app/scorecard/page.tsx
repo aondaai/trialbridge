@@ -76,11 +76,12 @@ export default async function ScorecardPage({
     // PRECOMPUTED by `npm run enrich-kols` (the Parallel Task API takes ~1 min/physician,
     // too slow to block a render). The page reads that store instantly; investigators
     // without a precomputed entry stay trial-experience-only.
+    const directory = loadDirectory();
     let kolInvestigators = competition.source === "live" ? ctgovToKolInputs(competition) : [];
     if (kolInvestigators.length > 0) {
       // Cross-reference affiliations against the ABRACRO/ACESSE directory → real CNES,
       // accurate region, and a confirmed institutional link (lifts the KOL score).
-      kolInvestigators = crossReferenceInvestigators(kolInvestigators, loadDirectory()).investigators;
+      kolInvestigators = crossReferenceInvestigators(kolInvestigators, directory).investigators;
       // Apply precomputed deep-web enrichment (pubs/society/guideline), if present.
       const enrichments = enrichmentsForNames(kolInvestigators.map((k) => k.name));
       kolInvestigators = applyEnrichment(kolInvestigators, enrichments);
@@ -95,7 +96,7 @@ export default async function ScorecardPage({
         criteria: consultation.criteria,
       },
       evaluatedSites,
-      { runId: consultation.id, competition, kolInvestigators },
+      { runId: consultation.id, competition, kolInvestigators, directorySites: directory },
     );
 
     return (

@@ -30,7 +30,10 @@ import {
   RegionSDInput,
 } from "@/lib/supplydemand/ratios";
 import { buildKolMap, KolInvestigatorInput } from "@/lib/kol/score";
+import { rankSites } from "@/lib/scoring/site";
 import type { CompetitionData } from "@/lib/ctgov/competition";
+import type { DirectorySite } from "@/lib/sites/directory";
+import { directorySiteToSiteInput, kolScoreByCnes } from "@/lib/sites/toSiteInput";
 
 export interface BuildReportOptions {
   runId?: string;
@@ -46,6 +49,11 @@ export interface BuildReportOptions {
   /** Deep-web-enriched KOL investigators (Parallel pipe). When provided, drives the
    *  §7 KOL map instead of the CT.gov trial-experience-only derivation. */
   kolInvestigators?: KolInvestigatorInput[];
+  /** Real site directory (ABRACRO/ACESSE). When provided, the §5/§6 rankings score
+   *  these real sites instead of the synthetic evaluated ones. */
+  directorySites?: DirectorySite[];
+  /** How many ranked sites to keep in §5 (default 20). */
+  maxRankedSites?: number;
 }
 
 /** Map CT.gov investigators → trial-experience-only KOL inputs (pre-enrichment). */
@@ -112,10 +120,6 @@ export function buildReport(
     }),
   );
 
-  const siteScores = perSite.map(({ site, feas }) =>
-    scoreSite(toSiteInput(site, feas.enrollableEstimate / months, profile)),
-  );
-
   // §4 Supply vs. demand, by macro-region. Competing trials come from CT.gov when
   // live (registry), else a MODELED placeholder (§7.11 graceful degradation).
   const competitionLive = opts.competition?.source === "live" ? opts.competition : undefined;
@@ -133,6 +137,24 @@ export function buildReport(
         ? ctgovToKolInputs(competitionLive)
         : [];
   const kolMap = kolInputs.length > 0 ? buildKolMap(kolInputs) : undefined;
+
+  // §5/§6 site rankings. Prefer the REAL directory (oncology sites, scored from directory
+  // signals + CT.gov competition per region + KOL links); fall back to the synthetic sites.
+  let siteScores;
+  if (opts.directorySites && opts.directorySites.length > 0) {
+    const kolByCnes = kolScoreByCnes(kolInputs);
+    const competingByRegion = competitionLive?.byRegion ?? {};
+    const ranked = rankSites(
+      opts.directorySites
+        .filter((s) => s.oncology)
+        .map((s) => scoreSite(directorySiteToSiteInput(s, { profile, competingByRegion, kolByCnes }))),
+    );
+    siteScores = ranked.slice(0, opts.maxRankedSites ?? 20);
+  } else {
+    siteScores = perSite.map(({ site, feas }) =>
+      scoreSite(toSiteInput(site, feas.enrollableEstimate / months, profile)),
+    );
+  }
 
   return assemble({
     context: {
