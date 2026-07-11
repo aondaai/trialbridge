@@ -20,7 +20,7 @@ import type { Provenance } from "@/lib/intake";
 
 interface ParseResult {
   criteria: Criterion[];
-  source: "claude" | "cached";
+  source: "claude" | "cached" | "structured";
   model?: string;
   note: string;
 }
@@ -72,6 +72,7 @@ export default function NewConsultationPage() {
     setError(null);
     setProvenance(r.provenance);
     setOmopRows(null);
+    setCtResult(null); // supersede any prior classic CT.gov fetch banner
     if (r.metadata.title) setTitle(r.metadata.title);
 
     const fromCtGov = r.metadata.sourceRegistry === "clinicaltrials.gov";
@@ -83,7 +84,7 @@ export default function NewConsultationPage() {
       setRows(r.preParsedCriteria);
       setResult({
         criteria: r.preParsedCriteria,
-        source: "cached",
+        source: "structured",
         note: `Structured import via ${r.provenance.adapter} — skipped the LLM parse. ${r.provenance.note ?? ""}`,
       });
       setTextMatchesNct(false);
@@ -108,6 +109,7 @@ export default function NewConsultationPage() {
       if (!res.ok) throw new Error((await res.json()).error ?? "ClinicalTrials.gov fetch failed");
       const r = (await res.json()) as CtGovFetchResult;
       setCtResult(r);
+      setProvenance(null); // supersede any prior universal-intake provenance badge
       setText(r.protocol.eligibilityCriteria);
       if (r.protocol.title) setTitle(r.protocol.title);
       setNct(r.protocol.nctId);
@@ -256,7 +258,7 @@ export default function NewConsultationPage() {
             }}
           />
           <div style={{ marginTop: 10 }}>
-            <button className="btn primary" onClick={parse} disabled={parsing || !text.trim()}>
+            <button className="cl-btn cl-btn--primary" onClick={parse} disabled={parsing || !text.trim()}>
               {parsing ? "Parsing…" : "Parse with Claude →"}
             </button>
           </div>
@@ -400,7 +402,7 @@ export default function NewConsultationPage() {
                 </label>
               </div>
               <div style={{ marginTop: 12 }}>
-                <button className="btn primary" onClick={post} disabled={posting || rows.length === 0}>
+                <button className="cl-btn cl-btn--primary" onClick={post} disabled={posting || rows.length === 0}>
                   {posting ? "Posting…" : `Post consultation (${rows.length} criteria) →`}
                 </button>
               </div>

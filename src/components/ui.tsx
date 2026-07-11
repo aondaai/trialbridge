@@ -10,7 +10,8 @@ export function TopBar({ active }: { active?: "home" | "sponsor" | "site" }) {
   return (
     <div className="topbar no-print">
       <Link href="/" className="brand">
-        Trial<span>Bridge</span> · Elegível
+        <span className="tb-mark">TB</span> Trial<span className="brand-accent">Bridge</span>{" "}
+        <small>· Elegível</small>
       </Link>
       <nav className="navlinks">
         <Link href="/sponsor" className={active === "sponsor" ? "active" : ""}>
@@ -26,8 +27,8 @@ export function TopBar({ active }: { active?: "home" | "sponsor" | "site" }) {
 
 export function PrivacyBanner({ variant }: { variant: "sponsor" | "site" }) {
   return (
-    <div className="privacy">
-      <span className="lock">🔒</span>
+    <div className="tb-privacy">
+      <span className="tb-privacy__lock">🔒</span>
       <div>
         {variant === "sponsor" ? (
           <>
@@ -54,7 +55,12 @@ export function PrivacyBanner({ variant }: { variant: "sponsor" | "site" }) {
 }
 
 export function Chip({ cohort, children }: { cohort: Cohort; children?: React.ReactNode }) {
-  return <span className={`chip ${cohort}`}>{children ?? cohort}</span>;
+  return (
+    <span className={`tb-chip tb-chip--${cohort}`}>
+      <span className="tb-chip__dot" />
+      {children ?? cohort}
+    </span>
+  );
 }
 
 export function CohortBar({
@@ -69,20 +75,20 @@ export function CohortBar({
   const total = Math.max(1, definite + possible + excluded);
   const pct = (n: number) => `${(100 * n) / total}%`;
   return (
-    <div className="cohortbar" title={`definite ${definite} · possible ${possible} · excluded ${excluded}`}>
-      <span className="b-definite" style={{ width: pct(definite) }} />
-      <span className="b-possible" style={{ width: pct(possible) }} />
-      <span className="b-excluded" style={{ width: pct(excluded) }} />
+    <div className="tb-cohortbar" title={`definite ${definite} · possible ${possible} · excluded ${excluded}`}>
+      <span className="tb-cohortbar__definite" style={{ width: pct(definite) }} />
+      <span className="tb-cohortbar__possible" style={{ width: pct(possible) }} />
+      <span className="tb-cohortbar__excluded" style={{ width: pct(excluded) }} />
     </div>
   );
 }
 
 export function CohortLegend() {
   return (
-    <div style={{ display: "flex", gap: 14, fontSize: 12.5, marginTop: 8 }} className="muted">
-      <span><span className="dot pass" /> definite — passes all criteria</span>
-      <span><span className="dot unknown" /> possible — eligible but has unknowns</span>
-      <span><span className="dot" style={{ background: "var(--excluded)" }} /> excluded</span>
+    <div className="tb-cohort-legend">
+      <span><i style={{ background: "var(--tb-definite, #1F9D6B)" }} /> definite — passes all criteria</span>
+      <span><i style={{ background: "var(--tb-possible, #D98A2B)" }} /> possible — eligible but has unknowns</span>
+      <span><i style={{ background: "var(--tb-excluded, #B8B7B0)" }} /> excluded</span>
     </div>
   );
 }
