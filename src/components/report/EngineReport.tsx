@@ -39,6 +39,11 @@ const COMP_LABEL: Record<string, string> = {
   staff_capacity: "Staff capacity",
 };
 
+/** Join a site's city + UF, tolerating either being empty (ABRACRO sites carry no city). */
+function locationOf(s: { city?: string | null; uf?: string | null }): string {
+  return [s.city, s.uf].filter(Boolean).join(", ");
+}
+
 function ScoreBar({ score }: { score: number }) {
   return (
     <div style={{ background: "var(--cl-surface-2)", borderRadius: 4, height: 8, width: 120, overflow: "hidden" }}>
@@ -93,7 +98,7 @@ export function EngineReport({ report }: { report: Report }) {
             {snap.topSites.map((s, i) => (
               <span key={s.cnes}>
                 {i > 0 ? " · " : ""}
-                <strong>{s.name}</strong> ({s.city}) <MetricChip metric={s.compositeMetric} />
+                <strong>{s.name}</strong>{locationOf(s) ? ` (${locationOf(s)})` : ""} <MetricChip metric={s.compositeMetric} />
               </span>
             ))}
           </p>
@@ -248,7 +253,7 @@ function SiteRankings({ sites }: { sites: SiteScore[] }) {
                 <tr key={s.cnes}>
                   <td>{i + 1}</td>
                   <td><strong>{s.name}</strong></td>
-                  <td>{s.city}{s.uf ? ` / ${s.uf}` : ""}</td>
+                  <td>{[s.city, s.uf].filter(Boolean).join(" / ") || <span className="muted">—</span>}</td>
                   <td><MetricChip metric={s.compositeMetric} strong /></td>
                   <td className="num">{infra ? `${Math.round(infra.score0100)}%` : "—"}</td>
                   <td style={{ textTransform: "capitalize" }}>{s.confidence}</td>
