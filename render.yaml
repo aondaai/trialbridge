@@ -35,3 +35,10 @@ services:
       # this service is unreachable.
       - key: TB_ESTIMATOR_URL
         value: https://trialbridge-estimator.onrender.com
+      # Shared-secret bearer token for the estimator's access gate (see
+      # src/lib/estimator/client.ts + estimator/trialbridge/auth.py). MUST match the
+      # TB_ESTIMATOR_TOKEN set on the estimator service, or every estimate 401s and the
+      # report/national card silently fall back to synthetic pools. Secret — set the
+      # value in the Render dashboard (Environment tab), not in git.
+      - key: TB_ESTIMATOR_TOKEN
+        sync: false
