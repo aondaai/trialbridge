@@ -179,7 +179,9 @@ export function buildReport(
     );
     const byUf = new Map<string, number>();
     for (const inv of kolInputs) {
-      const uf = inv.cnes ? cnesToUf.get(inv.cnes) : undefined;
+      // Prefer the UF the cross-reference resolved from the matched site (covers CNES-less
+      // ACESSE matches); fall back to the CNES→UF directory lookup.
+      const uf = inv.uf ?? (inv.cnes ? cnesToUf.get(inv.cnes) : undefined);
       if (!uf) continue;
       byUf.set(uf, (byUf.get(uf) ?? 0) + 1);
     }

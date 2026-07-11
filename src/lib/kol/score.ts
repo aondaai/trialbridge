@@ -38,6 +38,8 @@ export interface KolInvestigatorInput {
   name: string;
   regionCode: string;
   cnes?: string | null;
+  /** 2-letter UF, when the affiliation matched a directory site (even a CNES-less one). */
+  uf?: string | null;
   affiliation?: string | null;
   therapeuticArea?: string | null;
   signals: KolSignals;
