@@ -69,20 +69,30 @@ interface Mapped {
 function mapValue(value: any): Mapped {
   if (value?.valueQuantity) {
     const q = value.valueQuantity;
+    const num = typeof q.value === "number" ? q.value : Number(q.value);
+    // A quantity with no usable numeric value would become NaN → the matcher
+    // silently treats it as always-unknown. Don't dress that up as high-trust:
+    // mark it not-clean so confidence drops and the row is flagged for verify.
     return {
       operator: COMPARATOR[q.comparator] ?? "eq",
-      value: typeof q.value === "number" ? q.value : Number(q.value),
+      value: num,
       unit: q.unit ?? q.code ?? null,
-      clean: true,
+      clean: Number.isFinite(num),
     };
   }
   if (value?.valueRange) {
-    const lo = value.valueRange.low ?? {};
-    const hi = value.valueRange.high ?? {};
-    return { operator: "between", value: [Number(lo.value), Number(hi.value)], unit: lo.unit ?? hi.unit ?? null, clean: true };
+    const lo = Number(value.valueRange.low?.value);
+    const hi = Number(value.valueRange.high?.value);
+    const unit = value.valueRange.low?.unit ?? value.valueRange.high?.unit ?? null;
+    if (Number.isFinite(lo) && Number.isFinite(hi)) return { operator: "between", value: [lo, hi], unit, clean: true };
+    // A one-sided FHIR range is valid: {low} means ">= low", {high} means "<= high".
+    if (Number.isFinite(lo)) return { operator: "gte", value: lo, unit, clean: true };
+    if (Number.isFinite(hi)) return { operator: "lte", value: hi, unit, clean: true };
+    return { operator: "exists", value: null, unit: null, clean: false };
   }
   if (value?.valueCodeableConcept) {
-    return { operator: "eq", value: conceptText(value.valueCodeableConcept), unit: null, clean: true };
+    const txt = conceptText(value.valueCodeableConcept);
+    return { operator: "eq", value: txt, unit: null, clean: txt !== "" };
   }
   if (typeof value?.valueBoolean === "boolean") {
     return { operator: value.valueBoolean ? "exists" : "not_exists", value: null, unit: null, clean: true };
@@ -121,12 +131,23 @@ export const fhirAdapter: SourceAdapter = {
       const { field, known } = fieldFromText(label);
       const m = mapValue(value);
       const kind: Criterion["kind"] = ch.exclude ? "exclusion" : "inclusion";
+      // Guard: `exists`/`not_exists` on a field we DIDN'T recognize (not in the
+      // patient schema) would resolve to a definite fail/pass in the engine —
+      // an `exists` inclusion on such a field excludes every patient. Only use
+      // presence operators for recognized fields; otherwise fall back to an
+      // equality test, which resolves to `unknown` on missing data (→ possible).
+      let operator = m.operator;
+      let value2 = m.value;
+      if (!known && (operator === "exists" || operator === "not_exists")) {
+        operator = operator === "exists" ? "eq" : "neq";
+        value2 = "yes";
+      }
       return {
         id: `c${i + 1}`,
         kind,
         field,
-        operator: m.operator,
-        value: m.value,
+        operator,
+        value: value2,
         unit: m.unit ?? undefined,
         rawText: ch.description || `${label} ${m.operator} ${JSON.stringify(m.value)}`.trim(),
         // Clean map of a recognized field = trustworthy; otherwise flag for verify.

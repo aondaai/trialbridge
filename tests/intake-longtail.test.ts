@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { defaultRegistry } from "@/lib/intake";
 import { xlsxRows } from "@/lib/intake/adapters/xlsx";
+import { evaluatePatient } from "@/lib/matcher/engine";
+import type { Patient } from "@/lib/matcher/types";
 import { ATLAS_COHORT } from "@/data/intakeFixtures";
 import { makeEctd, makeXlsx } from "./helpers/fixtures";
 
@@ -68,9 +70,28 @@ describe("ATLAS cohort adapter (Phase 4)", () => {
     expect(result.provenance.adapter).toBe("atlas");
     const c = result.preParsedCriteria!;
     expect(c[0]).toMatchObject({ field: "age", operator: "gte", value: 18 });
-    // The 3 inclusion rules become presence criteria.
-    expect(c.filter((x) => x.operator === "exists")).toHaveLength(3);
+    // The 3 inclusion rules become criteria — but NOT `exists` (see below).
+    expect(c).toHaveLength(4);
     // Everything approximated from ATLAS logic is low-confidence.
     expect(c.every((x) => x.confidence <= 0.6)).toBe(true);
+  });
+
+  it("does NOT use `exists` inclusion on unmappable fields (would hard-exclude everyone)", async () => {
+    const { preParsedCriteria } = await defaultRegistry().ingest({ kind: "json", data: ATLAS_COHORT, filename: "cohort.json" });
+    // The bug: `exists` inclusion on a field absent from the patient schema
+    // resolves to `fail` → excluded. None of the rule criteria may use it.
+    for (const x of preParsedCriteria!.filter((k) => k.field !== "age")) {
+      expect(x.operator).not.toBe("exists");
+    }
+
+    // End-to-end proof against the real engine: a patient who carries NONE of
+    // the ATLAS slug fields must land in "possible" (unknown), never "excluded".
+    const patient: Patient = {
+      id: "p1", siteId: "s", diagnosis: "breast cancer", stage: "IV",
+      biomarkers: {}, priorLines: 2, ecog: 1, labs: {}, sex: "female", age: 55,
+    };
+    const cohort = evaluatePatient(patient, preParsedCriteria!).cohort;
+    expect(cohort).toBe("possible");
+    expect(cohort).not.toBe("excluded");
   });
 });
