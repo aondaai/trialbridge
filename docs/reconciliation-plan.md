@@ -75,7 +75,9 @@ existing `progress.md` discipline. P0 = R0–R6 (maps to eng spec §16 P0). P1 =
 - **R6 ✅ Report UI.** `components/MetricChip.tsx` + `components/report/EngineReport.tsx` + `lib/report/buildReport.ts` resolver, wired into `/scorecard?view=engine`. Every number renders through MetricChip. Eng spec §13.
 - **R7 ✅ Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts` — per-region pool÷trials ratio, under-penetration, opportunity flag, IBGE macro-region populations; wired into report §4. Competing-trials is a MODELED placeholder until R9. Eng spec §11. *(on `feat/scorecard-p1`)*
 - **R8 ✅ KOL service + map.** `src/lib/kol/score.ts` — weighted trials/pubs/society/CNES score, confidence by source count, `rankKols`/`regionKolDensity`/`sweetSpotRegions` (tri-density), `buildKolMap` → §7. Report §7 renders with an honest empty state (no fabricated physicians) until R9 supplies investigator data. Eng spec §10, §7.9. *(on `feat/scorecard-p1`)*
-- **R9 Connector breadth.** IBGE / CNES / INCA / ReBEC / ANS + CT.gov investigator/competition TS connectors (or bridge to the Python estimator for DataSUS). Eng spec §7. **This is the real-data lift** — it replaces the R7/site MODELED placeholders with registry data and lifts sites above LOW confidence. Involves live external APIs (NCBI E-utilities key optional; ORCID token).
+- **R9 🟡 Connector breadth (in progress).**
+  - **✅ Slice 1 — CT.gov competition + investigators.** `src/lib/ctgov/competition.ts` — real per-region competing-trial counts (registry seal) feed supply/demand; real PIs (PI/chair roles only, generic sponsor contacts dropped) populate the §7 KOL map with name + affiliation. Graceful degradation to placeholders on failure. Verified live (57 recruiting BR breast-cancer studies).
+  - **⏭ Remaining:** CNES infra (real infra-fit + lifts site confidence), INCA/DATASUS pools, ReBEC (completes competition), ANS (SUS→total), PubMed/ORCID (full KOL signal beyond trial experience). Eng spec §7.
 
 ### Branch state
 - **`feat/scorecard-engine`** → P0 (R0–R6) + review fixes → **PR #3** (open, against `main`).
