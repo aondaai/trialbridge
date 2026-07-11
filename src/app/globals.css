@@ -381,7 +381,7 @@ a.card:hover {
   font-family: var(--cl-font-mono, monospace); font-size: 13px;
   color: var(--cl-text, #141413);
 }
-.map-error { color: #b91c1c; padding: 0 6px 10px; margin: 0; }
+.map-error { color: var(--danger); padding: 0 6px 10px; margin: 0; }
 .map-frame {
   height: 70vh; min-height: 420px;
   border-radius: 10px; overflow: hidden;
