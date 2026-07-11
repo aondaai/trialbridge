@@ -11,7 +11,7 @@
 
 import { Confidence, SourceRef, rollUpConfidence } from "@/lib/metric";
 import { deepSearchMany } from "@/lib/parallel/deepSearch";
-import { parallelEnabled, TaskResult, ParallelConfidence } from "@/lib/parallel/client";
+import { parallelEnabled, TaskResult, ParallelConfidence, Processor } from "@/lib/parallel/client";
 import type { KolInvestigatorInput, KolSignals } from "@/lib/kol/score";
 
 /** JSON Schema the Task API fills for one physician. */
@@ -105,7 +105,7 @@ const cacheKey = (s: EnrichSubject) => `${s.name}|${s.affiliation ?? ""}|${s.the
 
 export async function enrichInvestigators(
   subjects: EnrichSubject[],
-  opts: { concurrency?: number; pollMs?: number; maxPolls?: number } = {},
+  opts: { concurrency?: number; pollMs?: number; maxPolls?: number; processor?: Processor } = {},
 ): Promise<Map<string, InvestigatorEnrichment>> {
   if (!parallelEnabled() || subjects.length === 0) return new Map();
 
@@ -120,11 +120,13 @@ export async function enrichInvestigators(
   if (misses.length === 0) return map;
 
   const results = await deepSearchMany(misses.map(enrichInput), KOL_OUTPUT_SCHEMA, {
-    processor: "core",
+    // `base` (~5 fields) is the right Enrichment tier for our 3-field KOL schema and is
+    // ~5× faster than `core` (~10 fields) — the difference between a usable synchronous
+    // render and a 2-minute hang. Bump to `core`/`pro` only if we add many more fields.
+    processor: opts.processor ?? "base",
     concurrency: opts.concurrency ?? 4,
-    // `core` needs a generous budget (~1–4 min); default well past the client's 60s.
-    pollMs: opts.pollMs ?? 4000,
-    maxPolls: opts.maxPolls ?? 75,
+    pollMs: opts.pollMs ?? 3000,
+    maxPolls: opts.maxPolls ?? 30,
   });
   misses.forEach((s, i) => {
     const e = parseEnrichment(s.name, results[i]);

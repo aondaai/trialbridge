@@ -10,8 +10,8 @@ import { PrintButton } from "@/components/PrintButton";
 import { buildReport, ctgovToKolInputs } from "@/lib/report/buildReport";
 import { EngineReport } from "@/components/report/EngineReport";
 import { fetchCompetition } from "@/lib/ctgov/competition";
-import { parallelEnabled } from "@/lib/parallel/client";
-import { enrichInvestigators, applyEnrichment } from "@/lib/kol/enrich";
+import { applyEnrichment } from "@/lib/kol/enrich";
+import { enrichmentsForNames } from "@/lib/kol/enrichmentStore";
 
 export const dynamic = "force-dynamic";
 
@@ -70,18 +70,13 @@ export default async function ScorecardPage({
     const condition = conditionQuery(consultation.title);
     const competition = await fetchCompetition(condition);
 
-    // Deep-web KOL enrichment via the Parallel pipe — publications, society roles,
-    // guideline authorship for the top investigators, researched concurrently. No-op
-    // when PARALLEL_API_KEY is absent (KOL stays trial-experience-only).
+    // Deep-web KOL enrichment (publications, society roles, guideline authorship) is
+    // PRECOMPUTED by `npm run enrich-kols` (the Parallel Task API takes ~1 min/physician,
+    // too slow to block a render). The page reads that store instantly; investigators
+    // without a precomputed entry stay trial-experience-only.
     let kolInvestigators = competition.source === "live" ? ctgovToKolInputs(competition) : [];
-    if (parallelEnabled() && kolInvestigators.length > 0) {
-      // Cap the synchronous enrichment (each `core` task ~1 min); results are cached,
-      // so subsequent viewers of this protocol get them instantly.
-      const top = kolInvestigators.slice(0, 2);
-      const enrichments = await enrichInvestigators(
-        top.map((k) => ({ name: k.name, affiliation: k.affiliation, therapeuticArea: condition })),
-        { concurrency: 2 },
-      );
+    if (kolInvestigators.length > 0) {
+      const enrichments = enrichmentsForNames(kolInvestigators.map((k) => k.name));
       kolInvestigators = applyEnrichment(kolInvestigators, enrichments);
     }
 
