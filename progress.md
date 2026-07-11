@@ -118,3 +118,4 @@ Two-agent adversarial review of the final feature state surfaced bugs the per-ta
 - [2026-07-11T03:43Z] DONE F0-3 — classifier label fixture (32 typed labels, A:10 B:14 C:4 D:4) + integrity test; 223 tests green. EPIC F0 COMPLETE.
 - [2026-07-11T03:47Z] DONE F1-1 — feasibility form ingestion (reuses intake envelope; parseFormText/ingestForm → FormFieldDraft[]; canonical-template recognition + order-independent fingerprint); 7 tests; 230 green.
 - [2026-07-11T03:51Z] DONE F1-2 — archetype+concept classifier (synonym→code→shortlist→unmapped; word-boundary synonym match; keyword section rules). P/R test vs 32 labels ≥0.85 acc, per-archetype P/R ≥0.7. 238 tests green. EPIC F1 COMPLETE.
+- [2026-07-11T03:54Z] DONE F2-1/F2-2 — profile (A) + capability (B) resolvers; pure row→Metric (SITE_DECLARED), thin Prisma binding separate; unavailable-not-blank on misses; 8 tests; 246 green.
