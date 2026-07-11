@@ -100,6 +100,12 @@ describe("mergeDirectory", () => {
     expect(merged[0].therapeuticAreas.sort()).toEqual(["Cardiovascular", "Oncologia"]);
   });
 
+  it("does NOT merge same-named CNES-less centres in different states (review #3)", () => {
+    const spSite = parseAcesse([new Array(8).fill("h"), acesseRow({ 4: "Santa Casa", 7: "SP" })]);
+    const rjSite = parseAcesse([new Array(8).fill("h"), acesseRow({ 4: "Santa Casa", 7: "RJ" })]);
+    expect(mergeDirectory(spSite, rjSite)).toHaveLength(2); // distinct institutions, kept separate
+  });
+
   it("dedupes by normalized name when CNES is absent (cross-list overlap)", () => {
     const abr = parseAbracro([ABRACRO_HEADER, abracroRow({ 28: "Instituto XYZ" })]); // no cnes
     const ace = parseAcesse([new Array(8).fill("h"), acesseRow({ 4: "INSTITUTO XYZ", 7: "SP" })]);

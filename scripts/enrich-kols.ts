@@ -8,11 +8,13 @@
  * Needs PARALLEL_API_KEY in .env.local (loaded below; a standalone script must, whereas
  * Next loads it automatically). Idempotent: merges into data/kol-enrichment.json.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 
-for (const line of readFileSync(".env.local", "utf8").split("\n")) {
-  const m = line.match(/^([A-Z_]+)=(.*)$/);
-  if (m) process.env[m[1]] = m[2];
+if (existsSync(".env.local")) {
+  for (const line of readFileSync(".env.local", "utf8").split("\n")) {
+    const m = line.match(/^([A-Z_]+)=(.*)$/);
+    if (m) process.env[m[1]] = m[2];
+  }
 }
 
 import { fetchCompetition } from "@/lib/ctgov/competition";

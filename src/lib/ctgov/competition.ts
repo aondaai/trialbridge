@@ -130,28 +130,50 @@ export function unavailableCompetition(note: string): CompetitionData {
  */
 export async function fetchCompetition(
   condition: string,
-  opts: { pageSize?: number; signal?: AbortSignal } = {},
+  opts: { pageSize?: number; maxPages?: number; signal?: AbortSignal } = {},
 ): Promise<CompetitionData> {
   const cond = condition.trim();
   if (!cond) return unavailableCompetition("No condition supplied for the CT.gov competition query.");
   const pageSize = Math.min(opts.pageSize ?? 200, 1000);
-  const params = new URLSearchParams({
-    "query.cond": cond,
-    "query.locn": "Brazil",
-    "filter.overallStatus": "RECRUITING",
-    countTotal: "true",
-    pageSize: String(pageSize),
-    fields: "protocolSection.identificationModule,protocolSection.contactsLocationsModule",
-  });
+  const maxPages = Math.max(1, opts.maxPages ?? 5); // up to ~1000 studies before we stop
+
   try {
-    const res = await fetch(`${CTGOV_BASE}?${params.toString()}`, {
-      signal: opts.signal ?? AbortSignal.timeout(TIMEOUT_MS),
-      headers: { accept: "application/json" },
-    });
-    if (!res.ok) return unavailableCompetition(`ClinicalTrials.gov returned ${res.status} for the competition query.`);
-    const json = (await res.json()) as { studies?: RawStudyLite[]; totalCount?: number };
-    const studies = json.studies ?? [];
-    return parseCompetition(studies, json.totalCount);
+    // Paginate: the per-region counts must be built from ALL studies, not just page 1 —
+    // otherwise byRegion undercounts while `total` reflects everything, inflating the
+    // supply/demand ratio behind a "registry" seal.
+    const studies: RawStudyLite[] = [];
+    let totalCount: number | undefined;
+    let pageToken: string | undefined;
+    let truncated = false;
+    for (let page = 0; page < maxPages; page++) {
+      const params = new URLSearchParams({
+        "query.cond": cond,
+        "query.locn": "Brazil",
+        "filter.overallStatus": "RECRUITING",
+        countTotal: "true",
+        pageSize: String(pageSize),
+        fields: "protocolSection.identificationModule,protocolSection.contactsLocationsModule",
+      });
+      if (pageToken) params.set("pageToken", pageToken);
+      const res = await fetch(`${CTGOV_BASE}?${params.toString()}`, {
+        signal: opts.signal ?? AbortSignal.timeout(TIMEOUT_MS),
+        headers: { accept: "application/json" },
+      });
+      if (!res.ok) {
+        if (page === 0) return unavailableCompetition(`ClinicalTrials.gov returned ${res.status} for the competition query.`);
+        break; // keep what we have from earlier pages
+      }
+      const json = (await res.json()) as { studies?: RawStudyLite[]; totalCount?: number; nextPageToken?: string };
+      totalCount = json.totalCount ?? totalCount;
+      studies.push(...(json.studies ?? []));
+      pageToken = json.nextPageToken;
+      if (!pageToken) break;
+      if (page === maxPages - 1) truncated = true;
+    }
+    const data = parseCompetition(studies, totalCount);
+    // If pagination was cut off, the per-region counts cover only the studies we read.
+    if (truncated) data.note = `Per-region counts cover the first ${studies.length} of ${totalCount ?? "?"} studies (pagination capped).`;
+    return data;
   } catch (e) {
     return unavailableCompetition(
       `CT.gov competition query unavailable (${e instanceof Error ? e.message : "error"}); using modeled placeholders.`,

@@ -99,6 +99,9 @@ const STOPWORDS = new Set([
   "complexo", "unidade", "pesquisa", "pesquisas", "medicina", "medico", "saude",
   "universidade", "universitario", "universitaria", "faculdade", "ltda", "sa", "rede",
   "cancer", "oncologia", "oncologico", "research", "clinical", "trials",
+  // generic English terms common in CT.gov affiliations
+  "oncology", "health", "medical", "sciences", "science", "university", "universities",
+  "institute", "department", "division", "service", "group", "care", "system",
   // connectors
   "de", "da", "do", "das", "dos", "e", "of", "the", "and", "for", "em",
   // common place tokens (too generic to disambiguate a site)
@@ -129,20 +132,30 @@ export function matchAffiliation(
   const aff = significantTokens(affiliation);
   if (aff.size === 0) return null;
   let best: DirectorySite | null = null;
+  let bestInter = 0;
   let bestScore = 0;
   for (const site of sites) {
     const sib = significantTokens(site.name);
     if (sib.size === 0) continue;
     let inter = 0;
-    for (const t of aff) if (sib.has(t)) inter++;
-    // Overlap relative to the smaller token set; require at least one shared distinctive token.
+    let maxSharedLen = 0;
+    for (const t of aff) if (sib.has(t)) { inter++; maxSharedLen = Math.max(maxSharedLen, t.length); }
+    if (inter === 0) continue;
+    // Qualify a match only on strong evidence: ≥2 shared distinctive tokens, OR a single
+    // shared token that is long/rare (≥6 chars, e.g. "barretos", "camargo"). A lone short
+    // common token ("jose", "lucas") must NOT link — that produced wrong-CNES false positives.
+    const qualifies = inter >= 2 || (inter === 1 && maxSharedLen >= 6);
+    if (!qualifies) continue;
     const score = inter / Math.min(aff.size, sib.size);
-    if (inter >= 1 && score > bestScore) {
+    if (score < minScore) continue;
+    // Prefer the most token overlap, then the highest score (deterministic; sites are name-sorted).
+    if (inter > bestInter || (inter === bestInter && score > bestScore)) {
+      bestInter = inter;
       bestScore = score;
       best = site;
     }
   }
-  return bestScore >= minScore ? best : null;
+  return best;
 }
 
 const TA_COLUMNS: [number, string][] = [
@@ -224,16 +237,42 @@ export function parseAcesse(rows: string[][]): DirectorySite[] {
   return out;
 }
 
-/** Merge + dedupe across both lists: by CNES when present, else normalized name. */
+/**
+ * Merge + dedupe across both lists. CNES is the strong key. CNES-less rows dedupe by
+ * normalized name, but only merge when their UFs are COMPATIBLE (either side null, or
+ * equal) — so a real cross-list overlap collapses while two same-named centres in
+ * different states ("Santa Casa" SP vs RJ) stay separate.
+ */
 export function mergeDirectory(...lists: DirectorySite[][]): DirectorySite[] {
-  const byKey = new Map<string, DirectorySite>();
+  const byCnes = new Map<string, DirectorySite>();
+  const cnesless: DirectorySite[] = [];
   for (const site of lists.flat()) {
-    const key = site.cnes ? `cnes:${site.cnes}` : `name:${normName(site.name)}`;
-    const existing = byKey.get(key);
-    if (!existing) byKey.set(key, { ...site });
-    else byKey.set(key, mergeTwo(existing, site));
+    if (site.cnes) {
+      byCnes.set(site.cnes, byCnes.has(site.cnes) ? mergeTwo(byCnes.get(site.cnes)!, site) : { ...site });
+    } else {
+      cnesless.push(site);
+    }
   }
-  return [...byKey.values()].sort((a, b) => a.name.localeCompare(b.name));
+
+  const nameGroups = new Map<string, DirectorySite[]>();
+  for (const s of cnesless) {
+    const k = normName(s.name);
+    const g = nameGroups.get(k);
+    if (g) g.push(s);
+    else nameGroups.set(k, [s]);
+  }
+
+  const merged: DirectorySite[] = [...byCnes.values()];
+  for (const group of nameGroups.values()) {
+    const buckets: DirectorySite[] = [];
+    for (const s of group) {
+      const bucket = buckets.find((b) => !b.uf || !s.uf || b.uf === s.uf); // UF-compatible
+      if (bucket) Object.assign(bucket, mergeTwo(bucket, s));
+      else buckets.push({ ...s });
+    }
+    merged.push(...buckets);
+  }
+  return merged.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function mergeTwo(a: DirectorySite, b: DirectorySite): DirectorySite {

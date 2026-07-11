@@ -50,6 +50,12 @@ describe("Parallel client — pure request/response", () => {
     expect(r.basis[0].confidence).toBe("high"); // normalized
     expect(r.runId).toBe("trun_1");
   });
+
+  it("does NOT seal an unknown/missing run status as completed (review #6)", () => {
+    expect(parseTaskResult({ run: { status: "running" }, output: { content: { x: 1 } } }).status).toBe("failed");
+    expect(parseTaskResult({ output: { content: { x: 1 } } }).status).toBe("failed");
+    expect(parseTaskResult({ run: { status: "completed" }, output: { content: {} } }).status).toBe("completed");
+  });
 });
 
 describe("runTask — lifecycle + graceful degradation", () => {

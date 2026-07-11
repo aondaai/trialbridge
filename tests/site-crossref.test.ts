@@ -29,6 +29,14 @@ describe("matchAffiliation — precision-biased token overlap", () => {
   it("does NOT false-match on generic place tokens (ICESP ≠ USP)", () => {
     expect(matchAffiliation("Instituto do Cancer do Estado de Sao Paulo", DIR)).toBeNull();
   });
+  it("does NOT link on a single SHORT shared token (review #1: wrong-CNES risk)", () => {
+    const dir = [site("Hospital São José do Rio Preto", "1111111", "Sudeste")];
+    // affiliation shares only the short common token "jose" → must not link a different city's site
+    expect(matchAffiliation("Hospital São José", dir)).toBeNull();
+  });
+  it("DOES link on a single LONG/rare shared token (Barretos)", () => {
+    expect(matchAffiliation("Barretos Oncology", DIR)?.cnes).toBe("2090236");
+  });
   it("rejects foreign / unknown affiliations", () => {
     expect(matchAffiliation("University Hospital, Basel, Switzerland", DIR)).toBeNull();
     expect(matchAffiliation(null, DIR)).toBeNull();
@@ -54,6 +62,18 @@ describe("crossReferenceInvestigators", () => {
     // unmatched investigator is unchanged
     expect(investigators[1].cnes).toBeUndefined();
     expect(investigators[1].signals.hasCnesLink).toBe(false);
+  });
+
+  it("an ACESSE match (no CNES) corrects the region but does NOT flip hasCnesLink (review #2)", () => {
+    const acesseDir = [site("Bioserv Life Sciences", null, "Sul")];
+    const { investigators, stats } = crossReferenceInvestigators(
+      [inv("Dr C", "Bioserv Life Sciences", "SE")],
+      acesseDir,
+    );
+    expect(stats.linked).toBe(0); // no CNES → not counted as a CNES link
+    expect(investigators[0].regionCode).toBe("Sul"); // region still corrected
+    expect(investigators[0].cnes).toBeNull();
+    expect(investigators[0].signals.hasCnesLink).toBe(false);
   });
 
   it("a linked investigator scores higher than the same one unlinked (institution signal)", async () => {
