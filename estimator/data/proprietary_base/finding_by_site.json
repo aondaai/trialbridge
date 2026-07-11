@@ -1,0 +1,67 @@
+[
+  {
+    "site": "ha",
+    "with_dx": 19065,
+    "finding_n": 18878
+  },
+  {
+    "site": "hmv",
+    "with_dx": 2625,
+    "finding_n": 2581
+  },
+  {
+    "site": "drarnaldo",
+    "with_dx": 1709,
+    "finding_n": 1694
+  },
+  {
+    "site": "unimedfor",
+    "with_dx": 1314,
+    "finding_n": 1298
+  },
+  {
+    "site": "felicio",
+    "with_dx": 1297,
+    "finding_n": 1292
+  },
+  {
+    "site": "uopeccan",
+    "with_dx": 1212,
+    "finding_n": 1212
+  },
+  {
+    "site": "imip",
+    "with_dx": 991,
+    "finding_n": 991
+  },
+  {
+    "site": "ibcc",
+    "with_dx": 828,
+    "finding_n": 828
+  },
+  {
+    "site": "hac",
+    "with_dx": 195,
+    "finding_n": 195
+  },
+  {
+    "site": "hmd",
+    "with_dx": 159,
+    "finding_n": 159
+  },
+  {
+    "site": "hsl",
+    "with_dx": 155,
+    "finding_n": 155
+  },
+  {
+    "site": "scmatao",
+    "with_dx": 107,
+    "finding_n": 107
+  },
+  {
+    "site": "hcor",
+    "with_dx": 87,
+    "finding_n": 87
+  }
+]
