@@ -50,20 +50,31 @@ estimator's CI + `model_version` into `Metric.note`/`source_refs`).
 Each step ends green (typecheck + `vitest run` + `next build`) before the next, matching the repo's
 existing `progress.md` discipline. P0 = R0–R6 (maps to eng spec §16 P0). P1 = R7–R9.
 
-- **R0 — Metric foundation (cross-cutting).** `src/lib/metric.ts`: `Provenance` (5 seals), `Confidence`,
-  `SourceRef`, `Metric`, constructors, `assertProvenanced()` gate, Appendix-B seal→colour map. Eng spec §4.4 + §2.4 rule 2. **← the start.**
-- **R1 — Constants library.** `src/lib/constants.ts`: cited benchmark constants as `Metric`s (Tufts enrolment/zero-enroller/timeline/dropout;
+> **Status (2026-07-10):** R0–R5 DONE — the complete *pure* engine, built on branch
+> `feat/scorecard-engine` in an isolated worktree (concurrent intake edits were live in the main
+> checkout). Full suite 245 passing, `tsc` clean, `next build` clean. R6 (UI wiring) is the next step.
+
+- **R0 ✅ Metric foundation (cross-cutting).** `src/lib/metric.ts`: `Provenance` (5 seals), `Confidence`,
+  `SourceRef`, `Metric`, constructors, `assertProvenanced()` gate, `buildProvenanceIndex()`, Appendix-B seal→colour map. Eng spec §4.4 + §2.4 rule 2.
+- **R1 ✅ Constants library.** `src/lib/constants.ts`: cited benchmark constants as `Metric`s (Tufts enrolment/zero-enroller/timeline/dropout;
   startup 45 vs 145d; Qiao 59%-of-NA; amendment $141k/$535k; FDA GCP OAI 4.1%; Lei 14.874 30/90/15d; trials-per-million anchors;
-  Demografia Médica). Promotes `docs/citations.md` into typed, auditable constants. Eng spec App. C.
-- **R2 — Scoring primitives.** `src/lib/scoring/normalize.ts` (benchmark-relative / absolute-anchored / categorical)
-  + `src/lib/scoring/weights.ts` (country 7-dim + site 9-comp defaults + 5 profiles; sum-to-1 CI test). Eng spec §6.1–6.2, App. D.
-- **R3 — Country scorecard.** `src/lib/scoring/country.ts` — 7 dimensions, composite, Go/Conditional/No-Go rule, hard flags. Eng spec §6.3, §5.2.
-- **R4 — Site scorecard.** `src/lib/scoring/site.ts` — 9 components, confidence roll-up, `guardrails.ts`. Eng spec §6.4–6.7.
-- **R5 — Report assembler.** `src/lib/report/assemble.ts` — typed 8-section `Report`, provenance index, provenance gate. Eng spec §8.
-- **R6 — Report UI.** `MetricChip` + scorecard sections rendered through it (extend `/scorecard`). Eng spec §13.
-- **R7 — Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts`. Eng spec §11.
-- **R8 — KOL service + map.** `src/lib/kol/score.ts` + PubMed/ORCID connectors. Eng spec §10, §7.9.
-- **R9 — Connector breadth.** IBGE / CNES / INCA / ReBEC / ANS TS connectors (or bridge to the Python estimator for DataSUS). Eng spec §7.
+  Demografia Médica). Sealed honestly per `docs/citations.md` (L.E.K. 65% = vendor, not peer-reviewed). Eng spec App. C.
+- **R2 ✅ Scoring primitives.** `src/lib/scoring/normalize.ts` (benchmark-relative / absolute-anchored / categorical / checklist)
+  + `src/lib/scoring/weights.ts` (country 7-dim + site 9-comp defaults + 5 profiles as renormalized multipliers; sum-to-1 CI test). Eng spec §6.1–6.2, App. D.
+- **R3 ✅ Country scorecard.** `src/lib/scoring/country.ts` — 7 dimensions, composite, Go/Conditional/No-Go rule, hard flags, `brazilCountryInput()` Tier-1 path. Eng spec §6.3, §5.2.
+- **R4 ✅ Site scorecard.** `src/lib/scoring/site.ts` — 9 components, confidence roll-up, `rankSites` tie-break; `guardrails.ts` demotion. Eng spec §6.4–6.7.
+- **R5 ✅ Report assembler.** `src/lib/report/{types,assemble}.ts` — typed 8-section `Report`, provenance index, provenance gate enforced. Eng spec §8.
+- **R6 ⏭ Report UI.** `MetricChip` + scorecard sections rendered through it (extend `/scorecard`). Eng spec §13. **← next.**
+- **R7 Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts`. Eng spec §11.
+- **R8 KOL service + map.** `src/lib/kol/score.ts` + PubMed/ORCID connectors. Eng spec §10, §7.9.
+- **R9 Connector breadth.** IBGE / CNES / INCA / ReBEC / ANS TS connectors (or bridge to the Python estimator for DataSUS). Eng spec §7.
+
+### How to wire the engine to real data (R6+)
+The engine takes typed inputs; the resolvers that fill them are the wiring points:
+- **Funnel/site pool** → from the existing `service.ts`/`feasibility.ts`/`enrichmentEstimator.ts` (or the Python estimator over DataSUS).
+- **Country input** → `brazilCountryInput()` (cited constants) + national eligible pool from the funnel.
+- **Site input** → `SiteMeta` + CNES `infra` + the declared-capacity overlay (seeds §15).
+- **Estimator provenance bridge** → `observed`→`registry_gov`/`site_declared`, `imputed`→`modeled` (carry CI + model_version into the `Metric`).
 
 ### Purity rule (ported from eng spec §2.4 / CLAUDE.md)
 `src/lib/scoring/**`, `src/lib/report/**`, `matcher/**` stay **pure** — no `fetch`, no Prisma, no `Date.now()`.
