@@ -50,9 +50,17 @@ estimator's CI + `model_version` into `Metric.note`/`source_refs`).
 Each step ends green (typecheck + `vitest run` + `next build`) before the next, matching the repo's
 existing `progress.md` discipline. P0 = R0–R6 (maps to eng spec §16 P0). P1 = R7–R9.
 
-> **Status (2026-07-10):** R0–R5 DONE — the complete *pure* engine, built on branch
+> **Status (2026-07-10):** **P0 (R0–R6) DONE** — the pure engine + the report UI, built on branch
 > `feat/scorecard-engine` in an isolated worktree (concurrent intake edits were live in the main
-> checkout). Full suite 245 passing, `tsc` clean, `next build` clean. R6 (UI wiring) is the next step.
+> checkout). Full suite **249 passing**, `tsc` clean, `next build` clean. R6 was **browser-verified**
+> live: `/scorecard?view=engine` renders the 8-section report with correct provenance dots, no console
+> errors. Next up: R7 (supply/demand) · R8 (KOL) · R9 (connector breadth) — all P1.
+>
+> **Running the engine view locally (worktree gotcha):** `preview_start` / the launch config resolves
+> its cwd to the **project root**, not this worktree, so it serves the main checkout's code. To see the
+> engine branch, run the dev server *from the worktree dir* (`./node_modules/.bin/next dev -p <port>`)
+> and copy a populated DB in first (`cp <main>/prisma/data/dev.db prisma/data/dev.db`; `dev.db` is
+> gitignored). Then open `/scorecard?view=engine&c=hero-her2-mbc`.
 
 - **R0 ✅ Metric foundation (cross-cutting).** `src/lib/metric.ts`: `Provenance` (5 seals), `Confidence`,
   `SourceRef`, `Metric`, constructors, `assertProvenanced()` gate, `buildProvenanceIndex()`, Appendix-B seal→colour map. Eng spec §4.4 + §2.4 rule 2.
@@ -64,7 +72,7 @@ existing `progress.md` discipline. P0 = R0–R6 (maps to eng spec §16 P0). P1 =
 - **R3 ✅ Country scorecard.** `src/lib/scoring/country.ts` — 7 dimensions, composite, Go/Conditional/No-Go rule, hard flags, `brazilCountryInput()` Tier-1 path. Eng spec §6.3, §5.2.
 - **R4 ✅ Site scorecard.** `src/lib/scoring/site.ts` — 9 components, confidence roll-up, `rankSites` tie-break; `guardrails.ts` demotion. Eng spec §6.4–6.7.
 - **R5 ✅ Report assembler.** `src/lib/report/{types,assemble}.ts` — typed 8-section `Report`, provenance index, provenance gate enforced. Eng spec §8.
-- **R6 ⏭ Report UI.** `MetricChip` + scorecard sections rendered through it (extend `/scorecard`). Eng spec §13. **← next.**
+- **R6 ✅ Report UI.** `components/MetricChip.tsx` + `components/report/EngineReport.tsx` + `lib/report/buildReport.ts` resolver, wired into `/scorecard?view=engine`. Every number renders through MetricChip. Eng spec §13.
 - **R7 Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts`. Eng spec §11.
 - **R8 KOL service + map.** `src/lib/kol/score.ts` + PubMed/ORCID connectors. Eng spec §10, §7.9.
 - **R9 Connector breadth.** IBGE / CNES / INCA / ReBEC / ANS TS connectors (or bridge to the Python estimator for DataSUS). Eng spec §7.
