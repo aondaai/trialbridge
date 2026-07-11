@@ -1,0 +1,528 @@
+{
+  "source": "DoctorAssistant_Feasibility_QuestionBank.xlsx",
+  "version": "1",
+  "formTemplate": {
+    "fingerprint": "questionbank-canonical-v1",
+    "name": "DoctorAssistant Feasibility — Canonical Model (16 sections)",
+    "structure": {
+      "sections": [
+        {
+          "idx": 1,
+          "name": "Informações Gerais",
+          "content": "Título do estudo, ID do estudo, nome/cargo/e-mail do respondente, data",
+          "archetype": "D / A",
+          "variesPerStudy": "Sim (título e ID)"
+        },
+        {
+          "idx": 2,
+          "name": "Informações da Instituição",
+          "content": "Nome, endereço, e-mail, telefone, site da instituição detentora",
+          "archetype": "A",
+          "variesPerStudy": "Não"
+        },
+        {
+          "idx": 3,
+          "name": "Responsável pela Base",
+          "content": "Nome, formação, cargo, contato, experiência do responsável principal",
+          "archetype": "A",
+          "variesPerStudy": "Não"
+        },
+        {
+          "idx": 4,
+          "name": "Descrição da Base",
+          "content": "Checkboxes do tipo de base: claims, EMR/EHR, farmácia, hospitalar, registro, laboratório...",
+          "archetype": "A / B",
+          "variesPerStudy": "Não"
+        },
+        {
+          "idx": 5,
+          "name": "Interesse em Participar",
+          "content": "Sim/Não + justificativa",
+          "archetype": "D",
+          "variesPerStudy": "Sim"
+        },
+        {
+          "idx": 6,
+          "name": "Desafios",
+          "content": "Principais desafios para a condução (volume, elegibilidade, prazo...)",
+          "archetype": "D",
+          "variesPerStudy": "Sim"
+        },
+        {
+          "idx": 7,
+          "name": "Bloco da Área Terapêutica",
+          "content": "Relevância/volume da base na TA; nº aprox. de pacientes; perguntas específicas (ASCVD, DII...)",
+          "archetype": "B / C",
+          "variesPerStudy": "Sim"
+        },
+        {
+          "idx": 8,
+          "name": "Matriz de Variáveis",
+          "content": "Grande grade: Disponível? / Fonte-Campo / Método / Completude / Observações — por variável, em ~9 categorias",
+          "archetype": "B",
+          "variesPerStudy": "Parcial (conced. clínicos mudam)"
+        },
+        {
+          "idx": 9,
+          "name": "Identificação da População",
+          "content": "Sim/Não/Parcial por critério de inclusão/exclusão (idade, diagnóstico, index date...)",
+          "archetype": "B / C",
+          "variesPerStudy": "Sim"
+        },
+        {
+          "idx": 10,
+          "name": "Contagens Preliminares",
+          "content": "Coorte/subgrupo -> N estimado para o período de interesse",
+          "archetype": "C",
+          "variesPerStudy": "Sim"
+        },
+        {
+          "idx": 11,
+          "name": "Equipe do Estudo",
+          "content": "Checkboxes de papéis disponíveis: PM, epidemiologista, bioestatístico, programador, SME...",
+          "archetype": "A",
+          "variesPerStudy": "Não"
+        },
+        {
+          "idx": 12,
+          "name": "Compliance / Privacidade / CEP",
+          "content": "Anonimização, aprovações necessárias, LGPD, comitê de ética",
+          "archetype": "A",
+          "variesPerStudy": "Não"
+        },
+        {
+          "idx": 13,
+          "name": "Contratação e Prazos",
+          "content": "Tempo de negociação, assinatura digital, sequência contrato x parecer CEP",
+          "archetype": "A",
+          "variesPerStudy": "Não"
+        },
+        {
+          "idx": 14,
+          "name": "Limitações Metodológicas",
+          "content": "Texto livre: principais limitações da base para o estudo",
+          "archetype": "D",
+          "variesPerStudy": "Sim"
+        },
+        {
+          "idx": 15,
+          "name": "Materiais Complementares",
+          "content": "Sim/Não: dicionário de dados, fluxograma, publicações, etc.",
+          "archetype": "A",
+          "variesPerStudy": "Não"
+        },
+        {
+          "idx": 16,
+          "name": "Comentários / Dúvidas",
+          "content": "Texto livre",
+          "archetype": "D",
+          "variesPerStudy": "Sim"
+        }
+      ]
+    }
+  },
+  "capabilityCatalog": [
+    {
+      "conceptId": "doenca_inflamatoria_intestinal",
+      "conceptLabel": "Doença Inflamatória Intestinal",
+      "synonyms": [
+        "DII",
+        "IBD",
+        "Crohn",
+        "retocolite"
+      ],
+      "code": "CID-10 K50/K51",
+      "available": "yes",
+      "identificationMethod": "NLP (NER) + assertion detection",
+      "sourceField": "entity (label=DISEASE) + term_code",
+      "completenessRaw": "Alta",
+      "notes": "Asserção PRESENTE/AUSENTE/HISTÓRICO disponível",
+      "placeholder": false
+    },
+    {
+      "conceptId": "idade",
+      "conceptLabel": "Idade",
+      "synonyms": [
+        "age",
+        "idade",
+        "birthdate"
+      ],
+      "code": "—",
+      "available": "yes",
+      "identificationMethod": "Cálculo por data de nascimento",
+      "sourceField": "birthdate vs index",
+      "completenessRaw": ">99,9%",
+      "notes": "Calculada no index date",
+      "placeholder": false
+    },
+    {
+      "conceptId": "ldl_colesterol",
+      "conceptLabel": "LDL-colesterol",
+      "synonyms": [
+        "LDL",
+        "colesterol LDL"
+      ],
+      "code": "LOINC 13457-7",
+      "available": "partial",
+      "identificationMethod": "",
+      "sourceField": "",
+      "completenessRaw": "[%/Alta/Média/Baixa]",
+      "notes": "",
+      "placeholder": true
+    },
+    {
+      "conceptId": "infarto_do_miocardio",
+      "conceptLabel": "Infarto do miocárdio",
+      "synonyms": [
+        "IAM",
+        "MI",
+        "infarto"
+      ],
+      "code": "CID-10 I21",
+      "available": "partial",
+      "identificationMethod": "",
+      "sourceField": "",
+      "completenessRaw": "[preencher]",
+      "notes": "",
+      "placeholder": true
+    },
+    {
+      "conceptId": "medicacao_classe_terapeutica",
+      "conceptLabel": "Medicação — classe terapêutica",
+      "synonyms": [
+        "droga",
+        "medicamento",
+        "ATC"
+      ],
+      "code": "ATC",
+      "available": "partial",
+      "identificationMethod": "",
+      "sourceField": "",
+      "completenessRaw": "[preencher]",
+      "notes": "",
+      "placeholder": true
+    }
+  ],
+  "questionBankLabels": [
+    {
+      "id": "G-01",
+      "section": "Inf. Gerais",
+      "field": "Título do estudo",
+      "archetype": "D",
+      "concept": "—",
+      "source": "Formulário recebido",
+      "strategy": "Extrair do próprio doc recebido (parsing)",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "G-02",
+      "section": "Inf. Gerais",
+      "field": "ID do estudo (ex. NIS100547)",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Formulário recebido",
+      "strategy": "Extrair; se ausente, \"Concept under review\"",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "G-03",
+      "section": "Inf. Gerais",
+      "field": "Nome/cargo/e-mail do respondente",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Lookup fixo",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "I-01",
+      "section": "Instituição",
+      "field": "Nome / endereço / e-mail / site",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Lookup fixo",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "R-01",
+      "section": "Responsável",
+      "field": "Nome, formação, cargo do responsável pela base",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Lookup fixo",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "D-01",
+      "section": "Descrição",
+      "field": "Tipo de base (claims / EMR / farmácia / NLP de texto clínico...)",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Checkbox pré-configurado",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "P-01",
+      "section": "Interesse",
+      "field": "Interesse em participar (Sim/Não) + justificativa",
+      "archetype": "D",
+      "concept": "—",
+      "source": "Regra + template",
+      "strategy": "Regra de negócio; narrativa por LLM",
+      "autoConfidence": "Média"
+    },
+    {
+      "id": "X-01",
+      "section": "Desafios",
+      "field": "Principais desafios (volume, elegibilidade, prazo)",
+      "archetype": "D",
+      "concept": "—",
+      "source": "Templates + histórico",
+      "strategy": "LLM ancorado em formulários anteriores",
+      "autoConfidence": "Média"
+    },
+    {
+      "id": "TA-01",
+      "section": "Bloco TA",
+      "field": "Base é referência/volume relevante na área terapêutica?",
+      "archetype": "B",
+      "concept": "—",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup + contagem de suporte",
+      "autoConfidence": "Média"
+    },
+    {
+      "id": "TA-02",
+      "section": "Bloco TA",
+      "field": "Nº aproximado de pacientes na base",
+      "archetype": "C",
+      "concept": "—",
+      "source": "Query na base",
+      "strategy": "COUNT(distinct patient)",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-01",
+      "section": "Variáveis",
+      "field": "Idade",
+      "archetype": "B",
+      "concept": "Demográfico: idade (birthdate)",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup: Disponível/Fonte/Completude",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-02",
+      "section": "Variáveis",
+      "field": "Sexo / gênero",
+      "archetype": "B",
+      "concept": "Demográfico: sexo",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-03",
+      "section": "Variáveis",
+      "field": "Etnia / raça / cor",
+      "archetype": "B",
+      "concept": "Demográfico: raça",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup (frequentemente \"Parcial\")",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-04",
+      "section": "Variáveis",
+      "field": "Tipo de cobertura / pagador",
+      "archetype": "B",
+      "concept": "Demográfico: payer",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-05",
+      "section": "Variáveis",
+      "field": "Diagnóstico principal (ex. DII, dislipidemia)",
+      "archetype": "B",
+      "concept": "CID-10 (K50/K51; E78)",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup por term_code + método (NLP/CID)",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-06",
+      "section": "Variáveis",
+      "field": "Diagnóstico ativo confirmável",
+      "archetype": "B",
+      "concept": "Assertion = PRESENTE",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup: NER + assertion detection",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-07",
+      "section": "Variáveis",
+      "field": "Data do diagnóstico",
+      "archetype": "B",
+      "concept": "Temporal: document_date",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-08",
+      "section": "Variáveis",
+      "field": "Comorbidades (IAM, AVC, DAP, DM2, HAS, DRC, IC)",
+      "archetype": "B",
+      "concept": "CID-10 múltiplos",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup por lista de conceitos",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-09",
+      "section": "Variáveis",
+      "field": "Resultados laboratoriais (LDL, HbA1c, PCR...)",
+      "archetype": "B",
+      "concept": "LOINC / lab estruturado",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup: valor/unidade/data/frequência",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-10",
+      "section": "Variáveis",
+      "field": "Medicamentos (classe/molécula/dose/via)",
+      "archetype": "B",
+      "concept": "ATC / prescrição-dispensação",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup: tipo de fonte do dado de medicação",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-11",
+      "section": "Variáveis",
+      "field": "Padrão/sequência de tratamento (switch, persistência)",
+      "archetype": "B",
+      "concept": "Derivada de medicação",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup: capacidade de derivação",
+      "autoConfidence": "Média"
+    },
+    {
+      "id": "V-12",
+      "section": "Variáveis",
+      "field": "Utilização de recursos (hospitalização, PS, óbito, custo)",
+      "archetype": "B",
+      "concept": "Encontro / evento",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup por tipo de evento",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "V-13",
+      "section": "Variáveis",
+      "field": "Texto livre / NLP (tipos de doc, conceitos extraíveis)",
+      "archetype": "B",
+      "concept": "NLP / NER",
+      "source": "Catálogo de Capacidade",
+      "strategy": "Lookup: capacidade de NLP validada",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "POP-01",
+      "section": "População",
+      "field": "Idade >=18 (ou >=16) no index date",
+      "archetype": "C",
+      "concept": "Critério de inclusão",
+      "source": "Query na base",
+      "strategy": "Filtro + COUNT",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "POP-02",
+      "section": "População",
+      "field": "Diagnóstico no período de interesse (index 2019-2025)",
+      "archetype": "C",
+      "concept": "Critério + janela",
+      "source": "Query na base",
+      "strategy": "Filtro + COUNT",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "CNT-01",
+      "section": "Contagens",
+      "field": "N por coorte/subgrupo (ex. adultos com dislipidemia)",
+      "archetype": "C",
+      "concept": "Coorte definida",
+      "source": "Query na base",
+      "strategy": "Coorte parametrizada -> N estimado",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "EQ-01",
+      "section": "Equipe",
+      "field": "Papéis disponíveis (PM, epi, bioest., programador, SME)",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Checkbox fixo",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "CP-01",
+      "section": "Compliance",
+      "field": "Base anonimizada / pseudo / identificável",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Lookup fixo",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "CP-02",
+      "section": "Compliance",
+      "field": "Aprovações necessárias (CEP/CONEP, LGPD)",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Lookup fixo",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "CT-01",
+      "section": "Contratação",
+      "field": "Prazos de negociação / assinatura digital",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Lookup fixo",
+      "autoConfidence": "Alta"
+    },
+    {
+      "id": "LIM-01",
+      "section": "Limitações",
+      "field": "Principais limitações metodológicas da base",
+      "archetype": "D",
+      "concept": "—",
+      "source": "Templates + histórico",
+      "strategy": "LLM ancorado; revisão humana obrigatória",
+      "autoConfidence": "Baixa"
+    },
+    {
+      "id": "MAT-01",
+      "section": "Materiais",
+      "field": "Dicionário de dados / fluxograma disponível?",
+      "archetype": "A",
+      "concept": "—",
+      "source": "Perfil da Instituição",
+      "strategy": "Checkbox fixo",
+      "autoConfidence": "Alta"
+    }
+  ]
+}
