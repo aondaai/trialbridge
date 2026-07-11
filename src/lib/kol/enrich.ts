@@ -95,18 +95,42 @@ export function parseEnrichment(name: string, result: TaskResult): InvestigatorE
  * name. No-op (empty map) when the Parallel key is absent — caller keeps CT.gov-only
  * signals.
  */
+/**
+ * Process-lifetime cache, keyed by (name|affiliation|TA). The `core` processor takes
+ * ~1 min/physician, so caching keeps a re-render (or a second sponsor viewing the same
+ * protocol) instant. In production this belongs in a shared store / background job.
+ */
+const enrichmentCache = new Map<string, InvestigatorEnrichment>();
+const cacheKey = (s: EnrichSubject) => `${s.name}|${s.affiliation ?? ""}|${s.therapeuticArea ?? ""}`.toLowerCase();
+
 export async function enrichInvestigators(
   subjects: EnrichSubject[],
-  opts: { concurrency?: number } = {},
+  opts: { concurrency?: number; pollMs?: number; maxPolls?: number } = {},
 ): Promise<Map<string, InvestigatorEnrichment>> {
   if (!parallelEnabled() || subjects.length === 0) return new Map();
-  const results = await deepSearchMany(
-    subjects.map(enrichInput),
-    KOL_OUTPUT_SCHEMA,
-    { processor: "core", concurrency: opts.concurrency ?? 4 },
-  );
+
+  // Serve cached subjects immediately; only research the misses.
   const map = new Map<string, InvestigatorEnrichment>();
-  subjects.forEach((s, i) => map.set(s.name, parseEnrichment(s.name, results[i])));
+  const misses: EnrichSubject[] = [];
+  for (const s of subjects) {
+    const cached = enrichmentCache.get(cacheKey(s));
+    if (cached) map.set(s.name, cached);
+    else misses.push(s);
+  }
+  if (misses.length === 0) return map;
+
+  const results = await deepSearchMany(misses.map(enrichInput), KOL_OUTPUT_SCHEMA, {
+    processor: "core",
+    concurrency: opts.concurrency ?? 4,
+    // `core` needs a generous budget (~1–4 min); default well past the client's 60s.
+    pollMs: opts.pollMs ?? 4000,
+    maxPolls: opts.maxPolls ?? 75,
+  });
+  misses.forEach((s, i) => {
+    const e = parseEnrichment(s.name, results[i]);
+    if (e.source === "parallel") enrichmentCache.set(cacheKey(s), e); // cache only successes
+    map.set(s.name, e);
+  });
   return map;
 }
 
@@ -127,7 +151,7 @@ export function applyEnrichment(
       societyRoles: e.societyRoles,
       guidelineAuthor: e.guidelineAuthor,
     };
-    return { ...inv, signals };
+    return { ...inv, signals, enrichmentCitations: e.citations };
   });
 }
 

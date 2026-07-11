@@ -9,7 +9,7 @@
  * KOL → R8) are optional; the report is valid without them and gains them later.
  */
 
-import type { Metric, ProvenanceIndex } from "@/lib/metric";
+import type { Metric, ProvenanceIndex, SourceRef } from "@/lib/metric";
 import type { CountryScorecard, SiteScore, HardFlag } from "@/lib/scoring/types";
 
 export interface ReportContext {
@@ -97,6 +97,10 @@ export interface KolRefSummary {
   regionCode: string;
   /** Real institutional affiliation (CT.gov) — the precise fact; region is best-effort. */
   affiliation?: string | null;
+  /** Deep-web-researched signals (Parallel), when enrichment ran. */
+  pubsCountTa?: number;
+  societyRoles?: string[];
+  citations?: SourceRef[];
   scoreMetric: Metric;
 }
 export interface KolMapSummary {

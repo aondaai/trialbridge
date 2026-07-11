@@ -9,7 +9,7 @@
  * confidence roll-up reflects how many independent sources backed the investigator.
  */
 
-import { Confidence, Metric, modeled, rollUpConfidence } from "@/lib/metric";
+import { Confidence, Metric, SourceRef, modeled, rollUpConfidence } from "@/lib/metric";
 import { normAbsolute, clampScore, Anchor } from "@/lib/scoring/normalize";
 import type { KolMapSummary } from "@/lib/report/types";
 
@@ -41,6 +41,8 @@ export interface KolInvestigatorInput {
   affiliation?: string | null;
   therapeuticArea?: string | null;
   signals: KolSignals;
+  /** Citations backing the researched signals (Parallel enrichment), if any. */
+  enrichmentCitations?: SourceRef[];
 }
 
 export interface KolScore {
@@ -167,14 +169,20 @@ export function sweetSpotRegions(
 
 /** Assemble the report's §7 KOL map from scored investigators. */
 export function buildKolMap(investigators: KolInvestigatorInput[]): KolMapSummary {
-  const byName = new Map(investigators.map((i) => [i.name, i.affiliation ?? null]));
+  const byName = new Map(investigators.map((i) => [i.name, i]));
   const scores = rankKols(investigators.map(kolScore));
   return {
-    physicians: scores.map((s) => ({
-      name: s.name,
-      regionCode: s.regionCode,
-      affiliation: byName.get(s.name) ?? null,
-      scoreMetric: s.scoreMetric,
-    })),
+    physicians: scores.map((s) => {
+      const inv = byName.get(s.name);
+      return {
+        name: s.name,
+        regionCode: s.regionCode,
+        affiliation: inv?.affiliation ?? null,
+        pubsCountTa: inv?.signals.pubsCountTa,
+        societyRoles: inv?.signals.societyRoles,
+        citations: inv?.enrichmentCitations,
+        scoreMetric: s.scoreMetric,
+      };
+    }),
   };
 }
