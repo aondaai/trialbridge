@@ -29,12 +29,17 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from trialbridge.data import MaterializedDataSUS, RealProprietary
+from trialbridge.data import MaterializedDataSUS, MaterializedProprietary, RealProprietary
 from trialbridge.estimator import (
     estimate, national_total, rank_bottlenecks, observed_n_by_site,
     fill_speed, national_fill_speed,
 )
 from trialbridge.protocols import hero_protocol_real
+# Governance backbone — the /query layer routes through these (guardrail, coverage, registry).
+from trialbridge.query import route, Intent, FindingOverImputedError
+from trialbridge.coverage import CalibratedCoverage, CALIBRATED_UFS_14
+from trialbridge.registry import make_version
+from trialbridge.finding import finding_n_by_site
 
 FILL_SPEED_TARGET_N = 50  # a typical single-region Phase II cohort size — illustrative default
 
@@ -52,6 +57,21 @@ _datasus = MaterializedDataSUS(base_dir=DATASUS_BASE_DIR)
 _proprietary_complete = RealProprietary(parquet_paths=[PROPRIETARY_GLOB], complete_cases_only=True)
 _proprietary_all = RealProprietary(parquet_paths=[PROPRIETARY_GLOB], complete_cases_only=False)
 _protocol = hero_protocol_real()
+
+# Full-base finding adapter (materialized from the 6.68M proprietary base; MaterializedProprietary
+# exposes .records() so finding_n_by_site works without the 58GB in the image).
+PROP_BASE_DIR = os.environ.get("TB_PROPRIETARY_BASE_DIR", "data/proprietary_base")
+_prop_finding = MaterializedProprietary(base_dir=PROP_BASE_DIR)
+
+# Calibrated coverage (data-driven from the materialized base's provenance) + a versioned
+# model id — the governance stamped on every counted (imputed) number.
+_coverage = CalibratedCoverage(
+    ufs=frozenset(_datasus.provenance.get("coverage_ufs") or CALIBRATED_UFS_14)
+)
+_model_version = make_version(
+    shrink_alpha=20.0, train_dx=["breast_cancer"], valid_ufs=list(_coverage.ufs),
+    trained_on=_datasus.provenance.get("source", "materialized"),
+).version
 
 
 class RegionEstimate(BaseModel):
@@ -118,6 +138,7 @@ class Provenance(BaseModel):
     coverage_ufs: Optional[List[str]] = None   # count only
     ci: Optional[List[float]] = None           # [lo, hi], count only
     sites_with_data: Optional[int] = None      # find only
+    model_version: Optional[str] = None        # count only — which versioned model produced it
     note: str
 
 
@@ -180,40 +201,39 @@ def _run(exclude_depth_ids: Optional[List[str]]) -> FeasibilityResponse:
     )
 
 
-def _count() -> QueryResponse:
-    """COUNT — how many eligible patients EXIST in the market (Asset 3, estimated)."""
-    ests = estimate(_protocol, _datasus, _proprietary_complete, exclude_depth_ids=None)
-    nat, lo, hi = national_total(ests)
-    prov = _datasus.provenance
+def _imputed_response(intent_str: str, res) -> QueryResponse:
+    """Map a route() imputed result (Estimated N / findability) to the response shape."""
+    pv = res.provenance
     return QueryResponse(
-        intent="count", protocol_id=_protocol.protocol_id, value=nat,
+        intent=intent_str, protocol_id=_protocol.protocol_id,
+        value=float(res.value) if res.value is not None else 0.0,
         provenance=Provenance(
             origin="estimated", asset="datasus_enriched",
             confidence="estimated (with CI, within covered UFs)",
-            source=prov.get("source", "DataSUS (materialized)"),
-            as_of=prov.get("as_of"),
-            coverage_ufs=prov.get("coverage_ufs", []),
-            ci=[lo, hi],
-            note="Standardized estimate over the national DataSUS base. Counting, not finding — "
-                 "these are not individually localizable patients.",
+            source=_datasus.provenance.get("source", "DataSUS (materialized)"),
+            as_of=_datasus.provenance.get("as_of"),
+            coverage_ufs=sorted(_coverage.ufs),
+            ci=(list(pv.ci) if pv.ci else None),
+            model_version=pv.model_version,
+            note="Standardized estimate over the national DataSUS base, coverage-gated and "
+                 "model-versioned. Counting, not finding — not individually localizable patients.",
         ),
     )
 
 
-def _find() -> QueryResponse:
-    """FIND — how many eligible patients are LOCALIZABLE now (Asset 2, observed).
-    Never touches Asset 3 (the golden rule: you cannot 'find' an imputed patient)."""
-    observed = observed_n_by_site(_protocol, _proprietary_all, exclude_depth_ids=None)
-    total = sum(s.observed_n for s in observed)
+def _observed_response(intent_str: str, res, sites: int) -> QueryResponse:
+    """Map a route() observed result (FIND / prevalence) to the response shape."""
     return QueryResponse(
-        intent="find", protocol_id=_protocol.protocol_id, value=float(total),
+        intent=intent_str, protocol_id=_protocol.protocol_id,
+        value=float(res.value) if res.value is not None else 0.0,
         provenance=Provenance(
             origin="observed", asset="proprietary_pure",
             confidence="observed (row-level, localizable)",
-            source="Proprietary NLP->OMOP depth (14 sites)",
-            sites_with_data=len(observed),
-            note="Direct count over real proprietary patients. Finding, not counting — "
-                 "each is a real, localizable record. Asset 3 (imputed) is never used here.",
+            source="Proprietary NLP->OMOP depth",
+            sites_with_data=sites,
+            note="Direct count over real proprietary patients. Finding, not counting — each is a "
+                 "real, localizable record. The imputed Asset 3 is STRUCTURALLY unreachable here "
+                 "(route() guardrail), not merely avoided by convention.",
         ),
     )
 
@@ -252,11 +272,49 @@ def soften(req: SoftenRequest):
 
 @app.post("/query", response_model=QueryResponse)
 def query(req: QueryRequest):
-    """Semantic layer: route by intent. count -> Asset 3 (estimated), find -> Asset 2
-    (observed). Enforces the golden rule 'contar != encontrar' at the boundary."""
+    """Semantic layer routed through trialbridge.query.route() — governance LIVE:
+    FIND is structurally barred from the imputed pathway (guardrail), Estimated N is
+    coverage-gated + model-versioned, every number carries provenance. Intents:
+    count | find | prevalence | findability | feasibility."""
     intent = (req.intent or "").strip().lower()
-    if intent == "count":
-        return _count()
-    if intent == "find":
-        return _find()
-    raise HTTPException(status_code=400, detail="intent must be 'count' or 'find'")
+    try:
+        if intent in ("count", "market_size"):
+            res = route(Intent.MARKET_SIZE, protocol=_protocol, proprietary=_proprietary_complete,
+                        datasus=_datasus, coverage=_coverage, model_version=_model_version)
+            return _imputed_response("count", res)
+        if intent == "find":
+            res = route(Intent.FIND, protocol=_protocol, proprietary=_proprietary_all)
+            sites = len(observed_n_by_site(_protocol, _proprietary_all))
+            return _observed_response("find", res, sites)
+        if intent == "prevalence":
+            res = route(Intent.PREVALENCE, protocol=_protocol, proprietary=_proprietary_complete,
+                        datasus=_datasus)
+            r = _observed_response("prevalence", res, 0)
+            r.provenance.asset = "datasus_pure"
+            r.provenance.source = _datasus.provenance.get("source", "DataSUS (materialized)")
+            r.provenance.note = "DataSUS national denominator after checkable criteria. Observed/exact."
+            return r
+        if intent == "findability":
+            res = route(Intent.FINDABILITY, protocol=_protocol, proprietary=_proprietary_complete,
+                        datasus=_datasus, coverage=_coverage, model_version=_model_version,
+                        observed_proprietary=_proprietary_all)
+            return _imputed_response("findability", res)
+        if intent == "feasibility":
+            sites = finding_n_by_site(_protocol, _prop_finding)  # FullProprietary via materialized adapter
+            total = sum(s.finding_n for s in sites)
+            return QueryResponse(
+                intent="feasibility", protocol_id=_protocol.protocol_id, value=float(total),
+                provenance=Provenance(
+                    origin="observed", asset="proprietary_pure",
+                    confidence="observed finding (checkable-level, site feasibility)",
+                    source=_prop_finding.provenance.get("source", "proprietary finding base"),
+                    as_of=_prop_finding.provenance.get("as_of"),
+                    sites_with_data=len(sites),
+                    note="Real breast-cancer patients matching demographics per site, over the full "
+                         "6.68M proprietary base. Finding, not counting — localizable records.",
+                ),
+            )
+    except FindingOverImputedError as e:
+        raise HTTPException(status_code=400, detail=f"golden rule violated: {e}")
+    raise HTTPException(status_code=400,
+                        detail="intent must be count|find|prevalence|findability|feasibility")
