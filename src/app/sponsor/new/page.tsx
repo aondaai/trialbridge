@@ -15,6 +15,8 @@ import type { Criterion } from "@/lib/matcher/types";
 import type { OmopCriterion } from "@/lib/omop/types";
 import { HERO_PROTOCOL_TEXT, HERO_META } from "@/data/hero-protocol";
 import { TopBar } from "@/components/ui";
+import { IntakePanel, TrustChip, type IntakeResultClient } from "./IntakePanel";
+import type { Provenance } from "@/lib/intake";
 
 interface ParseResult {
   criteria: Criterion[];
@@ -57,6 +59,42 @@ export default function NewConsultationPage() {
 
   const [omopRows, setOmopRows] = useState<OmopCriterion[] | null>(null);
   const [mappingOmop, setMappingOmop] = useState(false);
+
+  // Provenance of the last universal-intake ingest (which format, how, trust tier).
+  const [provenance, setProvenance] = useState<Provenance | null>(null);
+
+  /**
+   * Route an /api/intake result into the existing flow's two lanes:
+   *  - preParsedCriteria (structured) → jump straight to the verify table
+   *  - eligibilityText (document/registry) → prefill the parse step
+   */
+  function handleIntake(r: IntakeResultClient) {
+    setError(null);
+    setProvenance(r.provenance);
+    setOmopRows(null);
+    if (r.metadata.title) setTitle(r.metadata.title);
+
+    const fromCtGov = r.metadata.sourceRegistry === "clinicaltrials.gov";
+    setNct(fromCtGov ? r.metadata.sourceId : "");
+
+    if (r.preParsedCriteria && r.preParsedCriteria.length > 0) {
+      // Structured lane — no LLM parse; the verify table is the trust moment.
+      setText(r.eligibilityText ?? "");
+      setRows(r.preParsedCriteria);
+      setResult({
+        criteria: r.preParsedCriteria,
+        source: "cached",
+        note: `Structured import via ${r.provenance.adapter} — skipped the LLM parse. ${r.provenance.note ?? ""}`,
+      });
+      setTextMatchesNct(false);
+    } else {
+      // Document / registry lane — hand the eligibility text to the parse step.
+      setText(r.eligibilityText ?? "");
+      setRows([]);
+      setResult(null);
+      setTextMatchesNct(fromCtGov);
+    }
+  }
 
   async function fetchFromCtGov() {
     setFetchingCt(true);
@@ -158,14 +196,28 @@ export default function NewConsultationPage() {
     <>
       <TopBar active="sponsor" />
       <main className="wrap">
-        <h1 style={{ marginBottom: 2 }}>Post a consultation from protocol text</h1>
+        <h1 style={{ marginBottom: 2 }}>Post a consultation — bring your protocol in any format</h1>
         <p className="muted" style={{ marginTop: 0 }}>
-          Paste eligibility criteria. Claude parses them into machine-checkable
-          rules; you verify before posting. <Link href="/sponsor">← back</Link>
+          Upload a document, paste a registry id, or drop in structured eligibility. We detect the
+          format and extract machine-checkable rules; you verify before posting.{" "}
+          <Link href="/sponsor">← back</Link>
         </p>
 
+        <IntakePanel onResult={handleIntake} onError={setError} />
+
+        {provenance && (
+          <div className="privacy" style={{ marginBottom: 4, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span className="lock">📥</span>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <strong style={{ textTransform: "capitalize" }}>{provenance.adapter}</strong> · {provenance.extraction}
+              <div className="muted" style={{ fontSize: 12 }}>{provenance.note}</div>
+            </div>
+            <TrustChip trust={provenance.trust} />
+          </div>
+        )}
+
         <div className="card">
-          <h2>Step 1 · Fetch from ClinicalTrials.gov (optional)</h2>
+          <h2>Or: fetch from ClinicalTrials.gov (classic)</h2>
           <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
             Pull the eligibility text straight from a real NCT record instead of pasting it.
           </p>
