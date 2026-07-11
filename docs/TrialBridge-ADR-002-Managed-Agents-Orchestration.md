@@ -159,3 +159,20 @@ Concretely:
 **Invariants that hold across all phases:** no patient row leaves the site boundary; every surfaced
 value is a provenanced `Metric`; D is always `proposed` and never auto-approved; A/B/C are pure code
 that agents orchestrate but never fabricate.
+
+### Build status (2026-07-11)
+
+| Phase | State | Where |
+|---|---|---|
+| M0 | ✅ built + smoke-tested | `mcp/cohortServer.ts`, `mcp/cohortPreviewTool.ts`, `scripts/mcp-cohort-server.ts` |
+| M1 | ✅ built (offline-tested via injected deps) | `mcp/orchestrator.ts`, `mcp/agentConfig.ts` |
+| M2 | ✅ built | `resolvers/narrativeCritic.ts` (wired into the orchestrator) |
+| M3 | ✅ built | `mcp/fanout.ts` (bounded-concurrency network sweep, per-site failure isolation) |
+| M4 | ✅ built | `mcp/scheduler.ts` (nightly freshness planner, clock-free) |
+
+All five phases are implemented as pure/injected code and exercised by the test suite (typecheck +
+`vitest` + `next build` green). The remaining work is the **live MCA integration seam** — a small
+adapter that (a) starts the site-side `cohort.preview` server, (b) calls the real Managed-Agents
+`create agent`/`create session` API with `FEASIBILITY_AGENT` and the `managed-agents-2026-04-01` beta
+header, and (c) binds the orchestrator's injected deps to Prisma + Claude. That step needs a live API
+key and environment and is intentionally left to a keyed run rather than stubbed here.
