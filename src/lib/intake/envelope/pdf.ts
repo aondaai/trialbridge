@@ -15,6 +15,9 @@
 
 import { inflateSync, inflateRawSync } from "node:zlib";
 
+/** Per-stream inflate cap — same decompression-bomb guard as the zip reader. */
+const MAX_STREAM_BYTES = 64 * 1024 * 1024;
+
 const latin1 = (b: Uint8Array): string => Buffer.from(b).toString("latin1");
 
 export function extractPdfText(bytes: Uint8Array): string {
@@ -62,9 +65,9 @@ export function extractPdfText(bytes: Uint8Array): string {
 /** PDF FlateDecode is zlib-wrapped; a few writers emit raw deflate — try both. */
 function inflate(b: Uint8Array): Uint8Array {
   try {
-    return new Uint8Array(inflateSync(b));
+    return new Uint8Array(inflateSync(b, { maxOutputLength: MAX_STREAM_BYTES }));
   } catch {
-    return new Uint8Array(inflateRawSync(b));
+    return new Uint8Array(inflateRawSync(b, { maxOutputLength: MAX_STREAM_BYTES }));
   }
 }
 
@@ -101,7 +104,11 @@ function readLiteral(s: string, start: number): [string, number] {
     const c = s[i];
     if (c === "\\") {
       const n = s[i + 1];
-      if (n in ESCAPES) {
+      if (n === undefined) {
+        // Trailing backslash at end of a (truncated) stream — drop it rather
+        // than appending the literal string "undefined".
+        i += 1;
+      } else if (n in ESCAPES) {
         out += ESCAPES[n];
         i += 2;
       } else if (n >= "0" && n <= "7") {

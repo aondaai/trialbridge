@@ -37,7 +37,11 @@ export function docxToText(bytes: Uint8Array): string {
     .replace(/<w:br\b[^>]*\/?>/g, "\n")
     .split(/<\/w:p>/)
     .map((p) =>
-      [...p.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)].map((m) => decodeXml(m[1])).join(""),
+      // Match the text-run element `<w:t>`/`<w:t …>` ONLY — the `(?:\s[^>]*)?`
+      // requires whitespace after the full tag name, so table tags like
+      // `<w:tbl>`, `<w:tr>`, `<w:tc>` (eligibility often lives in tables) don't
+      // false-match and leak markup into the extracted text.
+      [...p.matchAll(/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g)].map((m) => decodeXml(m[1])).join(""),
     )
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")
