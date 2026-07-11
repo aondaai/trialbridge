@@ -73,9 +73,13 @@ existing `progress.md` discipline. P0 = R0–R6 (maps to eng spec §16 P0). P1 =
 - **R4 ✅ Site scorecard.** `src/lib/scoring/site.ts` — 9 components, confidence roll-up, `rankSites` tie-break; `guardrails.ts` demotion. Eng spec §6.4–6.7.
 - **R5 ✅ Report assembler.** `src/lib/report/{types,assemble}.ts` — typed 8-section `Report`, provenance index, provenance gate enforced. Eng spec §8.
 - **R6 ✅ Report UI.** `components/MetricChip.tsx` + `components/report/EngineReport.tsx` + `lib/report/buildReport.ts` resolver, wired into `/scorecard?view=engine`. Every number renders through MetricChip. Eng spec §13.
-- **R7 Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts`. Eng spec §11.
-- **R8 KOL service + map.** `src/lib/kol/score.ts` + PubMed/ORCID connectors. Eng spec §10, §7.9.
-- **R9 Connector breadth.** IBGE / CNES / INCA / ReBEC / ANS TS connectors (or bridge to the Python estimator for DataSUS). Eng spec §7.
+- **R7 ✅ Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts` — per-region pool÷trials ratio, under-penetration, opportunity flag, IBGE macro-region populations; wired into report §4. Competing-trials is a MODELED placeholder until R9. Eng spec §11. *(on `feat/scorecard-p1`)*
+- **R8 KOL service + map.** `src/lib/kol/score.ts` + PubMed/ORCID connectors. Eng spec §10, §7.9. **Pure scorer is quick, but the map is only demonstrable once R9 supplies investigator data.**
+- **R9 Connector breadth.** IBGE / CNES / INCA / ReBEC / ANS + CT.gov investigator/competition TS connectors (or bridge to the Python estimator for DataSUS). Eng spec §7. **This is the real-data lift** — it replaces the R7/site MODELED placeholders with registry data and lifts sites above LOW confidence. Involves live external APIs (NCBI E-utilities key optional; ORCID token).
+
+### Branch state
+- **`feat/scorecard-engine`** → P0 (R0–R6) + review fixes → **PR #3** (open, against `main`).
+- **`feat/scorecard-p1`** → stacked on the above; R7 landed. Not yet pushed.
 
 ### How to wire the engine to real data (R6+)
 The engine takes typed inputs; the resolvers that fill them are the wiring points:
