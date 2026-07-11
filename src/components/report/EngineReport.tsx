@@ -295,8 +295,9 @@ function KolMapCard({ report }: { report: Report }) {
       ) : (
         <>
           <p className="sub">
-            Investigators on recruiting trials with Brazil sites (CT.gov). Trial-experience signal only —
-            publications + society roles activate once PubMed/ORCID is wired.
+            Investigators on recruiting trials with Brazil sites (CT.gov). Publications, society roles and
+            guideline authorship are deep-web-researched with citations (Parallel) when enrichment is on;
+            otherwise trial-experience only.
           </p>
           <div className="table-scroll">
             <table className="data">
@@ -305,18 +306,35 @@ function KolMapCard({ report }: { report: Report }) {
                   <th>Rank</th>
                   <th>Physician</th>
                   <th>Affiliation</th>
+                  <th className="num">Pubs</th>
+                  <th>Society</th>
                   <th>KOL score</th>
                 </tr>
               </thead>
               <tbody>
-                {physicians.map((p, i) => (
-                  <tr key={`${p.name}-${i}`}>
-                    <td>{i + 1}</td>
-                    <td><strong>{p.name}</strong></td>
-                    <td>{p.affiliation ?? <span className="muted">—</span>}</td>
-                    <td><MetricChip metric={p.scoreMetric} strong /></td>
-                  </tr>
-                ))}
+                {physicians.map((p, i) => {
+                  const cited = (p.citations ?? []).filter((c) => c.url);
+                  return (
+                    <tr key={`${p.name}-${i}`}>
+                      <td>{i + 1}</td>
+                      <td><strong>{p.name}</strong></td>
+                      <td>{p.affiliation ?? <span className="muted">—</span>}</td>
+                      <td className="num">
+                        {p.pubsCountTa ? p.pubsCountTa : <span className="muted">—</span>}
+                        {cited.length > 0 && (
+                          <>
+                            {" "}
+                            <a href={cited[0].url!} target="_blank" rel="noopener noreferrer" title={`${cited.length} sources`} style={{ fontSize: 11 }}>
+                              [{cited.length} cited]
+                            </a>
+                          </>
+                        )}
+                      </td>
+                      <td>{p.societyRoles && p.societyRoles.length > 0 ? p.societyRoles.join(", ") : <span className="muted">—</span>}</td>
+                      <td><MetricChip metric={p.scoreMetric} strong /></td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -75,10 +75,12 @@ export default async function ScorecardPage({
     // when PARALLEL_API_KEY is absent (KOL stays trial-experience-only).
     let kolInvestigators = competition.source === "live" ? ctgovToKolInputs(competition) : [];
     if (parallelEnabled() && kolInvestigators.length > 0) {
-      const top = kolInvestigators.slice(0, 6);
+      // Cap the synchronous enrichment (each `core` task ~1 min); results are cached,
+      // so subsequent viewers of this protocol get them instantly.
+      const top = kolInvestigators.slice(0, 2);
       const enrichments = await enrichInvestigators(
         top.map((k) => ({ name: k.name, affiliation: k.affiliation, therapeuticArea: condition })),
-        { concurrency: 3 },
+        { concurrency: 2 },
       );
       kolInvestigators = applyEnrichment(kolInvestigators, enrichments);
     }
