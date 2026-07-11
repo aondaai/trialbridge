@@ -6,7 +6,7 @@
 import Link from "next/link";
 import type { Criterion, CriterionResult, Cohort } from "@/lib/matcher/types";
 
-export function TopBar({ active }: { active?: "home" | "sponsor" | "site" }) {
+export function TopBar({ active }: { active?: "home" | "sponsor" | "site" | "map" }) {
   return (
     <div className="topbar no-print">
       <Link href="/" className="brand">
@@ -19,6 +19,9 @@ export function TopBar({ active }: { active?: "home" | "sponsor" | "site" }) {
         </Link>
         <Link href="/site" className={active === "site" ? "active" : ""}>
           Site (Camila)
+        </Link>
+        <Link href="/map" className={active === "map" ? "active" : ""}>
+          LatAm Map
         </Link>
       </nav>
     </div>
