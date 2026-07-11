@@ -10,11 +10,19 @@ decision report at `/scorecard?view=engine` from **real** data — CT.gov trials
 infrastructure (Parallel Task API, `ultra-fast`) — every number sealed by provenance, nothing
 fabricated.
 
-## Branches & PRs (globaltrialbridge/trialbridge)
-- **`feat/scorecard-engine`** → **PR #3** (base `main`): P0 — the pure engine (R0–R6) + review fixes.
-- **`feat/scorecard-p1`** → **PR #4** (base `feat/scorecard-engine`, **stacked**): P1 — all the real-data
-  work (R7–R9, Parallel pipe, site directory, cross-reference, real sites in rankings, CNES infra, max-power).
-  **This is the active branch.** 18 commits over P0. Retarget PR #4 to `main` once #3 merges.
+## Repository
+**Main repo: `https://github.com/aondaai/trialbridge`** (private). `origin` points here.
+The old `globaltrialbridge/trialbridge` is **retired** (kept locally as the `globaltrialbridge-archive`
+remote for reference only — don't push there). Migrated 2026-07-11.
+
+## Branches & PRs (aondaai/trialbridge)
+- **`feat/scorecard-engine`** → **PR #5** (base `main`): P0 — the pure engine (R0–R6) + review fixes.
+- **`feat/scorecard-p1`** → **PR #6** (base `feat/scorecard-engine`, **stacked**): P1 — all the real-data
+  work (R7–R9, Parallel pipe, site directory, cross-reference, real sites in rankings, CNES infra),
+  plus real DataSUS pools, the design-system restyle + Brazil tile-maps, and the denser KOL map.
+  **This is the active branch.** Retarget PR #6 to `main` once #5 merges.
+- aondaai also has a **parallel line** (latam site map, estimator governance, `feat/scorecard-reconciliation`)
+  that predates this migration — reconcile the scorecard-engine diff against it before merging PR #5.
 - Both PRs are up to date with local. Working tree clean.
 
 ## How to RESUME (do this first in a new session)
