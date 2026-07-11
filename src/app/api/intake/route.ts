@@ -16,9 +16,25 @@ import { defaultRegistry } from "@/lib/intake";
 import type { IntakeInput } from "@/lib/intake";
 
 export const dynamic = "force-dynamic";
-// Uploaded documents can be a few MB; allow a generous body (the zip reader caps
-// decompression at 64MB per entry regardless).
 export const maxDuration = 30;
+
+/**
+ * Raw upload/body cap. App-Router route handlers have NO default body-size
+ * limit, and `formData()`/`arrayBuffer()` buffer the whole body in memory
+ * before any adapter runs — so without this an unauthenticated multi-GB POST
+ * would OOM the instance. (This is separate from the zip/pdf readers' 64MB
+ * decompression-output cap.) Real protocol documents are well under this.
+ */
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB
+
+class PayloadTooLarge extends Error {}
+
+function assertWithinLimit(req: Request): void {
+  const len = Number(req.headers.get("content-length") ?? "0");
+  if (Number.isFinite(len) && len > MAX_UPLOAD_BYTES) {
+    throw new PayloadTooLarge(`upload exceeds the ${MAX_UPLOAD_BYTES / (1024 * 1024)}MB limit`);
+  }
+}
 
 async function buildInput(req: Request): Promise<IntakeInput> {
   const contentType = req.headers.get("content-type") ?? "";
@@ -27,6 +43,10 @@ async function buildInput(req: Request): Promise<IntakeInput> {
     const form = await req.formData();
     const file = form.get("file");
     if (!file || typeof file === "string") throw new Error("no file field in the upload");
+    // Defense-in-depth: Content-Length is a hint, so re-check the actual size.
+    if (file.size > MAX_UPLOAD_BYTES) {
+      throw new PayloadTooLarge(`file exceeds the ${MAX_UPLOAD_BYTES / (1024 * 1024)}MB limit`);
+    }
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (bytes.length === 0) throw new Error("uploaded file is empty");
     return { kind: "file", filename: file.name || "upload", bytes };
@@ -58,9 +78,11 @@ async function buildInput(req: Request): Promise<IntakeInput> {
 export async function POST(req: Request) {
   let input: IntakeInput;
   try {
+    assertWithinLimit(req);
     input = await buildInput(req);
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 400 });
+    const status = err instanceof PayloadTooLarge ? 413 : 400;
+    return NextResponse.json({ error: (err as Error).message }, { status });
   }
 
   try {

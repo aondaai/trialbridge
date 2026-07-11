@@ -7,13 +7,14 @@
  * handed up via `onResult`; the parent routes the two lanes (eligibilityText →
  * parse+verify; preParsedCriteria → straight to the verify table).
  *
- * Also renders the "what you can bring" showcase so the sponsor SEES the full
- * range of supported entrances.
+ * Also renders the "what you can bring" showcase — each card can load a live
+ * sample so a sponsor can see any lane end-to-end in one click.
  */
 
 import { useRef, useState } from "react";
 import type { Criterion } from "@/lib/matcher/types";
 import type { ProtocolMeta, Provenance } from "@/lib/intake";
+import { FHIR_EVIDENCE_VARIABLE, ATLAS_COHORT, EUCTR_FIXTURE } from "@/data/intakeFixtures";
 
 export interface IntakeResultClient {
   metadata: ProtocolMeta;
@@ -31,21 +32,36 @@ const MODES: { key: Mode; icon: string; label: string }[] = [
   { key: "json", icon: "🧬", label: "Structured JSON" },
 ];
 
-const FORMATS: { icon: string; name: string; hint: string; trust: Provenance["trust"] }[] = [
-  { icon: "🔖", name: "ClinicalTrials.gov", hint: "NCT id → live registry fetch", trust: "high" },
-  { icon: "🇪🇺", name: "EU CTR", hint: "EudraCT number (YYYY-NNNNNN-CC)", trust: "high" },
-  { icon: "🧬", name: "FHIR EvidenceVariable", hint: "coded eligibility → skips the LLM", trust: "high" },
-  { icon: "📄", name: "Protocol PDF / DOCX", hint: "we locate the eligibility section", trust: "medium" },
-  { icon: "📝", name: "Synopsis / pasted text", hint: "bullets or prose", trust: "medium" },
-  { icon: "📊", name: "XLSX matrix", hint: "one row per criterion", trust: "medium" },
-  { icon: "🧩", name: "ATLAS cohort JSON", hint: "OHDSI cohort → approximate", trust: "medium" },
-  { icon: "📦", name: "IND / eCTD package", hint: ".zip → Module 5 protocol", trust: "low" },
+const SAMPLE_SYNOPSIS = `Protocol Synopsis — Drug Y in NSCLC
+
+Eligibility:
+- Adults with stage IV non-small cell lung cancer.
+- KRAS G12C mutation confirmed.
+- ECOG performance status 0 or 1.
+- No prior KRAS inhibitor.`;
+
+/** A loadable sample for a showcase card, or null when the format is binary. */
+type Sample =
+  | { mode: "id"; id: string }
+  | { mode: "text"; text: string }
+  | { mode: "json"; data: unknown }
+  | null;
+
+const FORMATS: { icon: string; name: string; hint: string; trust: Provenance["trust"]; sample: Sample }[] = [
+  { icon: "🔖", name: "ClinicalTrials.gov", hint: "NCT id → live registry fetch", trust: "high", sample: { mode: "id", id: "NCT03529110" } },
+  { icon: "🇪🇺", name: "EU CTR", hint: "EudraCT number (YYYY-NNNNNN-CC)", trust: "high", sample: { mode: "id", id: EUCTR_FIXTURE.eudractNumber } },
+  { icon: "🧬", name: "FHIR EvidenceVariable", hint: "coded eligibility → skips the LLM", trust: "high", sample: { mode: "json", data: FHIR_EVIDENCE_VARIABLE } },
+  { icon: "🧩", name: "ATLAS cohort JSON", hint: "OHDSI cohort → approximate", trust: "medium", sample: { mode: "json", data: ATLAS_COHORT } },
+  { icon: "📝", name: "Synopsis / pasted text", hint: "bullets or prose", trust: "medium", sample: { mode: "text", text: SAMPLE_SYNOPSIS } },
+  { icon: "📄", name: "Protocol PDF / DOCX", hint: "we locate the eligibility section", trust: "medium", sample: null },
+  { icon: "📊", name: "XLSX matrix", hint: "one row per criterion", trust: "medium", sample: null },
+  { icon: "📦", name: "IND / eCTD package", hint: ".zip → Module 5 protocol", trust: "low", sample: null },
 ];
 
 const TRUST_STYLE: Record<Provenance["trust"], { bg: string; fg: string; label: string }> = {
-  high: { bg: "rgba(22,163,74,0.12)", fg: "#16a34a", label: "high trust" },
-  medium: { bg: "rgba(251,191,36,0.14)", fg: "#b45309", label: "medium trust" },
-  low: { bg: "rgba(239,68,68,0.12)", fg: "#dc2626", label: "low trust — verify all" },
+  high: { bg: "rgba(22,163,74,0.12)", fg: "#15803d", label: "high trust" },
+  medium: { bg: "rgba(180,83,9,0.14)", fg: "#b45309", label: "medium trust" },
+  low: { bg: "rgba(220,38,38,0.12)", fg: "#dc2626", label: "low trust — verify all" },
 };
 
 export function TrustChip({ trust }: { trust: Provenance["trust"] }) {
@@ -76,16 +92,23 @@ export function IntakePanel({
   const [jsonInput, setJsonInput] = useState("");
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   async function post(body: BodyInit, headers?: HeadersInit) {
+    if (busy) return; // guard against overlapping submits
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setBusy(true);
     onError("");
     try {
-      const res = await fetch("/api/intake", { method: "POST", body, headers });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "intake failed");
+      const res = await fetch("/api/intake", { method: "POST", body, headers, signal: controller.signal });
+      // Tolerate a non-JSON error body (e.g. a platform 413/502 HTML page).
+      const json = await res.json().catch(() => ({ error: `intake failed (HTTP ${res.status})` }));
+      if (!res.ok) throw new Error(json.error ?? `intake failed (HTTP ${res.status})`);
       onResult(json as IntakeResultClient);
     } catch (e) {
+      if ((e as Error).name === "AbortError") return; // superseded by a newer submit
       onError((e as Error).message);
     } finally {
       setBusy(false);
@@ -93,13 +116,24 @@ export function IntakePanel({
   }
 
   function submitFile(file: File | undefined | null) {
-    if (!file) return;
+    if (busy || !file) return;
     const form = new FormData();
     form.append("file", file);
-    void post(form); // browser sets multipart boundary
+    void post(form); // browser sets the multipart boundary
   }
-  const submitJson = (mode: string, payload: Record<string, unknown>) =>
-    post(JSON.stringify({ mode, ...payload }), { "content-type": "application/json" });
+  const submitJson = (payloadMode: string, payload: Record<string, unknown>) =>
+    post(JSON.stringify({ mode: payloadMode, ...payload }), { "content-type": "application/json" });
+
+  function loadSample(s: NonNullable<Sample>) {
+    if (busy) return;
+    if (s.mode === "id") { setMode("id"); setIdInput(s.id); submitJson("id", { id: s.id }); }
+    else if (s.mode === "text") { setMode("text"); setTextInput(s.text); submitJson("text", { text: s.text }); }
+    else { setMode("json"); setJsonInput(JSON.stringify(s.data, null, 2)); submitJson("json", { data: s.data }); }
+  }
+
+  function openFilePicker() {
+    fileRef.current?.click();
+  }
 
   return (
     <div className="card">
@@ -126,18 +160,24 @@ export function IntakePanel({
       {mode === "file" && (
         <div>
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="Upload a protocol file — drop a file here or activate to browse"
+            aria-disabled={busy}
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={(e) => { e.preventDefault(); setDragOver(false); submitFile(e.dataTransfer.files?.[0]); }}
-            onClick={() => fileRef.current?.click()}
+            onClick={openFilePicker}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openFilePicker(); } }}
             style={{
               border: `2px dashed ${dragOver ? "var(--accent, #D97757)" : "var(--border)"}`,
               borderRadius: 10, padding: "26px 16px", textAlign: "center", cursor: "pointer",
               background: dragOver ? "rgba(217,119,87,0.06)" : "var(--panel-2)",
+              opacity: busy ? 0.6 : 1,
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 4 }}>📎</div>
-            <div style={{ fontWeight: 600 }}>Drop a file or click to browse</div>
+            <div style={{ fontWeight: 600 }}>{busy ? "Reading…" : "Drop a file or click to browse"}</div>
             <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
               PDF · DOCX · XLSX · .zip / eCTD · FHIR/ATLAS .json
             </div>
@@ -147,7 +187,7 @@ export function IntakePanel({
             type="file"
             accept=".pdf,.docx,.xlsx,.zip,.json,.txt,.md"
             style={{ display: "none" }}
-            onChange={(e) => submitFile(e.target.files?.[0])}
+            onChange={(e) => { submitFile(e.target.files?.[0]); e.target.value = ""; }}
           />
         </div>
       )}
@@ -164,7 +204,7 @@ export function IntakePanel({
             {busy ? "Fetching…" : "Fetch →"}
           </button>
           <span className="muted" style={{ fontSize: 12 }}>
-            {/^\s*NCT\d{8}/i.test(idInput) ? "→ ClinicalTrials.gov" : /^\s*\d{4}-\d{6}-\d{2}/.test(idInput) ? "→ EU CTR" : ""}
+            {/^\s*NCT\d{8}\s*$/i.test(idInput) ? "→ ClinicalTrials.gov" : /^\s*\d{4}-\d{6}-\d{2}\s*$/.test(idInput) ? "→ EU CTR" : ""}
           </span>
         </div>
       )}
@@ -203,10 +243,10 @@ export function IntakePanel({
         </div>
       )}
 
-      {/* "What you can bring" showcase */}
+      {/* "What you can bring" showcase — each card can load a live sample */}
       <details style={{ marginTop: 14 }}>
         <summary style={{ cursor: "pointer", fontSize: 13, fontWeight: 600 }}>What can I bring? (8 formats)</summary>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8, marginTop: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 8, marginTop: 10 }}>
           {FORMATS.map((f) => (
             <div key={f.name} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "9px 11px", background: "var(--panel-2)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
@@ -214,6 +254,17 @@ export function IntakePanel({
                 <TrustChip trust={f.trust} />
               </div>
               <div className="muted" style={{ fontSize: 12, marginTop: 3 }}>{f.hint}</div>
+              <div style={{ marginTop: 7 }}>
+                {f.sample ? (
+                  <button className="btn soft" disabled={busy} onClick={() => loadSample(f.sample!)} style={{ padding: "3px 10px", fontSize: 12 }}>
+                    Try a sample →
+                  </button>
+                ) : (
+                  <button className="btn soft" onClick={() => setMode("file")} style={{ padding: "3px 10px", fontSize: 12 }}>
+                    Upload your own →
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>

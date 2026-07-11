@@ -279,14 +279,49 @@ export default function NewConsultationPage() {
         {result && (
           <>
             <div className="card">
-              <h2>Step 3 · Verify parsed criteria</h2>
-              <div className="privacy" style={{ marginBottom: 12 }}>
-                <span className="lock">{result.source === "claude" ? "🤖" : "📦"}</span>
+              <h2>Step 3 · Verify {result.source === "structured" ? "imported" : "parsed"} criteria</h2>
+              <div className="privacy" style={{ marginBottom: 10 }}>
+                <span className="lock">{result.source === "claude" ? "🤖" : result.source === "structured" ? "🧬" : "📦"}</span>
                 <div>
-                  <strong>{result.source === "claude" ? `Parsed by ${result.model}` : "Cached parse"}.</strong>{" "}
+                  <strong>
+                    {result.source === "claude"
+                      ? `Parsed by ${result.model}`
+                      : result.source === "structured"
+                        ? "Structured import — no LLM parse"
+                        : "Cached parse"}
+                    .
+                  </strong>{" "}
                   {result.note}
                 </div>
               </div>
+              {/* Trust-driven flagging: how much of THIS import needs a human. */}
+              {(() => {
+                const flagged = rows.filter((r) => r.confidence < 0.75).length;
+                const trust = provenance?.trust;
+                const emphasize = trust === "low" || flagged > 0;
+                return (
+                  <div
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+                      marginBottom: 12, padding: "8px 12px", borderRadius: 8,
+                      border: `1px solid ${emphasize ? "rgba(180,83,9,0.35)" : "var(--border)"}`,
+                      background: emphasize ? "rgba(251,191,36,0.08)" : "var(--panel-2)",
+                    }}
+                  >
+                    {provenance && <TrustChip trust={provenance.trust} />}
+                    <span style={{ fontSize: 13 }}>
+                      {flagged > 0 ? (
+                        <>
+                          <strong>{flagged} of {rows.length}</strong> row{flagged === 1 ? "" : "s"} flagged for verification
+                          {trust === "low" && " — low-trust source, review every row"}.
+                        </>
+                      ) : (
+                        <>All {rows.length} rows above the confidence threshold — spot-check and post.</>
+                      )}
+                    </span>
+                  </div>
+                );
+              })()}
               <div className="table-scroll">
                 <table className="data">
                   <thead>
@@ -351,7 +386,25 @@ export default function NewConsultationPage() {
               <button className="btn soft" onClick={mapToOmop} disabled={mappingOmop || rows.length === 0}>
                 {mappingOmop ? "Mapping…" : "Map to OMOP →"}
               </button>
-              {omopRows && (
+              {omopRows && (() => {
+                const coded = omopRows.length;
+                const resolved = omopRows.filter((o) => o.concept.verified).length;
+                const dxJoined = omopRows.filter((o) => o.icd10Prefixes && o.icd10Prefixes.length > 0).length;
+                return (
+                <>
+                <div className="privacy" style={{ marginTop: 10, alignItems: "flex-start" }}>
+                  <span className="lock">🗺️</span>
+                  <div style={{ fontSize: 12.5 }}>
+                    <strong>{coded} criteria coded</strong> to OMOP domains + vocabularies.{" "}
+                    {resolved > 0
+                      ? `${resolved} carry a resolved standard concept_id`
+                      : "No standard concept_ids yet — resolving them just needs a vocabulary bundle dropped in (data/vocab-index.json); the domain/table/vocabulary coding above is already done"}
+                    {dxJoined > 0 && `, and ${dxJoined} diagnosis ${dxJoined === 1 ? "row carries" : "rows carry"} the CID-10 join prefixes for the DataSUS base cohort`}.
+                    <div className="muted" style={{ marginTop: 2 }}>
+                      &ldquo;Needs mapping&rdquo; below is the expected state without a vocabulary bundle, not a failure — the coding is honest about what is verified vs. still placeholder.
+                    </div>
+                  </div>
+                </div>
                 <div className="table-scroll" style={{ marginTop: 10 }}>
                   <table className="data">
                     <thead>
@@ -383,7 +436,9 @@ export default function NewConsultationPage() {
                     </tbody>
                   </table>
                 </div>
-              )}
+                </>
+                );
+              })()}
               <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
                 See <code>docs/omop-vocabulary-mapping.md</code> for which concepts are verified vs. placeholder, and why.
               </p>
