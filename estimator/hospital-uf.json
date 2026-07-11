@@ -1,0 +1,19 @@
+{
+  "_doc": "Proprietary hospital-code -> UF (federal unit) map. The full/materialized proprietary base carries a hospital code but NO UF column, so per-UF findability and the leave-one-UF-out geographic holdout (Trilha B step 3) both need this lookup. 'source' records provenance per entry: 'user' = confirmed by the data owner; 'inferred' = high-confidence identification from the hospital code, reviewed by the owner (table shown 2026-07-11) without objection; null uf = unconfirmed, must NOT be assigned a UF (kept out of per-UF aggregation rather than guessed).",
+  "_as_of": "2026-07-11",
+  "map": {
+    "ha":        {"uf": "SP", "name": "Hospital de Amor (Barretos)",            "source": "user"},
+    "hac":       {"uf": "PR", "name": "Hospital Angelina Caron",                "source": "user"},
+    "hmd":       {"uf": "RS", "name": "Hospital Mae de Deus",                   "source": "user"},
+    "hmv":       {"uf": "RS", "name": "Hospital Moinhos de Vento (Porto Alegre)","source": "inferred"},
+    "drarnaldo": {"uf": "SP", "name": "Instituto do Cancer Dr. Arnaldo",        "source": "inferred"},
+    "unimedfor": {"uf": "CE", "name": "Unimed Fortaleza",                       "source": "inferred"},
+    "felicio":   {"uf": "MG", "name": "Hospital Felicio Rocho (Belo Horizonte)","source": "inferred"},
+    "uopeccan":  {"uf": "PR", "name": "UOPECCAN (Cascavel)",                    "source": "inferred"},
+    "imip":      {"uf": "PE", "name": "IMIP (Recife)",                          "source": "inferred"},
+    "ibcc":      {"uf": "SP", "name": "Instituto Brasileiro de Controle do Cancer", "source": "inferred"},
+    "scmatao":   {"uf": "SP", "name": "Santa Casa de Matao",                    "source": "inferred"},
+    "hcor":      {"uf": "SP", "name": "Hospital do Coracao (Sao Paulo)",        "source": "inferred"},
+    "hsl":       {"uf": null, "name": "unconfirmed (Sirio-Libanes SP?)",        "source": "unconfirmed"}
+  }
+}
