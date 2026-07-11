@@ -293,28 +293,34 @@ function KolMapCard({ report }: { report: Report }) {
           wired — R9. No physicians are shown rather than fabricated.
         </p>
       ) : (
-        <div className="table-scroll">
-          <table className="data">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Physician</th>
-                <th>Region</th>
-                <th>KOL score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {physicians.map((p, i) => (
-                <tr key={`${p.name}-${i}`}>
-                  <td>{i + 1}</td>
-                  <td><strong>{p.name}</strong></td>
-                  <td>{p.regionCode}</td>
-                  <td><MetricChip metric={p.scoreMetric} strong /></td>
+        <>
+          <p className="sub">
+            Investigators on recruiting trials with Brazil sites (CT.gov). Trial-experience signal only —
+            publications + society roles activate once PubMed/ORCID is wired.
+          </p>
+          <div className="table-scroll">
+            <table className="data">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Physician</th>
+                  <th>Affiliation</th>
+                  <th>KOL score</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {physicians.map((p, i) => (
+                  <tr key={`${p.name}-${i}`}>
+                    <td>{i + 1}</td>
+                    <td><strong>{p.name}</strong></td>
+                    <td>{p.affiliation ?? <span className="muted">—</span>}</td>
+                    <td><MetricChip metric={p.scoreMetric} strong /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

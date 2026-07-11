@@ -38,6 +38,7 @@ export interface KolInvestigatorInput {
   name: string;
   regionCode: string;
   cnes?: string | null;
+  affiliation?: string | null;
   therapeuticArea?: string | null;
   signals: KolSignals;
 }
@@ -166,11 +167,13 @@ export function sweetSpotRegions(
 
 /** Assemble the report's §7 KOL map from scored investigators. */
 export function buildKolMap(investigators: KolInvestigatorInput[]): KolMapSummary {
+  const byName = new Map(investigators.map((i) => [i.name, i.affiliation ?? null]));
   const scores = rankKols(investigators.map(kolScore));
   return {
     physicians: scores.map((s) => ({
       name: s.name,
       regionCode: s.regionCode,
+      affiliation: byName.get(s.name) ?? null,
       scoreMetric: s.scoreMetric,
     })),
   };

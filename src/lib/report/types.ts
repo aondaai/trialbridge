@@ -95,6 +95,8 @@ export interface SupplyDemandSummary {
 export interface KolRefSummary {
   name: string;
   regionCode: string;
+  /** Real institutional affiliation (CT.gov) — the precise fact; region is best-effort. */
+  affiliation?: string | null;
   scoreMetric: Metric;
 }
 export interface KolMapSummary {
