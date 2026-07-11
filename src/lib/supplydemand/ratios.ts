@@ -6,7 +6,7 @@
  * report can surface "many patients, few trials" sweet spots. Pure.
  */
 
-import { Confidence, Metric, modeled, registry } from "@/lib/metric";
+import { Confidence, Metric, modeled, registry, SourceRef } from "@/lib/metric";
 import { TRIALS_PER_MILLION_BR, TRIALS_PER_MILLION_US } from "@/lib/constants";
 import type { SupplyDemandSummary } from "@/lib/report/types";
 
@@ -25,8 +25,11 @@ export const BR_MACROREGION_POPULATION: Record<string, number> = {
 export interface RegionSDInput {
   regionCode: string;
   regionName?: string;
-  /** Modeled eligible pool for the indication in this region (from the funnel). */
+  /** Eligible pool for the indication in this region (funnel, or real DataSUS estimate). */
   eligiblePool: number;
+  /** When the pool is a real-base estimate: its citation + note, carried on the metric. */
+  eligiblePoolSourceRefs?: SourceRef[];
+  eligiblePoolNote?: string | null;
   /** Competing active trials in the same condition (CT.gov + ReBEC). */
   competingTrials: number;
   /** Region population (IBGE), for trials-per-million. */
@@ -130,6 +133,9 @@ function oneRegion(
     regionName: r.regionName ?? r.regionCode,
     eligiblePoolMetric: modeled("supplydemand.eligible_pool", Math.round(r.eligiblePool), Confidence.MEDIUM, {
       unit: "patients",
+      asOf,
+      sourceRefs: r.eligiblePoolSourceRefs,
+      note: r.eligiblePoolNote ?? null,
     }),
     competingTrialsMetric,
     ratioMetric: modeled("supplydemand.ratio", round1(ratio), Confidence.MEDIUM, {
