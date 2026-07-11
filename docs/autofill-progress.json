@@ -8,7 +8,7 @@
   {"id":"F2-2","epic":"F2","desc":"capabilityResolver (B) returns a Metric from CapabilityCatalog via conceptResolver","file":"src/lib/feasibility-autofill/resolvers/capability.ts","passes":true},
   {"id":"F2-3","epic":"F2","desc":"DOCX writer round-trips (fill→reopen→assert values+styling)","file":"src/lib/feasibility-autofill/render/docx.ts","passes":true},
   {"id":"F2-4","epic":"F2","desc":"/diff blocks unapproved content (approved-vs-proposed guard)","file":"src/lib/feasibility-autofill/render/diff.ts","passes":true},
-  {"id":"F3-1","epic":"F3","desc":"questionnaire criteria wired to matcher/engine + soften; per-criterion deltas; small-cell suppression preserved","file":"src/lib/feasibility-autofill/resolvers/cohort.ts","passes":false},
+  {"id":"F3-1","epic":"F3","desc":"questionnaire criteria wired to matcher/engine + soften; per-criterion deltas; small-cell suppression preserved","file":"src/lib/feasibility-autofill/resolvers/cohort.ts","passes":true},
   {"id":"F4-1","epic":"F4","desc":"PriorFormAnswer store + retrieval (keyword/embedding-lite RAG over prior answers)","file":"src/lib/feasibility-autofill/rag.ts","passes":false},
   {"id":"F4-2","epic":"F4","desc":"narrativeResolver (D) on the parse.ts LLM-containment pattern; always status=proposed","file":"src/lib/feasibility-autofill/resolvers/narrative.ts","passes":false},
   {"id":"F4-3","epic":"F4","desc":"review-workspace route under src/app/site/feasibility/; D answers never auto-approved","file":"src/app/site/feasibility/page.tsx","passes":false},
