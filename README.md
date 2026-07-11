@@ -134,12 +134,7 @@ say exactly that much and no more.
 
 ## LatAm Site Map
 
-`/map` renders ~8,486 sites with active trials across Brazil, Mexico, Chile,
-and Argentina by default (≈22.6k all-time identifiable sites via the 'include dormant' toggle) (ClinicalTrials.gov registry data; city-level coordinates), colored
-by activity status with per-country filters. The payload
-(`public/data/latam-sites.json`) is generated from the SiteMapTool pipeline
-(github.com/aondaai/trialbridge branch `feat/latam-site-map` holds the full
-pipeline) via:
+`/map` renders ~8,707 sites with active clinical trials across Brazil, Mexico, Chile, and Argentina by default; an "include dormant" toggle reveals ~22,523 all-time identifiable sites. Data comes from ClinicalTrials.gov registry listings with city-level coordinates, colored by activity status with per-country filters. The payload (`public/data/latam-sites.json`) is generated from the SiteMapTool pipeline (github.com/aondaai/trialbridge branch `feat/latam-site-map` holds the full pipeline) via:
 
     npm run build-latam-map-data -- <path-to-full-sites.json>
 

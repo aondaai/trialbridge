@@ -47,7 +47,11 @@ writeFileSync(
   "public/data/latam-sites.json",
   JSON.stringify({ generated_at: new Date().toISOString(), sites }),
 );
+const noCoords = full.sites.filter((s) => s.lat == null || s.lng == null).length;
+const placeholders = full.sites.filter(
+  (s) => s.is_placeholder && s.lat != null && s.lng != null,
+).length;
 console.log(
   `wrote public/data/latam-sites.json: ${sites.length} mappable sites ` +
-    `(${full.sites.length - mappable.length} excluded: placeholders + no coords)`,
+    `(excluded: ${placeholders} placeholders, ${noCoords} without coords)`,
 );
