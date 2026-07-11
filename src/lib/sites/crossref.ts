@@ -29,6 +29,9 @@ export function crossReferenceInvestigators(
     return {
       ...inv,
       cnes,
+      // The matched site's UF places the investigator on the state tile-map — this
+      // captures CNES-less ACESSE matches too, which the CNES→UF path alone drops.
+      uf: match.uf ?? inv.uf ?? null,
       regionCode: match.region ?? inv.regionCode,
       // A "CNES link" requires an actual CNES — an ACESSE match (CNES-less) corrects the
       // region but must not flip the institution signal to a confirmed registered site.
