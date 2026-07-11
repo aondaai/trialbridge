@@ -204,7 +204,7 @@ export default function NewConsultationPage() {
             }}
           />
           <div style={{ marginTop: 10 }}>
-            <button className="btn primary" onClick={parse} disabled={parsing || !text.trim()}>
+            <button className="cl-btn cl-btn--primary" onClick={parse} disabled={parsing || !text.trim()}>
               {parsing ? "Parsing…" : "Parse with Claude →"}
             </button>
           </div>
@@ -348,7 +348,7 @@ export default function NewConsultationPage() {
                 </label>
               </div>
               <div style={{ marginTop: 12 }}>
-                <button className="btn primary" onClick={post} disabled={posting || rows.length === 0}>
+                <button className="cl-btn cl-btn--primary" onClick={post} disabled={posting || rows.length === 0}>
                   {posting ? "Posting…" : `Post consultation (${rows.length} criteria) →`}
                 </button>
               </div>

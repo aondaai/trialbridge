@@ -82,7 +82,7 @@ export default function NewSitePage() {
             </label>
 
             <div style={{ marginTop: 12 }}>
-              <button className="btn primary" type="submit">
+              <button className="cl-btn cl-btn--primary" type="submit">
                 List site →
               </button>
             </div>
