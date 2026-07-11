@@ -5,6 +5,7 @@
  */
 import Link from "next/link";
 import type { Criterion, CriterionResult, Cohort } from "@/lib/matcher/types";
+import { Provenance, Confidence, type Metric } from "@/lib/metric";
 
 export function TopBar({ active }: { active?: "home" | "sponsor" | "site" }) {
   return (
@@ -138,5 +139,72 @@ export function CriterionResultList({ results }: { results: CriterionResult[] })
         </div>
       ))}
     </div>
+  );
+}
+
+/**
+ * MetricChip — the evidence-provenance seal (TrialBridge design system). Every quantitative
+ * value a sponsor/coordinator sees renders through one, so hard fact (site-declared / registry)
+ * reads apart from estimate (modeled) at a glance. Maps the metric.ts Provenance enum onto the
+ * design system's provenance classes + tokens.
+ */
+const PROV_CLASS: Record<Provenance, string> = {
+  [Provenance.PEER_REVIEWED]: "peer",
+  [Provenance.REGISTRY_GOV]: "registry",
+  [Provenance.SITE_DECLARED]: "declared",
+  [Provenance.MODELED]: "modeled",
+  [Provenance.VENDOR]: "vendor",
+};
+const PROV_LABEL: Record<Provenance, string> = {
+  [Provenance.PEER_REVIEWED]: "Peer-reviewed",
+  [Provenance.REGISTRY_GOV]: "Registry / gov",
+  [Provenance.SITE_DECLARED]: "Site-declared",
+  [Provenance.MODELED]: "Modeled",
+  [Provenance.VENDOR]: "Vendor benchmark",
+};
+const CONF_GLYPH: Record<Confidence, string> = {
+  [Confidence.HIGH]: "●",
+  [Confidence.MEDIUM]: "◐",
+  [Confidence.LOW]: "○",
+};
+
+export function MetricChip({
+  metric,
+  showValue = true,
+  size = "sm",
+}: {
+  metric: Metric;
+  showValue?: boolean;
+  size?: "sm" | "md";
+}) {
+  const cls = PROV_CLASS[metric.provenance];
+  const tip = [metric.note, metric.asOf ? `as of ${metric.asOf}` : null].filter(Boolean).join(" · ");
+  return (
+    <span
+      className={`tb-chip tb-chip--${cls}${size === "md" ? " tb-chip--md" : ""}`}
+      tabIndex={tip ? 0 : undefined}
+    >
+      {showValue && metric.value != null && (
+        <span className="tb-chip__value">{String(metric.value)}</span>
+      )}
+      <span className="tb-chip__seal">{PROV_LABEL[metric.provenance]}</span>
+      <span className="tb-chip__conf" aria-label={`confidence ${metric.confidence}`}>
+        {CONF_GLYPH[metric.confidence]}
+      </span>
+      {tip && (
+        <span className="tb-chip__tip" role="tooltip">
+          {tip}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** ArchetypeTag — the A/B/C/D routing lane. Colour encodes deterministic (A/B/C) vs LLM (D). */
+export function ArchetypeTag({ archetype }: { archetype: "A" | "B" | "C" | "D" }) {
+  return (
+    <span className={`tb-arch tb-arch--${archetype}`} title={`Arquétipo ${archetype}`}>
+      {archetype}
+    </span>
   );
 }

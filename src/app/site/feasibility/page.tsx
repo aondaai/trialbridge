@@ -1,29 +1,50 @@
 /**
  * Feasibility Autofill — review workspace (F4-3, Camila track).
  *
- * The site-side inbox + review surface. Reads the seeded canonical template and the
- * site's capability catalog / institution profile, and renders each section with its
- * dominant archetype and provenance rules. Incoming FeasibilityRequests (once sponsors
- * dispatch them, F6) list here for section-by-section review.
- *
- * The HITL invariant is stated in the UI and enforced in src/lib/feasibility-autofill/review.ts:
- * archetype-D (LLM) answers are pre-flagged and never auto-approved.
+ * On-brand with the TrialBridge design system (claude.css tokens, the cl- and tb- component
+ * classes, MetricChip provenance seals, cohort palette). Reads the seeded canonical template + the
+ * site's catalog/profile and lays out each section with its archetype and how it's answered.
+ * The HITL invariant (D is LLM-drafted and never auto-approved) is stated in the UI and
+ * enforced in src/lib/feasibility-autofill/review.ts.
  */
 
 import { prisma } from "@/lib/db";
-import { TopBar } from "@/components/ui";
+import { TopBar, PrivacyBanner, MetricChip, ArchetypeTag } from "@/components/ui";
 import { CANONICAL_SECTIONS, primaryArchetype } from "@/lib/feasibility-autofill/canonicalTemplate";
+import { siteDeclared, modeled, Confidence, type Metric } from "@/lib/metric";
+import type { Archetype } from "@/lib/feasibility-autofill/fixtures/questionBankLabels";
 
 export const dynamic = "force-dynamic";
 
 const DEMO_SITE_ID = "site-ihealth-demo";
 
-const ARCHETYPE_UI: Record<string, { color: string; label: string }> = {
-  A: { color: "#6A1B9A", label: "A · Perfil (lookup)" },
-  B: { color: "#1565C0", label: "B · Catálogo (lookup)" },
-  C: { color: "#E08A2B", label: "C · Contagem (query)" },
-  D: { color: "#C62828", label: "D · Narrativa (LLM, revisão)" },
+/** How each archetype is answered — the routing legend (site-declared vs modeled). */
+const ARCHETYPES: Array<{ code: Archetype; role: string; how: string; sample: Metric }> = [
+  { code: "A", role: "Perfil da instituição", how: "Lookup determinístico no cadastro.",
+    sample: siteDeclared("profile.institution_name", "iHealth (demo)", Confidence.HIGH, { note: "Perfil da instituição" }) },
+  { code: "B", role: "Catálogo de capacidade", how: "Lookup por conceito clínico; não mapeado é sinalizado.",
+    sample: siteDeclared("capability.ibd", "yes", Confidence.HIGH, { note: "NLP (NER) + assertion detection" }) },
+  { code: "C", role: "Contagem de pacientes", how: "Query na base — agregada, <5 suprimido.",
+    sample: modeled("cohort.candidates", "42", Confidence.HIGH, { unit: "pacientes", note: "definite + possible, agregada" }) },
+  { code: "D", role: "Narrativa", how: "Rascunho por LLM, ancorado em respostas anteriores. Revisão humana obrigatória.",
+    sample: modeled("narrative.limitacoes", "rascunho", Confidence.LOW, { note: "Proposto — nunca aprovado automaticamente" }) },
+];
+
+/** A representative (value-less) provenance seal per archetype, for the section table. */
+const ARCH_SEAL: Record<Archetype, Metric> = {
+  A: siteDeclared("s", null, Confidence.HIGH),
+  B: siteDeclared("s", null, Confidence.HIGH),
+  C: modeled("s", null, Confidence.HIGH),
+  D: modeled("s", null, Confidence.LOW),
 };
+const ARCH_HOW: Record<Archetype, string> = {
+  A: "Lookup no perfil",
+  B: "Lookup no catálogo",
+  C: "Contagem na base",
+  D: "Rascunho por LLM",
+};
+
+const gap = (n: number) => ({ display: "grid", gap: `var(--cl-space-${n})` }) as const;
 
 export default async function FeasibilityWorkspace() {
   const [requests, catalogCount, profile, template] = await Promise.all([
@@ -33,66 +54,110 @@ export default async function FeasibilityWorkspace() {
     prisma.formTemplate.findFirst({ orderBy: { createdAt: "desc" } }),
   ]).catch(() => [[], 0, null, null] as const);
 
+  const stats: Array<{ label: string; value: string }> = [
+    { label: "Perfil da instituição", value: profile ? "Configurado" : "Pendente" },
+    { label: "Catálogo de capacidade", value: `${catalogCount} conceitos` },
+    { label: "Template reconhecido", value: template ? "Modelo canônico" : "—" },
+    { label: "Solicitações na caixa", value: String(requests.length) },
+  ];
+
   return (
     <>
       <TopBar active="site" />
-      <main className="wrap" style={{ maxWidth: 900, margin: "0 auto", padding: "1.5rem" }}>
-        <h1 style={{ fontSize: "1.4rem", fontWeight: 700 }}>Feasibility Autofill — Bancada de revisão</h1>
-        <p style={{ color: "#555", marginTop: 4 }}>
-          Cada campo do formulário é roteado para um dos quatro arquétipos. A/B/C são
-          determinísticos e carregam proveniência; D é rascunho por LLM e exige aprovação
-          humana — nunca aprovado automaticamente.
-        </p>
+      <main className="wrap" style={{ ...gap(6) }}>
+        <header style={gap(2)}>
+          <h1 style={{ margin: 0 }}>Feasibility autofill — bancada de revisão</h1>
+          <p className="muted" style={{ margin: 0, maxWidth: 640 }}>
+            Cada campo do formulário é roteado para um dos quatro arquétipos. A, B e C são
+            determinísticos e carregam proveniência; D é rascunho por LLM e exige aprovação
+            humana — nunca aprovado automaticamente.
+          </p>
+        </header>
 
-        <section style={{ display: "flex", gap: 12, margin: "1rem 0", flexWrap: "wrap" }}>
-          <StatCard label="Perfil da instituição" value={profile ? "configurado" : "pendente"} />
-          <StatCard label="Catálogo de capacidade" value={`${catalogCount} conceitos`} />
-          <StatCard label="Template reconhecido" value={template?.name ?? "—"} />
-          <StatCard label="Solicitações na caixa" value={String(requests.length)} />
+        <PrivacyBanner variant="site" />
+
+        {/* Summary stats */}
+        <section
+          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--cl-space-3)" }}
+        >
+          {stats.map((s) => (
+            <div key={s.label} className="cl-card cl-card--flat" style={{ padding: "var(--cl-space-4) var(--cl-space-5)" }}>
+              <div className="tb-stat__label">{s.label}</div>
+              <div className="tb-stat tb-stat--sm">{s.value}</div>
+            </div>
+          ))}
         </section>
 
+        {/* Archetype legend */}
+        <section style={gap(3)}>
+          <h2 className="cl-h3" style={{ margin: 0 }}>Como cada campo é respondido</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "var(--cl-space-3)" }}>
+            {ARCHETYPES.map((a) => (
+              <div key={a.code} className="cl-card">
+                <div className="cl-card__body" style={gap(3)}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "var(--cl-space-2)" }}>
+                    <ArchetypeTag archetype={a.code} />
+                    <strong style={{ fontSize: "var(--cl-text-sm)" }}>{a.role}</strong>
+                  </div>
+                  <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.45 }}>{a.how}</p>
+                  <MetricChip metric={a.sample} size="md" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Inbox / empty state */}
         {requests.length === 0 && (
-          <div
-            style={{ border: "1px dashed #cbd5e1", borderRadius: 8, padding: "1rem", background: "#f8fafc", color: "#475569" }}
-          >
-            Nenhuma solicitação de feasibility ainda. Quando um patrocinador enviar um
-            formulário, ele aparece aqui para revisão seção a seção.
+          <div className="cl-alert cl-alert--info">
+            <span className="cl-alert__icon">📥</span>
+            <div>
+              <p className="cl-alert__title">Nenhuma solicitação de feasibility ainda</p>
+              <p className="cl-alert__body">
+                Quando um patrocinador enviar um formulário, ele aparece aqui para revisão seção a
+                seção — com proveniência, contagens agregadas e rascunhos para aprovar.
+              </p>
+            </div>
           </div>
         )}
 
-        <h2 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "1.5rem 0 .5rem" }}>
-          Modelo canônico ({CANONICAL_SECTIONS.length} seções)
-        </h2>
-        <ol style={{ listStyle: "none", padding: 0, display: "grid", gap: 8 }}>
-          {CANONICAL_SECTIONS.map((s) => {
-            const a = primaryArchetype(s);
-            const ui = ARCHETYPE_UI[a];
-            return (
-              <li
-                key={s.idx}
-                style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid #e2e8f0", borderRadius: 8, padding: "8px 12px" }}
-              >
-                <span style={{ color: "#94a3b8", fontVariantNumeric: "tabular-nums", width: 20 }}>{s.idx}</span>
-                <span style={{ flex: 1, fontWeight: 500 }}>{s.name}</span>
-                <span
-                  style={{ background: ui.color, color: "white", fontSize: ".72rem", padding: "2px 8px", borderRadius: 999, whiteSpace: "nowrap" }}
-                >
-                  {ui.label}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
+        {/* Canonical model */}
+        <section style={gap(3)}>
+          <h2 className="cl-h3" style={{ margin: 0 }}>
+            Modelo canônico <span className="muted mono" style={{ fontSize: 14 }}>({CANONICAL_SECTIONS.length} seções)</span>
+          </h2>
+          <div className="cl-table-wrap">
+            <table className="cl-table cl-table--hover">
+              <thead>
+                <tr>
+                  <th style={{ width: 44 }}>#</th>
+                  <th>Seção</th>
+                  <th style={{ width: 96 }}>Arquétipo</th>
+                  <th style={{ width: 260 }}>Proveniência</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CANONICAL_SECTIONS.map((s) => {
+                  const a = primaryArchetype(s);
+                  return (
+                    <tr key={s.idx}>
+                      <td className="mono" style={{ color: "var(--cl-text-muted)" }}>{s.idx}</td>
+                      <td style={{ fontWeight: 500 }}>{s.name}</td>
+                      <td>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                          <ArchetypeTag archetype={a} />
+                          <span className="muted" style={{ fontSize: 12.5 }}>{ARCH_HOW[a]}</span>
+                        </span>
+                      </td>
+                      <td><MetricChip metric={ARCH_SEAL[a]} showValue={false} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </main>
     </>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: "8px 14px", minWidth: 140 }}>
-      <div style={{ fontSize: ".72rem", color: "#64748b", textTransform: "uppercase", letterSpacing: ".04em" }}>{label}</div>
-      <div style={{ fontSize: "1rem", fontWeight: 600, marginTop: 2 }}>{value}</div>
-    </div>
   );
 }
