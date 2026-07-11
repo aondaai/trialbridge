@@ -149,7 +149,9 @@ describe("buildProvenanceIndex — the Risk Register roll-up (§8)", () => {
 describe("Appendix B — every seal has a UI colour + label and a strength rank", () => {
   it("SEAL_UI and SEAL_RANK cover all five seals", () => {
     for (const seal of Object.values(Provenance)) {
-      expect(SEAL_UI[seal]?.color).toMatch(/^#/);
+      expect(SEAL_UI[seal]?.colorHex).toMatch(/^#/);
+      expect(SEAL_UI[seal]?.color).toContain("--tb-prov-");
+      expect(SEAL_UI[seal]?.subtle.length).toBeGreaterThan(0);
       expect(SEAL_UI[seal]?.label.length).toBeGreaterThan(0);
       expect(typeof SEAL_RANK[seal]).toBe("number");
     }

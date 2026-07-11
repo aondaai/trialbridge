@@ -28,7 +28,10 @@ services:
         sync: false
       - key: TB_DATASUS_LABEL
         value: "DataSUS/OMOP (omop_sample)"
-      # Optional — point at a deployed estimator service for the national card;
-      # the sponsor view degrades gracefully when it is absent.
-      # - key: TB_ESTIMATOR_URL
-      #   value: https://<your-estimator>.onrender.com
+      # Live estimator (materialized real DataSUS bases) — powers the national card
+      # AND the scorecard report's real patient pools. The service reports its own
+      # base label (omop_full), which overrides TB_DATASUS_LABEL at response time.
+      # The sponsor/report views degrade gracefully (synthetic, honestly labeled) if
+      # this service is unreachable.
+      - key: TB_ESTIMATOR_URL
+        value: https://trialbridge-estimator.onrender.com

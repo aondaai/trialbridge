@@ -7,13 +7,31 @@ import { estimateFeasibility } from "@/lib/feasibility";
 import { HERO_META } from "@/data/hero-protocol";
 import { TopBar, CohortBar, CohortLegend } from "@/components/ui";
 import { PrintButton } from "@/components/PrintButton";
-import { buildReport } from "@/lib/report/buildReport";
+import { buildReport, ctgovToKolInputs } from "@/lib/report/buildReport";
 import { EngineReport } from "@/components/report/EngineReport";
+import { fetchCompetition } from "@/lib/ctgov/competition";
+import { fetchNationalEstimate } from "@/lib/estimator/client";
+import { applyEnrichment } from "@/lib/kol/enrich";
+import { enrichmentsForNames } from "@/lib/kol/enrichmentStore";
+import { loadDirectory } from "@/lib/sites/loadDirectory";
+import { crossReferenceInvestigators } from "@/lib/sites/crossref";
+import { infraForCnes } from "@/lib/sites/infraStore";
 
 export const dynamic = "force-dynamic";
 
 function fmt(n: number | "<5"): string {
   return n === "<5" ? "<5" : String(n);
+}
+
+/** Derive a CT.gov condition search from a protocol title (free-text query.cond). */
+function conditionQuery(title: string): string {
+  const t = title.toLowerCase();
+  if (/breast/.test(t)) return "breast cancer";
+  if (/nsclc|lung/.test(t)) return "non-small cell lung cancer";
+  if (/melanoma/.test(t)) return "melanoma";
+  if (/colorectal|\bcrc\b/.test(t)) return "colorectal cancer";
+  // Fallback: strip a leading "Phase … —" and any parenthetical, else the raw title.
+  return title.replace(/^phase\s+[ivx]+\s*[—-]\s*/i, "").replace(/\([^)]*\)/g, "").trim() || title;
 }
 
 /** Build a `/scorecard` query string, dropping empty params. */
@@ -52,6 +70,30 @@ export default async function ScorecardPage({
   if (view === "engine") {
     const allSites = await loadAllSites();
     const evaluatedSites = allSites.map((ds) => evaluateDataset(ds, consultation.criteria));
+    // R9: real competition + investigators from ClinicalTrials.gov, and the REAL
+    // national patient pools from the DataSUS estimator (both degrade gracefully —
+    // a null estimate falls back to the synthetic-cohort pools, honestly labeled).
+    const condition = conditionQuery(consultation.title);
+    const [competition, nationalEstimate] = await Promise.all([
+      fetchCompetition(condition),
+      fetchNationalEstimate(),
+    ]);
+
+    // Deep-web KOL enrichment (publications, society roles, guideline authorship) is
+    // PRECOMPUTED by `npm run enrich-kols` (the Parallel Task API takes ~1 min/physician,
+    // too slow to block a render). The page reads that store instantly; investigators
+    // without a precomputed entry stay trial-experience-only.
+    const directory = loadDirectory();
+    let kolInvestigators = competition.source === "live" ? ctgovToKolInputs(competition) : [];
+    if (kolInvestigators.length > 0) {
+      // Cross-reference affiliations against the ABRACRO/ACESSE directory → real CNES,
+      // accurate region, and a confirmed institutional link (lifts the KOL score).
+      kolInvestigators = crossReferenceInvestigators(kolInvestigators, directory).investigators;
+      // Apply precomputed deep-web enrichment (pubs/society/guideline), if present.
+      const enrichments = enrichmentsForNames(kolInvestigators.map((k) => k.name));
+      kolInvestigators = applyEnrichment(kolInvestigators, enrichments);
+    }
+
     const report = buildReport(
       {
         id: consultation.id,
@@ -61,7 +103,15 @@ export default async function ScorecardPage({
         criteria: consultation.criteria,
       },
       evaluatedSites,
-      { runId: consultation.id },
+      {
+        runId: consultation.id,
+        competition,
+        nationalEstimate,
+        kolInvestigators,
+        directorySites: directory,
+        // Real infra (Part B) for the oncology sites, from the precomputed store.
+        siteInfraByCnes: infraForCnes(directory.filter((s) => s.oncology).map((s) => s.cnes)),
+      },
     );
 
     return (
