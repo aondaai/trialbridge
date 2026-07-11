@@ -102,3 +102,11 @@ Mirror of the sponsor intake, for Camila. Spec docs/superpowers/specs/2026-07-10
 - Reviews: every task spec✅+quality-approved; Task 5 Important fix (Sex column F/M); final review Approved-to-merge with fix wave bf5c254 (dup-id write crash → ensureUniquePatientIds; dead const; trust=low on 0 columns). Full suite 216/216, tsc clean, next build OK.
 - E2E verified live in Docker (:3080): paste CSV → "3 rows · 11 mapped · 0 ignored · 2 unknown" + medium trust + mapping table → submit → site + 3 patients written; DB round-trip lossless (hgb g/L→g/dL, her2 neg→negative + blank→null, stage "Stage II"→"II").
 - Commits: f2c7064..bf5c254 (on feat/scorecard-reconciliation).
+
+## Site EHR intake — review-fix wave 2 (2026-07-11)
+Two-agent adversarial review of the final feature state surfaced bugs the per-task + first whole-branch review missed. All fixed in 45e8f75 (full suite 218/218, tsc clean, next build OK; live-smoked in docker):
+- CRITICAL: the mapping-override was keyed by column HEADER TEXT, so two columns sharing a header (or two blank headers) collapsed — editing one dropdown retargeted both. Now keyed by column INDEX (`Record<number,MapTarget>`), route→adapter→panel consistent; the existing adapter override test updated to `{8:"ignore"}`.
+- IMPORTANT: `csvAdapter.assign()` wrote null unconditionally, so a second column mapping to the same field with a blank cell overwrote an earlier good value (ECOG=1 + blank Perf Status → ecog null). Now writes only on success (guards mirror the id/diagnosis cases). +test.
+- IMPORTANT: `reMap` had no busy-guard/abort → a stale response could revert a correction; and "List site" wasn't gated on a pending re-map. Added AbortController + busy guard + `<select disabled={busy}>`, and lifted `busy` to the page via `onBusyChange` to gate the submit button.
+- MINOR: `.txt` uploads (advertised in `accept`) now accepted by the adapter.
+- Ship-as-is: streamed-body size cap matches the existing /api/intake posture (content-length + post-read file.size).
