@@ -72,8 +72,14 @@ export const atlasAdapter: SourceAdapter = {
         id: `c${criteria.length + 1}`,
         kind: "inclusion",
         field: slug(name),
-        operator: "exists",
-        value: null,
+        // NOT `exists`: the slug field is never in the patient schema, and an
+        // `exists` INCLUSION on a missing field resolves to `fail` in the engine
+        // → the patient is EXCLUDED. That would classify an entire cohort as
+        // excluded from an approximation. `eq` on the same (absent) field
+        // resolves to `unknown` → "possible" instead: honest — "couldn't verify
+        // this rule against the data" — never a false exclusion.
+        operator: "eq",
+        value: "yes",
         rawText: name,
         // ATLAS logic → flat criterion is lossy; flag every row for verification.
         confidence: 0.5,
@@ -86,8 +92,8 @@ export const atlasAdapter: SourceAdapter = {
         id: "c1",
         kind: "inclusion",
         field: "primary_cohort_entry_event",
-        operator: "exists",
-        value: null,
+        operator: "eq",
+        value: "yes",
         rawText: "ATLAS primary criteria (cohort entry event)",
         confidence: 0.5,
       });
