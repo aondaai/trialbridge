@@ -4,7 +4,7 @@ export class PatientRegistry {
   private adapters: PatientSourceAdapter[] = [];
   register(a: PatientSourceAdapter): this { this.adapters.push(a); return this; }
   /** Structure an input with the highest-scoring adapter; throws if none claims it. */
-  async structure(input: PatientSourceInput, override?: Record<string, MapTarget>): Promise<PatientIntakeResult> {
+  async structure(input: PatientSourceInput, override?: Record<number, MapTarget>): Promise<PatientIntakeResult> {
     let best: PatientSourceAdapter | null = null;
     let bestScore = 0;
     for (const a of this.adapters) {

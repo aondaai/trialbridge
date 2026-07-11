@@ -24,15 +24,29 @@ describe("csv patient adapter", () => {
     const p2 = r.patients[1];
     expect(p2.age).toBeNull();            // blank age
     expect(p2.ecog).toBe(4);              // 4 is in range 0..4 — valid value
-    expect(p2.labs.creatinine).toBeNull(); // "pending"
-    expect(p2.biomarkers.pd_l1_tps).toBeNull(); // blank
+    expect(p2.labs.creatinine ?? null).toBeNull(); // "pending" → unparseable, left unknown (absent)
+    expect(p2.biomarkers.pd_l1_tps ?? null).toBeNull(); // blank → left unknown (absent)
     expect(r.stats.cellsUnparsed).toBeGreaterThan(0);
     expect(r.stats.rows).toBe(2);
   });
 
   it("respects a mapping override (force a column to 'ignore')", async () => {
-    const r = await defaultPatientRegistry().structure({ kind: "text", text: CSV }, { "PD-L1 TPS": "ignore" });
+    // "PD-L1 TPS" is the 9th column (index 8) — override is keyed by column index.
+    const r = await defaultPatientRegistry().structure({ kind: "text", text: CSV }, { 8: "ignore" });
     expect(r.patients[0].biomarkers.pd_l1_tps).toBeUndefined();
     expect(r.stats.columnsIgnored).toBeGreaterThan(0);
+  });
+
+  it("does not overwrite a good value with null from a duplicate-target column", async () => {
+    // Both ECOG and Perf Status map to ecog; the second (Perf Status) cell is blank.
+    const csv = ["MRN,ECOG,Perf Status", "p1,1,"].join("\n");
+    const r = await defaultPatientRegistry().structure({ kind: "text", text: csv });
+    expect(r.patients[0].ecog).toBe(1); // the good value from the first column survives
+  });
+
+  it("leaves a single blank ecog column as null", async () => {
+    const csv = ["MRN,ECOG", "p1,"].join("\n");
+    const r = await defaultPatientRegistry().structure({ kind: "text", text: csv });
+    expect(r.patients[0].ecog).toBeNull();
   });
 });

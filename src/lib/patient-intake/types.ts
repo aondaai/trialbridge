@@ -19,5 +19,5 @@ export type PatientSourceInput = { kind: "text"; text: string } | { kind: "file"
 export interface PatientSourceAdapter {
   id: string;
   detect(input: PatientSourceInput): number;
-  extract(input: PatientSourceInput, override?: Record<string, MapTarget>): Promise<PatientIntakeResult>;
+  extract(input: PatientSourceInput, override?: Record<number, MapTarget>): Promise<PatientIntakeResult>;
 }

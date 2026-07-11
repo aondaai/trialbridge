@@ -15,7 +15,7 @@ class PayloadTooLarge extends Error {}
 
 export async function POST(req: Request) {
   let input: PatientSourceInput;
-  let override: Record<string, MapTarget> | undefined;
+  let override: Record<number, MapTarget> | undefined;
   try {
     const len = Number(req.headers.get("content-length") ?? "0");
     if (Number.isFinite(len) && len > MAX_UPLOAD_BYTES) throw new PayloadTooLarge("upload exceeds 25MB limit");
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       const ov = form.get("override");
       if (typeof ov === "string" && ov) override = JSON.parse(ov);
     } else {
-      const body = (await req.json().catch(() => ({}))) as { mode?: string; text?: string; override?: Record<string, MapTarget> };
+      const body = (await req.json().catch(() => ({}))) as { mode?: string; text?: string; override?: Record<number, MapTarget> };
       if (body.mode !== "text" || !body.text?.trim()) throw new Error("expected { mode:'text', text } or a file upload");
       input = { kind: "text", text: body.text };
       override = body.override;

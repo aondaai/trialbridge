@@ -15,7 +15,7 @@ import type {
 
 function isCsvFile(input: PatientSourceInput): boolean {
   if (input.kind === "text") return true;
-  return /\.(csv|xlsx)$/i.test(input.filename) ||
+  return /\.(csv|xlsx|txt)$/i.test(input.filename) ||
     (input.bytes.length >= 2 && input.bytes[0] === 0x50 && input.bytes[1] === 0x4b); // PK → xlsx zip
 }
 
@@ -34,21 +34,21 @@ function assign(p: Patient, target: MapTarget, header: string, raw: string): boo
     case "ignore": return true; // not "unparsed" — deliberately skipped
     case "id": { if (t) { p.id = t; return true; } return false; }
     case "diagnosis": { if (t) { p.diagnosis = t; return true; } return false; }
-    case "stage": { const v = normalizeStage(t); p.stage = v; return v !== null; }
-    case "sex": { const v = normalizeSex(t); p.sex = v; return v !== null; }
-    case "age": { const v = normalizeInt(t, 0, 120); p.age = v; return v !== null; }
-    case "ecog": { const v = normalizeInt(t, 0, 4); p.ecog = v; return v !== null; }
-    case "priorLines": { const v = normalizeInt(t, 0, 99); p.priorLines = v; return v !== null; }
+    case "stage": { const v = normalizeStage(t); if (v !== null) p.stage = v; return v !== null; }
+    case "sex": { const v = normalizeSex(t); if (v !== null) p.sex = v; return v !== null; }
+    case "age": { const v = normalizeInt(t, 0, 120); if (v !== null) p.age = v; return v !== null; }
+    case "ecog": { const v = normalizeInt(t, 0, 4); if (v !== null) p.ecog = v; return v !== null; }
+    case "priorLines": { const v = normalizeInt(t, 0, 99); if (v !== null) p.priorLines = v; return v !== null; }
     case "her2_status": case "er_status": case "pr_status": {
-      const v = normalizeMarker(t); p.biomarkers[target] = v; return v !== null;
+      const v = normalizeMarker(t); if (v !== null) p.biomarkers[target] = v; return v !== null;
     }
     case "creatinine": case "hemoglobin": case "platelets": case "bilirubin": case "ejection_fraction": {
-      const v = parseLab(target as LabField, t, unitFromHeader(header)); p.labs[target] = v; return v !== null;
+      const v = parseLab(target as LabField, t, unitFromHeader(header)); if (v !== null) p.labs[target] = v; return v !== null;
     }
     case "biomarker": {
       const key = slugColumn(header);
       const v = t === "" ? null : t;
-      p.biomarkers[key] = v; return v !== null;
+      if (v !== null) p.biomarkers[key] = v; return v !== null;
     }
   }
 }
@@ -72,7 +72,7 @@ export const csvAdapter: PatientSourceAdapter = {
     const { rows, extraction } = rowsFrom(input);
     if (rows.length < 2) throw new Error("csv: need a header row and at least one data row");
     const headers = rows[0].map((h) => h.trim());
-    const targets: MapTarget[] = headers.map((h) => override?.[h] ?? suggestTarget(h));
+    const targets: MapTarget[] = headers.map((h, i) => override?.[i] ?? suggestTarget(h));
 
     const stats: IntakeStats = { rows: rows.length - 1, columnsMapped: 0, columnsIgnored: 0, cellsUnparsed: 0 };
     targets.forEach((t) => { if (t === "ignore") stats.columnsIgnored++; else stats.columnsMapped++; });

@@ -5,7 +5,7 @@
  * Patient[] is written up via `onPatients` so the parent form can carry it in
  * a hidden field for the server action to read.
  */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Patient } from "@/lib/matcher/types";
 import { TrustChip } from "@/app/sponsor/new/IntakePanel";
 import type { MapTarget, PatientIntakeResult } from "@/lib/patient-intake";
@@ -30,25 +30,40 @@ const TARGETS: MapTarget[] = [
   "ignore",
 ];
 
-export function EhrIntakePanel({ onPatients }: { onPatients: (p: Patient[]) => void }) {
+export function EhrIntakePanel({
+  onPatients,
+  onBusyChange,
+}: {
+  onPatients: (p: Patient[]) => void;
+  onBusyChange?: (busy: boolean) => void;
+}) {
   const [result, setResult] = useState<PatientIntakeResult | null>(null);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const lastFile = useRef<File | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    onBusyChange?.(busy);
+  }, [busy, onBusyChange]);
 
   async function post(body: BodyInit, headers?: HeadersInit) {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setBusy(true);
     setError("");
     try {
-      const res = await fetch("/api/patient-intake", { method: "POST", body, headers });
+      const res = await fetch("/api/patient-intake", { method: "POST", body, headers, signal: controller.signal });
       const json = await res.json().catch(() => ({ error: `failed (HTTP ${res.status})` }));
       if (!res.ok) throw new Error(json.error ?? "failed");
       const parsed = json as PatientIntakeResult;
       setResult(parsed);
       onPatients(parsed.patients);
     } catch (e) {
+      if ((e as Error).name === "AbortError") return; // superseded by a newer submit
       setError((e as Error).message);
     } finally {
       setBusy(false);
@@ -69,11 +84,11 @@ export function EhrIntakePanel({ onPatients }: { onPatients: (p: Patient[]) => v
     void post(JSON.stringify({ mode: "text", text }), { "content-type": "application/json" });
   }
 
-  function reMap(column: string, target: string) {
-    if (!result) return;
-    const override: Record<string, string> = {};
-    result.mapping.forEach((m) => {
-      override[m.column] = m.column === column ? target : m.target;
+  function reMap(changedIndex: number, target: MapTarget) {
+    if (!result || busy) return;
+    const override: Record<number, MapTarget> = {};
+    result.mapping.forEach((m, i) => {
+      override[i] = i === changedIndex ? target : m.target;
     });
     if (lastFile.current) {
       const fd = new FormData();
@@ -175,13 +190,14 @@ export function EhrIntakePanel({ onPatients }: { onPatients: (p: Patient[]) => v
                 </tr>
               </thead>
               <tbody>
-                {result.mapping.map((m) => (
-                  <tr key={m.column}>
+                {result.mapping.map((m, i) => (
+                  <tr key={i}>
                     <td className="mono">{m.column}</td>
                     <td>
                       <select
                         value={m.target}
-                        onChange={(e) => reMap(m.column, e.target.value)}
+                        disabled={busy}
+                        onChange={(e) => reMap(i, e.target.value as MapTarget)}
                         style={{
                           background: "var(--panel-2)",
                           color: "var(--text)",

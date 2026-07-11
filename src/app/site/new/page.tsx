@@ -19,6 +19,7 @@ const selStyle: React.CSSProperties = {
 
 export default function NewSitePage() {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [intakeBusy, setIntakeBusy] = useState(false);
 
   return (
     <>
@@ -76,13 +77,13 @@ export default function NewSitePage() {
               <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>
                 EHR export
               </div>
-              <EhrIntakePanel onPatients={setPatients} />
+              <EhrIntakePanel onPatients={setPatients} onBusyChange={setIntakeBusy} />
             </div>
 
             <input type="hidden" name="patients" value={JSON.stringify(patients)} />
 
             <div style={{ marginTop: 12 }}>
-              <button className="cl-btn cl-btn--primary" type="submit" disabled={patients.length === 0}>
+              <button className="cl-btn cl-btn--primary" type="submit" disabled={patients.length === 0 || intakeBusy}>
                 List site{patients.length > 0 ? ` (${patients.length} patients)` : ""} →
               </button>
             </div>
