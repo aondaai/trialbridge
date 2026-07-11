@@ -12,8 +12,16 @@
  * per-site confidence roll-up honestly lands on LOW for public-data-only sites.
  */
 
-import { Confidence, modeled } from "@/lib/metric";
+import { Confidence, modeled, registry } from "@/lib/metric";
 import { amendmentCost } from "@/lib/constants";
+import { DEFAULT_SCREEN_TO_ENROLL } from "@/lib/feasibility";
+import type { NationalEstimate } from "@/lib/estimator/client";
+import {
+  allocateSitePools,
+  datasusSourceRef,
+  macroRegionPools,
+  nationalPoolMetric,
+} from "@/lib/estimator/pools";
 import { scoreCountry, brazilCountryInput } from "@/lib/scoring/country";
 import { scoreSite, SiteInput } from "@/lib/scoring/site";
 import { TrialProfile } from "@/lib/scoring/weights";
@@ -56,6 +64,10 @@ export interface BuildReportOptions {
   maxRankedSites?: number;
   /** Real deep-web-researched infrastructure per CNES (Part B). */
   siteInfraByCnes?: Map<string, import("@/lib/sites/infraEnrich").SiteInfra>;
+  /** Real national estimate from the Python estimator (DataSUS/OMOP over the real
+   *  base). When present it replaces the synthetic-cohort pools everywhere: funnel,
+   *  country supply, §4 regional pools, softening levers, and per-site allocations. */
+  nationalEstimate?: NationalEstimate | null;
 }
 
 /** Map CT.gov investigators → trial-experience-only KOL inputs (pre-enrichment). */
@@ -105,27 +117,39 @@ export function buildReport(
     }),
   }));
 
-  const nationalPool = sites.reduce((n, s) => n + s.counts.definite + s.counts.possible, 0);
+  // Real national estimate (DataSUS) replaces the synthetic-cohort pool chain end-to-end.
+  const est = opts.nationalEstimate ?? undefined;
+
+  const syntheticPool = sites.reduce((n, s) => n + s.counts.definite + s.counts.possible, 0);
+  const nationalPool = est ? est.estimatedN : syntheticPool;
   const nationalPpm = perSite.reduce((n, p) => n + p.feas.enrollableEstimate, 0) / months;
   const recordsReviewed = sites.reduce((n, s) => n + s.counts.total, 0);
 
-  const funnel = buildFunnel(nationalPool, nationalPpm, recordsReviewed, consultation.criteria);
-  const softening = buildSoftening(sites, consultation.criteria, phase);
+  const funnel = est
+    ? buildRealFunnel(est, consultation.criteria)
+    : buildFunnel(syntheticPool, nationalPpm, recordsReviewed, consultation.criteria);
+  const softening =
+    est && est.bottlenecks.some((b) => b.gain > 0)
+      ? buildRealSoftening(est, phase)
+      : buildSoftening(sites, consultation.criteria, phase);
 
   const country = scoreCountry(
     brazilCountryInput({
       nationalEligiblePool: nationalPool,
       targetSampleSize,
       asOf,
-      // With no site online, keep the country card renderable from constants; the
-      // supply dimension will simply reflect the (small/zero) pool honestly.
+      // Real pool → carry the estimator's CI + DataSUS citation on the supply metric.
+      overrides: est ? { nationalPoolMetric: nationalPoolMetric(est) } : undefined,
     }),
   );
 
-  // §4 Supply vs. demand, by macro-region. Competing trials come from CT.gov when
-  // live (registry), else a MODELED placeholder (§7.11 graceful degradation).
+  // §4 Supply vs. demand, by macro-region. Pools come from the real DataSUS estimate
+  // when available (UF estimates rolled up), else from the synthetic site cohorts.
+  // Competing trials come from CT.gov when live (registry), else a MODELED placeholder.
   const competitionLive = opts.competition?.source === "live" ? opts.competition : undefined;
-  const sdInputs = buildRegionSDInputs(sites, competitionLive);
+  const sdInputs = est
+    ? buildRealRegionSDInputs(est, competitionLive)
+    : buildRegionSDInputs(sites, competitionLive);
   const supplyDemand =
     sdInputs.length > 0 ? toSupplyDemandSummary(computeSupplyDemand(sdInputs, { asOf })) : undefined;
 
@@ -146,10 +170,14 @@ export function buildReport(
   if (opts.directorySites && opts.directorySites.length > 0) {
     const kolByCnes = kolScoreByCnes(kolInputs);
     const competingByRegion = competitionLive?.byRegion ?? {};
+    const oncologySites = opts.directorySites.filter((s) => s.oncology);
+    // Real DataSUS pools: each UF's real eligible total, split across that UF's
+    // ranked oncology sites by PI share (replaces the PI-count pool proxy).
+    const poolByCnes = est ? allocateSitePools(oncologySites, est) : undefined;
     const ranked = rankSites(
-      opts.directorySites
-        .filter((s) => s.oncology)
-        .map((s) => scoreSite(directorySiteToSiteInput(s, { profile, competingByRegion, kolByCnes, infraByCnes: opts.siteInfraByCnes }))),
+      oncologySites.map((s) =>
+        scoreSite(directorySiteToSiteInput(s, { profile, competingByRegion, kolByCnes, infraByCnes: opts.siteInfraByCnes, poolByCnes })),
+      ),
     );
     siteScores = ranked.slice(0, opts.maxRankedSites ?? 20);
   } else {
@@ -175,12 +203,135 @@ export function buildReport(
     supplyDemand,
     kolMap,
     assumptions: [
+      est
+        ? `Patient pools are REAL: ${est.dataSource} — ${est.baseCohort.toLocaleString("en-US")} row-level base-cohort patients, ${Math.round(est.estimatedN).toLocaleString("en-US")} estimated eligible (95% CI ${Math.round(est.ciLo).toLocaleString("en-US")}–${Math.round(est.ciHi).toLocaleString("en-US")}). Per-site pools split each UF's real total by PI share (the share is modeled).`
+        : "Patient pools are synthetic-cohort placeholders (estimator offline — DataSUS pools return when it reconnects).",
       "Site capture rate over the eligible pool (conservative screen-to-enrol default).",
       competitionLive
-        ? `Competition + KOL investigators are LIVE from ClinicalTrials.gov (${competitionLive.total} recruiting BR studies). CNES infrastructure and PubMed/ORCID KOL signals remain modeled until those connectors are wired.`
-        : "Competition, CNES infrastructure, KOL and startup signals are MODELED placeholders until the CT.gov / CNES / PubMed connectors are wired (R9) — sites carry LOW confidence accordingly.",
-      "SUS→total correction not yet applied (ANS connector = R9).",
+        ? `Competition + KOL investigators are LIVE from ClinicalTrials.gov (${competitionLive.total} recruiting BR studies). PubMed/ORCID KOL signals remain modeled until those connectors are wired.`
+        : "Competition, KOL and startup signals are MODELED placeholders until the CT.gov / PubMed connectors are wired (R9).",
+      "SUS→total correction not yet applied (ANS connector pending); trials not on CT.gov (ReBEC) not yet counted.",
     ],
+  });
+}
+
+/**
+ * §2 funnel from the REAL national estimate: a registry-sealed DataSUS base cohort
+ * narrowing to a CI-carrying eligible estimate. The estimate itself is a transported
+ * model over real rows, so it stays MODELED (imputed → modeled per metric.ts), but
+ * the base is registry_gov/HIGH and every metric cites the DataSUS source + date.
+ */
+function buildRealFunnel(est: NationalEstimate, criteria: Criterion[]): FunnelSummary {
+  const src = [datasusSourceRef(est)];
+  const inclusion = criteria.filter((c) => c.kind === "inclusion").length;
+  const eligible = Math.round(est.estimatedN);
+  const ci: [number, number] = [Math.round(est.ciLo), Math.round(est.ciHi)];
+  const survivalPct = est.baseCohort > 0 ? round1((100 * est.estimatedN) / est.baseCohort) : 0;
+  // National eligible arrivals/month (incidence-based, summed over reporting UFs),
+  // discounted by the conservative screen-to-enrol default.
+  const monthlyEligible = est.byRegion.reduce((s, r) => s + (r.monthlyEligible ?? 0), 0);
+  const ppm = monthlyEligible > 0 ? monthlyEligible * DEFAULT_SCREEN_TO_ENROLL : null;
+
+  return {
+    scope: "national",
+    scopeRef: null,
+    basePopulationMetric: registry("funnel.base", est.baseCohort, Confidence.HIGH, {
+      unit: "patients",
+      asOf: est.asOf,
+      sourceRefs: src,
+      note: "Real indication-wide base cohort — row-level DataSUS/OMOP records.",
+    }),
+    stages: [
+      {
+        criterionId: "all_ie",
+        label: `Full I/E funnel (${inclusion} inclusion + ${criteria.length - inclusion} exclusion)`,
+        survivalMetric: modeled("funnel.survival", survivalPct, Confidence.MEDIUM, {
+          unit: "%",
+          asOf: est.asOf,
+          sourceRefs: src,
+        }),
+        remainingPoolMetric: modeled("funnel.remaining", eligible, Confidence.MEDIUM, {
+          unit: "patients",
+          asOf: est.asOf,
+          ci,
+          sourceRefs: src,
+        }),
+        burdenFlag: est.baseCohort > 0 && est.estimatedN / est.baseCohort < 0.2,
+      },
+    ],
+    eligiblePoolMetric: modeled("funnel.eligible", eligible, Confidence.MEDIUM, {
+      unit: "patients",
+      asOf: est.asOf,
+      ci,
+      sourceRefs: src,
+      note: "Transported estimate over the real DataSUS base; 95% CI shown.",
+    }),
+    projectedPatientsPerMonthMetric: modeled("funnel.ppm", ppm != null ? round1(ppm) : null, ppm != null ? Confidence.MEDIUM : Confidence.LOW, {
+      unit: "patients/month",
+      asOf: est.asOf,
+      sourceRefs: src,
+      note:
+        ppm != null
+          ? "Eligible arrivals/month (DataSUS incidence) × conservative screen-to-enrol default."
+          : "Estimator did not report per-region fill speed.",
+    }),
+  };
+}
+
+/**
+ * §2 softening from the REAL bottleneck gains: how many actual base-cohort patients
+ * each criterion excludes. Indication-defining criteria (e.g. metastatic disease)
+ * surface here too — the metric notes make clear that relaxing those is a population
+ * change, not a protocol softening.
+ */
+function buildRealSoftening(est: NationalEstimate, phase: "II" | "III"): SofteningSummary {
+  const src = [datasusSourceRef(est)];
+  const top = est.bottlenecks
+    .filter((b) => b.gain > 0)
+    .sort((a, b) => b.gain - a.gain)
+    .slice(0, 3);
+  return {
+    scenarios: top.map((b) => ({
+      label: `Relax: ${b.text}`,
+      criteriaRelaxed: [b.criterionId],
+      deltaEligiblePoolMetric: modeled("soften.delta_pool", Math.round(b.gain), Confidence.MEDIUM, {
+        unit: "patients",
+        asOf: est.asOf,
+        sourceRefs: src,
+        note: "Real base-cohort patients currently excluded by this criterion (DataSUS).",
+      }),
+      deltaPatientsPerMonthMetric: modeled("soften.delta_ppm", null, Confidence.LOW, {
+        unit: "patients/month",
+        note: "Per-month delta requires the rate model per scenario (R-followup).",
+      }),
+      amendmentCostAvoidedMetric: amendmentCost(phase),
+      scientificRiskNote:
+        "Gain measured over the indication-wide base cohort. If this criterion defines the study population (e.g. disease stage or biomarker), relaxing it changes the indication — review clinical rationale before treating it as a softening lever.",
+    })),
+  };
+}
+
+/**
+ * §4 supply/demand inputs from the REAL estimate: UF-level estimates rolled up to
+ * the 5 macro-regions, competing trials from CT.gov when live.
+ */
+function buildRealRegionSDInputs(
+  est: NationalEstimate,
+  competition?: CompetitionData,
+): RegionSDInput[] {
+  const src = [datasusSourceRef(est)];
+  return macroRegionPools(est).map((p) => {
+    const liveCount = competition?.byRegion?.[p.region];
+    return {
+      regionCode: p.region,
+      regionName: p.region,
+      eligiblePool: p.eligible,
+      eligiblePoolSourceRefs: src,
+      eligiblePoolNote: `Real DataSUS estimate (UF-level estimates summed; base cohort ${p.baseCohort.toLocaleString("en-US")}).`,
+      competingTrials: liveCount ?? 4,
+      competingTrialsProvenance: liveCount != null ? ("registry" as const) : ("modeled" as const),
+      population: BR_MACROREGION_POPULATION[p.region] ?? 20_000_000,
+    };
   });
 }
 

@@ -10,6 +10,7 @@ import { PrintButton } from "@/components/PrintButton";
 import { buildReport, ctgovToKolInputs } from "@/lib/report/buildReport";
 import { EngineReport } from "@/components/report/EngineReport";
 import { fetchCompetition } from "@/lib/ctgov/competition";
+import { fetchNationalEstimate } from "@/lib/estimator/client";
 import { applyEnrichment } from "@/lib/kol/enrich";
 import { enrichmentsForNames } from "@/lib/kol/enrichmentStore";
 import { loadDirectory } from "@/lib/sites/loadDirectory";
@@ -69,9 +70,14 @@ export default async function ScorecardPage({
   if (view === "engine") {
     const allSites = await loadAllSites();
     const evaluatedSites = allSites.map((ds) => evaluateDataset(ds, consultation.criteria));
-    // R9: real competition + investigators from ClinicalTrials.gov (degrades gracefully).
+    // R9: real competition + investigators from ClinicalTrials.gov, and the REAL
+    // national patient pools from the DataSUS estimator (both degrade gracefully —
+    // a null estimate falls back to the synthetic-cohort pools, honestly labeled).
     const condition = conditionQuery(consultation.title);
-    const competition = await fetchCompetition(condition);
+    const [competition, nationalEstimate] = await Promise.all([
+      fetchCompetition(condition),
+      fetchNationalEstimate(),
+    ]);
 
     // Deep-web KOL enrichment (publications, society roles, guideline authorship) is
     // PRECOMPUTED by `npm run enrich-kols` (the Parallel Task API takes ~1 min/physician,
@@ -100,6 +106,7 @@ export default async function ScorecardPage({
       {
         runId: consultation.id,
         competition,
+        nationalEstimate,
         kolInvestigators,
         directorySites: directory,
         // Real infra (Part B) for the oncology sites, from the precomputed store.

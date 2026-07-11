@@ -4,10 +4,10 @@
  *
  * Uses real directory signals where we have them — ANVISA/FDA/EMA inspection experience
  * → data quality, lab/EDC capability → infra fit, a named ethics committee → CEP gate,
- * CT.gov competition per region — and honest MODELED placeholders for what needs patient
- * data (eligible pool, per-month rate) or a connector we haven't wired (equipment: Part B).
- * Directory sites carry no marketplace declaration + no publicly-verifiable pool, so the
- * confidence roll-up honestly lands LOW.
+ * CT.gov competition per region, and REAL DataSUS pool allocations (estimator UF totals
+ * split by PI share) when the estimator covers the site's UF. What still lacks a source
+ * stays an honest MODELED placeholder. A real (publicly-verifiable) pool is one of the
+ * three confidence signals, so covered sites with PI history roll up to MEDIUM.
  */
 
 import type { DirectorySite } from "@/lib/sites/directory";
@@ -16,6 +16,7 @@ import type { TrialProfile } from "@/lib/scoring/weights";
 import type { KolInvestigatorInput } from "@/lib/kol/score";
 import { kolScore } from "@/lib/kol/score";
 import type { SiteInfra } from "@/lib/sites/infraEnrich";
+import type { SitePoolAllocation } from "@/lib/estimator/pools";
 
 export interface SiteInputContext {
   profile: TrialProfile;
@@ -25,6 +26,9 @@ export interface SiteInputContext {
   kolByCnes?: Map<string, number>;
   /** Real deep-web-researched infrastructure per CNES (Part B), when available. */
   infraByCnes?: Map<string, SiteInfra>;
+  /** Real DataSUS pool allocation per CNES/id (estimator UF totals × site share).
+   *  When a site has one, it replaces the PI-count pool proxy. */
+  poolByCnes?: Map<string, SitePoolAllocation>;
   daysToFpiBudget?: number;
 }
 
@@ -42,6 +46,7 @@ export function kolScoreByCnes(investigators: KolInvestigatorInput[]): Map<strin
 export function directorySiteToSiteInput(site: DirectorySite, ctx: SiteInputContext): SiteInput {
   const piCount = site.piCount ?? 0;
   const insp = site.inspections;
+  const realPool = ctx.poolByCnes?.get(site.cnes ?? site.id);
 
   // Infra-fit: REAL deep-web-researched equipment (Part B) when we have it — the five
   // oncology-core items (CACON/UNACON, radiotherapy, on-site imaging, ICU, GCP pharmacy);
@@ -73,13 +78,14 @@ export function directorySiteToSiteInput(site: DirectorySite, ctx: SiteInputCont
     uf: site.uf ?? "",
     profile: ctx.profile,
 
-    // Eligible pool: no patient cohort for directory sites → modeled capacity proxy from
-    // PI count (LOW confidence via the roll-up). Real pools arrive with DATASUS/INCA (R9).
-    eligiblePool: Math.max(20, piCount * 15),
+    // Eligible pool: REAL DataSUS allocation when the estimator covers this site's UF —
+    // the UF total is a real-base estimate (publicly verifiable), the per-site share is
+    // modeled from PI count. Otherwise fall back to the old PI-count capacity proxy.
+    eligiblePool: realPool ? realPool.pool : Math.max(20, piCount * 15),
     declaredPool: null,
-    poolVerifiablePublicly: false,
+    poolVerifiablePublicly: !!realPool,
 
-    projectedPatientsPerMonth: Math.max(0.5, piCount * 0.4), // modeled
+    projectedPatientsPerMonth: realPool?.ppm ?? Math.max(0.5, piCount * 0.4),
     declaredCommitmentPerMonth: null,
 
     priorTrials: piCount, // proxy (association centres run trials)
