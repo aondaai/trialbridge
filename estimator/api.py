@@ -201,39 +201,42 @@ def _run(exclude_depth_ids: Optional[List[str]]) -> FeasibilityResponse:
     )
 
 
-def _imputed_response(intent_str: str, res) -> QueryResponse:
+# Honest coverage label: `coverage_ufs` today is every UF present in the DataSUS base
+# (all 27), NOT a calibration-validated subset — so `covered_only` gates nothing yet. We
+# say so plainly rather than claiming a gate that isn't real. A true calibrated gate
+# (CalibratedCoverage.from_model over a holdout report) is Trilha B; until then the note
+# must not imply the number is validated coverage.
+_COVERAGE_IS_CALIBRATED = False  # flip to True once a real calibration/holdout report drives _coverage
+
+
+def _imputed_response(intent_str: str, res, note: str,
+                      confidence: str = "estimated (imputed, with CI)") -> QueryResponse:
     """Map a route() imputed result (Estimated N / findability) to the response shape."""
     pv = res.provenance
     return QueryResponse(
         intent=intent_str, protocol_id=_protocol.protocol_id,
         value=float(res.value) if res.value is not None else 0.0,
         provenance=Provenance(
-            origin="estimated", asset="datasus_enriched",
-            confidence="estimated (with CI, within covered UFs)",
+            origin="estimated", asset="datasus_enriched", confidence=confidence,
             source=_datasus.provenance.get("source", "DataSUS (materialized)"),
             as_of=_datasus.provenance.get("as_of"),
             coverage_ufs=sorted(_coverage.ufs),
             ci=(list(pv.ci) if pv.ci else None),
-            model_version=pv.model_version,
-            note="Standardized estimate over the national DataSUS base, coverage-gated and "
-                 "model-versioned. Counting, not finding — not individually localizable patients.",
+            model_version=pv.model_version, note=note,
         ),
     )
 
 
-def _observed_response(intent_str: str, res, sites: int) -> QueryResponse:
+def _observed_response(intent_str: str, res, sites, note: str, confidence: str,
+                       asset: str = "proprietary_pure",
+                       source: str = "Proprietary NLP->OMOP depth") -> QueryResponse:
     """Map a route() observed result (FIND / prevalence) to the response shape."""
     return QueryResponse(
         intent=intent_str, protocol_id=_protocol.protocol_id,
         value=float(res.value) if res.value is not None else 0.0,
         provenance=Provenance(
-            origin="observed", asset="proprietary_pure",
-            confidence="observed (row-level, localizable)",
-            source="Proprietary NLP->OMOP depth",
-            sites_with_data=sites,
-            note="Direct count over real proprietary patients. Finding, not counting — each is a "
-                 "real, localizable record. The imputed Asset 3 is STRUCTURALLY unreachable here "
-                 "(route() guardrail), not merely avoided by convention.",
+            origin="observed", asset=asset, confidence=confidence,
+            source=source, sites_with_data=sites, note=note,
         ),
     )
 
@@ -281,24 +284,39 @@ def query(req: QueryRequest):
         if intent in ("count", "market_size"):
             res = route(Intent.MARKET_SIZE, protocol=_protocol, proprietary=_proprietary_complete,
                         datasus=_datasus, coverage=_coverage, model_version=_model_version)
-            return _imputed_response("count", res)
+            gate = ("coverage-gated to a calibrated subset" if _COVERAGE_IS_CALIBRATED
+                    else f"over all {len(_coverage.ufs)} UFs present in the base — coverage NOT yet "
+                         "calibration-validated (placeholder)")
+            return _imputed_response(
+                "count", res, confidence="estimated (with CI)",
+                note=f"Standardized Estimated N {gate}, model-versioned. Counting, not finding — "
+                     "not individually localizable patients.")
         if intent == "find":
             res = route(Intent.FIND, protocol=_protocol, proprietary=_proprietary_all)
             sites = len(observed_n_by_site(_protocol, _proprietary_all))
-            return _observed_response("find", res, sites)
+            return _observed_response(
+                "find", res, sites, confidence="observed (row-level, localizable)",
+                note="Direct count over real proprietary patients passing the full protocol. Finding, "
+                     "not counting — each is a real, localizable record. The imputed Asset 3 is "
+                     "STRUCTURALLY unreachable here (route() guardrail), not merely avoided by convention.")
         if intent == "prevalence":
             res = route(Intent.PREVALENCE, protocol=_protocol, proprietary=_proprietary_complete,
                         datasus=_datasus)
-            r = _observed_response("prevalence", res, 0)
-            r.provenance.asset = "datasus_pure"
-            r.provenance.source = _datasus.provenance.get("source", "DataSUS (materialized)")
-            r.provenance.note = "DataSUS national denominator after checkable criteria. Observed/exact."
-            return r
+            return _observed_response(
+                "prevalence", res, None, asset="datasus_pure",
+                source=_datasus.provenance.get("source", "DataSUS (materialized)"),
+                confidence="observed (aggregate denominator, exact — not localizable rows)",
+                note="DataSUS national denominator after the protocol's checkable criteria. An exact "
+                     "population aggregate, not individually localizable patients.")
         if intent == "findability":
             res = route(Intent.FINDABILITY, protocol=_protocol, proprietary=_proprietary_complete,
                         datasus=_datasus, coverage=_coverage, model_version=_model_version,
                         observed_proprietary=_proprietary_all)
-            return _imputed_response("findability", res)
+            return _imputed_response(
+                "findability", res, confidence="ratio (observed / estimated)",
+                note="Observed N (localizable, Asset 2) divided by Estimated N (imputed market, Asset 3). "
+                     "A RATE in [0,1], not a headcount — the fraction of the addressable market localizable "
+                     "today. Inherits the model's uncertainty via the denominator.")
         if intent == "feasibility":
             sites = finding_n_by_site(_protocol, _prop_finding)  # FullProprietary via materialized adapter
             total = sum(s.finding_n for s in sites)
