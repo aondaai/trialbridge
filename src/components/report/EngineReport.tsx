@@ -104,6 +104,11 @@ export function EngineReport({ report }: { report: Report }) {
       {/* §3 Country Case */}
       <CountryCard country={country} />
 
+      {/* §4 Supply vs. Demand */}
+      {report.supplyDemand && report.supplyDemand.regions.length > 0 && (
+        <SupplyDemandCard report={report} />
+      )}
+
       {/* §2 Softening */}
       {softening.scenarios.length > 0 && (
         <div className="card">
@@ -169,6 +174,38 @@ function CountryCard({ country }: { country: CountryScorecard }) {
                     <MetricChip key={m.key} metric={m} />
                   ))}
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function SupplyDemandCard({ report }: { report: Report }) {
+  const sd = report.supplyDemand!;
+  return (
+    <div className="card">
+      <h2>Patient supply vs. trial demand</h2>
+      <p className="sub">Eligible patients per competing trial, by region — higher = idle patients, low cannibalization.</p>
+      <div className="table-scroll">
+        <table className="data">
+          <thead>
+            <tr>
+              <th>Region</th>
+              <th>Eligible pool</th>
+              <th>Competing trials</th>
+              <th>Supply / demand ratio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sd.regions.map((r) => (
+              <tr key={r.regionCode}>
+                <td>{r.regionCode}</td>
+                <td><MetricChip metric={r.eligiblePoolMetric} /></td>
+                <td><MetricChip metric={r.competingTrialsMetric} /></td>
+                <td><MetricChip metric={r.ratioMetric} strong /></td>
               </tr>
             ))}
           </tbody>
