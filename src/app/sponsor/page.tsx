@@ -45,7 +45,7 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
               <div className="muted" style={{ fontSize: 13 }}>
                 Observed (direct count, {national.sitesWithData} sites with real data)
               </div>
-              <div className="stat" style={{ color: "var(--definite)" }}>
+              <div className="tb-stat" style={{ color: "var(--definite)" }}>
                 {national.observedTotal.toLocaleString("en-US")}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
@@ -69,7 +69,7 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
           <div className="grid2">
             <div>
               <div className="muted" style={{ fontSize: 13 }}>Estimated eligible (national)</div>
-              <div className="stat" style={{ color: "var(--brand)" }}>
+              <div className="tb-stat" style={{ color: "var(--brand)" }}>
                 {Math.round(national.estimatedN).toLocaleString("en-US")}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
@@ -81,7 +81,7 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
               <div className="muted" style={{ fontSize: 13 }}>
                 Observed (direct count, {national.sitesWithData} sites with real data)
               </div>
-              <div className="stat small" style={{ color: "var(--definite)" }}>
+              <div className="tb-stat tb-stat--sm" style={{ color: "var(--definite)" }}>
                 {national.observedTotal.toLocaleString("en-US")}
               </div>
               <div className="muted" style={{ fontSize: 12 }}>
@@ -118,7 +118,7 @@ export default async function SponsorPage({
                 No protocol posted yet — post one to see site responses and softening.
               </p>
             </div>
-            <Link href="/sponsor/new" className="btn no-print" style={{ flexShrink: 0 }}>
+            <Link href="/sponsor/new" className="cl-btn cl-btn--secondary no-print" style={{ flexShrink: 0 }}>
               + Post from protocol text
             </Link>
           </div>
@@ -143,7 +143,7 @@ export default async function SponsorPage({
               {consultation.nct ? ` · ref ${consultation.nct}` : ""}
             </p>
           </div>
-          <Link href="/sponsor/new" className="btn no-print" style={{ flexShrink: 0 }}>
+          <Link href="/sponsor/new" className="cl-btn cl-btn--secondary no-print" style={{ flexShrink: 0 }}>
             + Post from protocol text
           </Link>
         </div>
@@ -235,13 +235,13 @@ export default async function SponsorPage({
           <div className="grid2">
             <div>
               <div className="muted" style={{ fontSize: 13 }}>Screening pool now (match ≠ enrollable)</div>
-              <div className="stat small">{feasibility.screeningPool}</div>
+              <div className="tb-stat tb-stat--sm">{feasibility.screeningPool}</div>
             </div>
             <div>
               <div className="muted" style={{ fontSize: 13 }}>
                 ≈ enrollable over {feasibility.months} months
               </div>
-              <div className="stat" style={{ color: "var(--brand)" }}>~{feasibility.enrollableEstimate}</div>
+              <div className="tb-stat" style={{ color: "var(--brand)" }}>~{feasibility.enrollableEstimate}</div>
               <div className="muted" style={{ fontSize: 12 }}>
                 incl. ~{feasibility.incidentOverWindow} incident patients across the window
               </div>

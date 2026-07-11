@@ -92,15 +92,15 @@ export default async function SitePage({
             <div>
               <div className="muted" style={{ fontSize: 13 }}>Confirmed / possible / excluded</div>
               <div style={{ display: "flex", gap: 8, alignItems: "baseline", marginTop: 4 }}>
-                <span className="stat" style={{ color: "var(--definite)" }}>{counts.definite}</span>
-                <span className="stat small" style={{ color: "var(--possible)" }}>{counts.possible}</span>
-                <span className="stat small muted">{counts.excluded}</span>
+                <span className="tb-stat" style={{ color: "var(--definite)" }}>{counts.definite}</span>
+                <span className="tb-stat tb-stat--sm" style={{ color: "var(--possible)" }}>{counts.possible}</span>
+                <span className="tb-stat tb-stat--sm muted">{counts.excluded}</span>
               </div>
               <CohortLegend />
             </div>
             <div>
               <div className="muted" style={{ fontSize: 13 }}>≈ enrollable over 6 months (funnel-discounted)</div>
-              <div className="stat" style={{ color: "var(--brand)" }}>~{feas.enrollableEstimate}</div>
+              <div className="tb-stat" style={{ color: "var(--brand)" }}>~{feas.enrollableEstimate}</div>
               <div className="muted" style={{ fontSize: 12 }}>
                 {counts.definite + counts.possible} screening pool · {ds.site.monthlyIncidence}/mo incident
               </div>
@@ -146,7 +146,7 @@ export default async function SitePage({
               <form action={submitCapacity}>
                 <input type="hidden" name="consultationId" value={consultation.id} />
                 <input type="hidden" name="siteId" value={SITE_ID} />
-                <button className="btn primary" type="submit">Submit proof of capacity →</button>
+                <button className="cl-btn cl-btn--primary" type="submit">Submit proof of capacity →</button>
               </form>
             </>
           )}
