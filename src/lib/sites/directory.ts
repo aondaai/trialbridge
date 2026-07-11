@@ -91,6 +91,60 @@ export function normName(name: string): string {
     .trim();
 }
 
+// ── Affiliation matching (CT.gov investigator affiliation → directory site) ──────
+const STOPWORDS = new Set([
+  // organisation words
+  "hospital", "hospitalar", "centro", "center", "centre", "clinica", "clinico", "clinicas",
+  "instituto", "institucional", "associacao", "fundacao", "irmandade", "santa", "casa",
+  "complexo", "unidade", "pesquisa", "pesquisas", "medicina", "medico", "saude",
+  "universidade", "universitario", "universitaria", "faculdade", "ltda", "sa", "rede",
+  "cancer", "oncologia", "oncologico", "research", "clinical", "trials",
+  // connectors
+  "de", "da", "do", "das", "dos", "e", "of", "the", "and", "for", "em",
+  // common place tokens (too generic to disambiguate a site)
+  "sao", "paulo", "paulista", "rio", "janeiro", "minas", "gerais", "grande", "norte",
+  "sul", "estado", "brasil", "brazil", "federal", "regional", "municipal", "nacional",
+]);
+
+function significantTokens(name: string): Set<string> {
+  return new Set(
+    normName(name)
+      .split(" ")
+      .filter((t) => t.length >= 3 && !STOPWORDS.has(t)),
+  );
+}
+
+/**
+ * Best directory-site match for a free-text affiliation (CT.gov). Token-overlap on
+ * DISTINCTIVE tokens (place/proper names, stopwords removed) — strict enough to avoid
+ * false positives; unmatched affiliations simply stay unlinked. Returns null below the
+ * threshold.
+ */
+export function matchAffiliation(
+  affiliation: string | null | undefined,
+  sites: DirectorySite[],
+  minScore = 0.6,
+): DirectorySite | null {
+  if (!affiliation) return null;
+  const aff = significantTokens(affiliation);
+  if (aff.size === 0) return null;
+  let best: DirectorySite | null = null;
+  let bestScore = 0;
+  for (const site of sites) {
+    const sib = significantTokens(site.name);
+    if (sib.size === 0) continue;
+    let inter = 0;
+    for (const t of aff) if (sib.has(t)) inter++;
+    // Overlap relative to the smaller token set; require at least one shared distinctive token.
+    const score = inter / Math.min(aff.size, sib.size);
+    if (inter >= 1 && score > bestScore) {
+      bestScore = score;
+      best = site;
+    }
+  }
+  return bestScore >= minScore ? best : null;
+}
+
 const TA_COLUMNS: [number, string][] = [
   [6, "Alergia/Imunologia"], [7, "Cardiovascular"], [8, "Dermatologia"], [9, "Doenças Infecciosas"],
   [10, "Endocrinologia"], [11, "Gastrointestinal"], [12, "Hematologia"], [13, "Hepatologia"],

@@ -318,7 +318,14 @@ function KolMapCard({ report }: { report: Report }) {
                     <tr key={`${p.name}-${i}`}>
                       <td>{i + 1}</td>
                       <td><strong>{p.name}</strong></td>
-                      <td>{p.affiliation ?? <span className="muted">—</span>}</td>
+                      <td>
+                        {p.affiliation ?? <span className="muted">—</span>}
+                        {p.cnes && (
+                          <span title="Matched to the ABRACRO/ACESSE site directory" style={{ fontSize: 11, color: "var(--cl-info)", marginLeft: 6 }}>
+                            · CNES {p.cnes}
+                          </span>
+                        )}
+                      </td>
                       <td className="num">
                         {p.pubsCountTa ? p.pubsCountTa : <span className="muted">—</span>}
                         {cited.length > 0 && (
