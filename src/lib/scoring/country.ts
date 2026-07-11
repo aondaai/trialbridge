@@ -40,6 +40,9 @@ export interface CountryInput {
   implementationMaturity: number; // 0..1 penalty on the statutory score (young INAEP, backlog)
   // D2 patient supply
   nationalEligiblePool: number; // from the funnel
+  /** Pre-built pool Metric (CI + citation) when the pool comes from a real source
+   *  (DataSUS estimator); when absent, a plain modeled Metric is built from the number. */
+  nationalPoolMetric?: Metric | null;
   targetSampleSize: number; // sponsor's Brazil sample target
   treatmentNaiveAdvantage: boolean;
   // D3 competition
@@ -129,10 +132,12 @@ export function scoreCountry(input: CountryInput, weights?: CountryWeights): Cou
     "higher",
   );
   const supplyScore = clampScore(supplyBase + (input.treatmentNaiveAdvantage ? 8 : 0));
-  const poolMetric = modeled("country.patient_supply.national_pool", Math.round(input.nationalEligiblePool), Confidence.MEDIUM, {
-    unit: "patients",
-    note: "National eligible pool from the funnel; SUS-access caveat applies.",
-  });
+  const poolMetric =
+    input.nationalPoolMetric ??
+    modeled("country.patient_supply.national_pool", Math.round(input.nationalEligiblePool), Confidence.MEDIUM, {
+      unit: "patients",
+      note: "National eligible pool from the funnel; SUS-access caveat applies.",
+    });
   const d2 = dim("patient_supply", supplyScore, w.patient_supply, [poolMetric]);
 
   // D3 competition: under-penetration = opportunity (lower trials/million scores higher).

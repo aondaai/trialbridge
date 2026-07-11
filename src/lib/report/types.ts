@@ -9,7 +9,7 @@
  * KOL → R8) are optional; the report is valid without them and gains them later.
  */
 
-import type { Metric, ProvenanceIndex } from "@/lib/metric";
+import type { Metric, ProvenanceIndex, SourceRef } from "@/lib/metric";
 import type { CountryScorecard, SiteScore, HardFlag } from "@/lib/scoring/types";
 
 export interface ReportContext {
@@ -87,18 +87,40 @@ export interface RegionSupplyDemandSummary {
   competingTrialsMetric: Metric;
   ratioMetric: Metric;
 }
+/** Real per-UF eligible pool (DataSUS estimate), for the §4 Brazil tile-map. */
+export interface UfPool {
+  uf: string;
+  eligible: number;
+}
 export interface SupplyDemandSummary {
   regions: RegionSupplyDemandSummary[];
+  /** Present when the real DataSUS estimate is wired: per-state eligible pools. */
+  ufPools?: UfPool[];
 }
 
 // ── §7 KOL map (optional — R8) ───────────────────────────────────────────────────
 export interface KolRefSummary {
   name: string;
   regionCode: string;
+  /** Real institutional affiliation (CT.gov) — the precise fact; region is best-effort. */
+  affiliation?: string | null;
+  /** CNES code, when the affiliation matched a directory site (cross-reference). */
+  cnes?: string | null;
+  /** Deep-web-researched signals (Parallel), when enrichment ran. */
+  pubsCountTa?: number;
+  societyRoles?: string[];
+  citations?: SourceRef[];
   scoreMetric: Metric;
+}
+/** KOL count per UF (investigators matched to a directory site), for the §7 tile-map. */
+export interface UfKolCount {
+  uf: string;
+  count: number;
 }
 export interface KolMapSummary {
   physicians: KolRefSummary[];
+  /** Per-state active-investigator counts, when affiliations resolved to a UF. */
+  ufCounts?: UfKolCount[];
 }
 
 /** The whole report. */

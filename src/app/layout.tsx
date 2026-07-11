@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Newsreader, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "./claude.css";
+import "./design-tokens.css";
 import "./landing.css";
 
 /* Substitute brand faces, self-hosted by next/font (no external CDN). These map

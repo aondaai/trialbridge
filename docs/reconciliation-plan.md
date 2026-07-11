@@ -73,9 +73,19 @@ existing `progress.md` discipline. P0 = R0–R6 (maps to eng spec §16 P0). P1 =
 - **R4 ✅ Site scorecard.** `src/lib/scoring/site.ts` — 9 components, confidence roll-up, `rankSites` tie-break; `guardrails.ts` demotion. Eng spec §6.4–6.7.
 - **R5 ✅ Report assembler.** `src/lib/report/{types,assemble}.ts` — typed 8-section `Report`, provenance index, provenance gate enforced. Eng spec §8.
 - **R6 ✅ Report UI.** `components/MetricChip.tsx` + `components/report/EngineReport.tsx` + `lib/report/buildReport.ts` resolver, wired into `/scorecard?view=engine`. Every number renders through MetricChip. Eng spec §13.
-- **R7 Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts`. Eng spec §11.
-- **R8 KOL service + map.** `src/lib/kol/score.ts` + PubMed/ORCID connectors. Eng spec §10, §7.9.
-- **R9 Connector breadth.** IBGE / CNES / INCA / ReBEC / ANS TS connectors (or bridge to the Python estimator for DataSUS). Eng spec §7.
+- **R7 ✅ Supply/Demand ratios.** `src/lib/supplydemand/ratios.ts` — per-region pool÷trials ratio, under-penetration, opportunity flag, IBGE macro-region populations; wired into report §4. Competing-trials is a MODELED placeholder until R9. Eng spec §11. *(on `feat/scorecard-p1`)*
+- **R8 ✅ KOL service + map.** `src/lib/kol/score.ts` — weighted trials/pubs/society/CNES score, confidence by source count, `rankKols`/`regionKolDensity`/`sweetSpotRegions` (tri-density), `buildKolMap` → §7. Report §7 renders with an honest empty state (no fabricated physicians) until R9 supplies investigator data. Eng spec §10, §7.9. *(on `feat/scorecard-p1`)*
+- **R9 🟡 Connector breadth (in progress).**
+  - **✅ Slice 1 — CT.gov competition + investigators.** `ctgov/competition.ts` — real per-region competing-trial counts (registry, paginated) feed supply/demand; real PIs (PI/chair only) populate the §7 KOL map.
+  - **✅ Parallel deep-web pipe + KOL enrichment.** `parallel/*` + `kol/enrich.ts` — real publications/society/guideline with citations, precomputed (`enrich-kols`).
+  - **✅ Site directory + cross-reference.** ABRACRO/ACESSE → 397 real sites (`import-sites`); investigators matched to sites → real CNES, region, institution-link.
+  - **✅ Real sites in the rankings.** `sites/toSiteInput.ts` — §5/§6 rank the 397 real oncology centres (inspections→data-quality, CT.gov competition, KOL links).
+  - **✅ Part B — CNES infra enrichment.** `sites/infraEnrich.ts` + `enrich-sites` — deep-web-researched equipment (CACON/UNACON, PET-CT, linac, MRI, ICU, GCP pharmacy, cited) → real `infrastructure_fit`.
+  - **⏭ Remaining:** INCA/DATASUS real pools (replace synthetic cohorts), ReBEC (completes competition), ANS (SUS→total). Eng spec §7.
+
+### Branch state
+- **`feat/scorecard-engine`** → P0 (R0–R6) + review fixes → **PR #3** (open, against `main`).
+- **`feat/scorecard-p1`** → stacked on the above; R7 landed. Not yet pushed.
 
 ### How to wire the engine to real data (R6+)
 The engine takes typed inputs; the resolvers that fill them are the wiring points:

@@ -54,3 +54,6 @@ yarn-error.log*
 
 # git worktrees for isolated agent work
 /.claude/worktrees/
+/data/kol-enrichment.json
+/data/site-directory.json
+/data/site-infra.json
