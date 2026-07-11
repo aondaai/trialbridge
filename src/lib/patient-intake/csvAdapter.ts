@@ -13,8 +13,6 @@ import type {
   ColumnMapping, IntakeStats, LabField, MapTarget, PatientIntakeResult, PatientSourceAdapter, PatientSourceInput, TrustTier,
 } from "./types";
 
-const LAB_FIELDS: LabField[] = ["creatinine", "hemoglobin", "platelets", "bilirubin", "ejection_fraction"];
-
 function isCsvFile(input: PatientSourceInput): boolean {
   if (input.kind === "text") return true;
   return /\.(csv|xlsx)$/i.test(input.filename) ||
@@ -56,6 +54,9 @@ function assign(p: Patient, target: MapTarget, header: string, raw: string): boo
 }
 
 function trustFor(stats: IntakeStats, columns: number): TrustTier {
+  // A sheet where every column was ignored has captured no clinical data —
+  // "high" (or even "medium") would be misleading.
+  if (stats.columnsMapped === 0) return "low";
   const totalCells = stats.rows * Math.max(1, columns - stats.columnsIgnored);
   const unparsedFrac = totalCells === 0 ? 0 : stats.cellsUnparsed / totalCells;
   if (stats.columnsMapped >= columns - stats.columnsIgnored && unparsedFrac < 0.05) return "high";

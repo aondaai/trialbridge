@@ -13,7 +13,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { upsertSite, replacePatients, type SiteMeta } from "@/lib/data/sites";
-import { slugify } from "./parse";
+import { slugify, ensureUniquePatientIds } from "./parse";
 import type { Patient } from "@/lib/matcher/types";
 
 const REGIONS = ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"] as const;
@@ -48,7 +48,7 @@ export async function listSite(formData: FormData) {
   if (!Array.isArray(patients) || patients.length === 0) {
     throw new Error("No structured patient records — upload an EHR export first.");
   }
-  patients = patients.map((p, i) => ({ ...p, id: p.id || `row-${i + 1}`, siteId: id }));
+  patients = ensureUniquePatientIds(patients).map((p) => ({ ...p, siteId: id }));
 
   const meta: SiteMeta = {
     id,
