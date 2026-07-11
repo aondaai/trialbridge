@@ -21,6 +21,26 @@
 const BASE_URL = process.env.TB_ESTIMATOR_URL ?? "http://127.0.0.1:8421";
 const TIMEOUT_MS = 8000;
 
+/**
+ * Shared-secret bearer token for the estimator's access gate. Optional: when unset
+ * (local dev, or before the gate is enabled) no auth header is sent and the open
+ * estimator answers normally. When the estimator has TB_ESTIMATOR_TOKEN set, this
+ * must match or requests get 401.
+ *
+ * Server-side only — read from process.env with no NEXT_PUBLIC_ prefix, so it is never
+ * bundled to the browser. fetchNationalEstimate() must stay server-side (server
+ * component / route handler); called from a client component, process.env is undefined
+ * and the header is dropped -> 401. Trimmed to match the estimator, which strips the
+ * env value (a stray newline/space pasted into the Render dashboard would otherwise 401).
+ */
+const ESTIMATOR_TOKEN = process.env.TB_ESTIMATOR_TOKEN?.trim();
+
+function estimatorHeaders(): Record<string, string> {
+  const h: Record<string, string> = { "Content-Type": "application/json" };
+  if (ESTIMATOR_TOKEN) h["Authorization"] = `Bearer ${ESTIMATOR_TOKEN}`;
+  return h;
+}
+
 export interface RegionEstimate {
   region: string;
   estimatedN: number;
@@ -81,7 +101,7 @@ export async function fetchNationalEstimate(): Promise<NationalEstimate | null> 
   try {
     const res = await withTimeout(`${BASE_URL}/feasibility/estimate`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: estimatorHeaders(),
       body: "{}",
       cache: "no-store",
     });
