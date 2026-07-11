@@ -12,9 +12,9 @@
   {"id":"F4-1","epic":"F4","desc":"PriorFormAnswer store + retrieval (keyword/embedding-lite RAG over prior answers)","file":"src/lib/feasibility-autofill/rag.ts","passes":true},
   {"id":"F4-2","epic":"F4","desc":"narrativeResolver (D) on the parse.ts LLM-containment pattern; always status=proposed","file":"src/lib/feasibility-autofill/resolvers/narrative.ts","passes":true},
   {"id":"F4-3","epic":"F4","desc":"review-workspace route under src/app/site/feasibility/; D answers never auto-approved","file":"src/app/site/feasibility/page.tsx","passes":true},
-  {"id":"F5-1","epic":"F5","desc":"DQ flags computed off CapabilityCatalog.completeness (conformance/completeness/plausibility)","file":"src/lib/feasibility-autofill/dq.ts","passes":false},
-  {"id":"F5-2","epic":"F5","desc":"AuditLog versioning: every answer edit writes a new version + audit row","file":"src/lib/feasibility-autofill/audit.ts","passes":false},
-  {"id":"F5-3","epic":"F5","desc":"edit→synonym write-back + RAG index (the learning loop)","file":"src/lib/feasibility-autofill/learn.ts","passes":false},
+  {"id":"F5-1","epic":"F5","desc":"DQ flags computed off CapabilityCatalog.completeness (conformance/completeness/plausibility)","file":"src/lib/feasibility-autofill/dq.ts","passes":true},
+  {"id":"F5-2","epic":"F5","desc":"AuditLog versioning: every answer edit writes a new version + audit row","file":"src/lib/feasibility-autofill/audit.ts","passes":true},
+  {"id":"F5-3","epic":"F5","desc":"edit→synonym write-back + RAG index (the learning loop)","file":"src/lib/feasibility-autofill/learn.ts","passes":true},
   {"id":"F6-1","epic":"F6","desc":"structured answers feed existing scorecard Metrics (do not fork src/lib/metric)","file":"src/lib/feasibility-autofill/scorecardFeed.ts","passes":false},
   {"id":"F6-2","epic":"F6","desc":"feasibility inbox reuses Consultation/Response primitives (no parallel dispatch table)","file":"src/lib/feasibility-autofill/inbox.ts","passes":false}
 ]
