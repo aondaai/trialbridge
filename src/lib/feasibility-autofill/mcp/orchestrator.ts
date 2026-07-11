@@ -21,6 +21,7 @@ import { resolveProfileByLabel, type ProfileLike } from "../resolvers/profile";
 import { resolveCapability, type CapabilityLike } from "../resolvers/capability";
 import type { CohortPreview } from "../resolvers/cohort";
 import { draftNarrative, type NarrativeContext, type NarrativeDraft } from "../resolvers/narrative";
+import { critiqueNarrative, type Critique } from "../resolvers/narrativeCritic";
 import { retrievePriorAnswers, type PriorAnswer } from "../rag";
 import { Confidence, modeled, assertProvenanced, buildProvenanceIndex, type Metric, type ProvenanceIndex } from "@/lib/metric";
 import type { FormFieldDraft } from "../ingest";
@@ -38,6 +39,8 @@ export interface OrchestratedAnswer {
   status: "proposed";
   /** D only: the narrative draft + citations (for the review workspace). */
   narrative?: NarrativeDraft;
+  /** D only: the adversarial grounding critique (advisory — never changes status). */
+  critique?: Critique;
 }
 
 export interface AutofillRequest {
@@ -56,6 +59,8 @@ export interface OrchestratorDeps {
   loadPriors: (siteId: string) => Promise<PriorAnswer[]>;
   /** Narrative drafter; defaults to the built-in resolver (Claude/template). */
   draft?: (ctx: NarrativeContext) => Promise<NarrativeDraft>;
+  /** D-critic; defaults to the built-in adversarial grounding check (Claude/heuristic). */
+  critique?: (draft: NarrativeDraft, ctx: NarrativeContext) => Promise<Critique>;
   /** Injected timestamp (kept clock-free). */
   asOf?: string;
 }
@@ -80,6 +85,7 @@ export async function orchestrateAutofill(
 ): Promise<AutofillResult> {
   const asOf = deps.asOf ?? null;
   const drafter = deps.draft ?? ((ctx: NarrativeContext) => draftNarrative(ctx));
+  const critic = deps.critique ?? ((draft: NarrativeDraft, ctx: NarrativeContext) => critiqueNarrative(draft, ctx));
 
   const profile = await deps.loadProfile(request.siteId);
   const priors = await deps.loadPriors(request.siteId);
@@ -110,10 +116,14 @@ export async function orchestrateAutofill(
       });
       answers.push({ ...base, metric });
     } else {
-      // D — narrative. Retrieve exemplars, draft (never approves).
+      // D — narrative. Retrieve exemplars, draft (never approves), then adversarially critique
+      // the draft for grounding BEFORE it reaches human review. The critique is advisory — it
+      // annotates the answer for the reviewer, never changes status.
       const exemplars = retrievePriorAnswers({ label: field.label, section: field.section, conceptId: cls.concept }, priors);
-      const narrative = await drafter({ fieldLabel: field.label, section: field.section, exemplars, institutionFacts: profile ? { anonimizacao: profile.anonymizationLevel } : {} });
-      answers.push({ ...base, metric: narrative.metric, narrative });
+      const ctx: NarrativeContext = { fieldLabel: field.label, section: field.section, exemplars, institutionFacts: profile ? { anonimizacao: profile.anonymizationLevel } : {} };
+      const narrative = await drafter(ctx);
+      const critique = await critic(narrative, ctx);
+      answers.push({ ...base, metric: narrative.metric, narrative, critique });
     }
   }
 
