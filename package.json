@@ -20,7 +20,8 @@
     "smoke": "./node_modules/.bin/tsx scripts/smoke.ts",
     "db:push": "./node_modules/.bin/prisma db push",
     "postinstall": "./node_modules/.bin/prisma generate",
-    "enrich-kols": "./node_modules/.bin/tsx scripts/enrich-kols.ts"
+    "enrich-kols": "./node_modules/.bin/tsx scripts/enrich-kols.ts",
+    "import-sites": "./node_modules/.bin/tsx scripts/import-sites.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
