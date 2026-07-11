@@ -19,6 +19,7 @@
     "autofill:run": "./node_modules/.bin/tsx scripts/autofill-run.ts",
     "db:seed-demo-prior": "./node_modules/.bin/tsx scripts/seed-demo-prior.ts",
     "db:seed-demo-request": "./node_modules/.bin/tsx scripts/seed-demo-request.ts",
+    "autofill:e2e": "./node_modules/.bin/tsx scripts/autofill-e2e.ts",
     "demo": "./node_modules/.bin/tsx scripts/demo.ts",
     "demo:intake": "./node_modules/.bin/tsx scripts/demo-intake.ts",
     "build-vocab-index": "./node_modules/.bin/tsx scripts/build-vocab-index.ts",

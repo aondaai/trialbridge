@@ -4,6 +4,6 @@
   {"id":"FIN-3","desc":"US-5 export: route renders the APPROVED answers to a filled .docx via render/docx.ts, guarded by render/diff (only approved ship)","file":"src/app/site/feasibility/export/route.ts","passes":true},
   {"id":"FIN-4","desc":"US-6 learn: approving D indexes a PriorFormAnswer; a concept mapping writes a ConceptSynonym; the classifier consumes learned synonyms; test proves a learned synonym maps a previously-unmapped label","file":"src/lib/feasibility-autofill/learn.ts","passes":true},
   {"id":"FIN-5","desc":"#4 ontology: concept-map + synonyms extended to ASCVD/IBD (CID-10 I21/E78/K50-51, LOINC, ATC) with PT-BR synonyms; ASCVD/IBD B-field label P/R test ≥0.8; no fabricated concept_ids","file":"src/lib/feasibility-autofill/classify.ts","passes":true},
-  {"id":"FIN-6","desc":"Tests: persist.ts + actions logic covered; round-trip test (docx→request→autofill→approve→render) asserts only approved ships + no patient id leaks; existing 336 stay green","file":"tests/autofill-roundtrip.test.ts","passes":false},
-  {"id":"FIN-7","desc":"autofill:e2e headless driver prints request id, N answers, approved count, rendered .docx bytes, cohort N","file":"scripts/autofill-e2e.ts","passes":false}
+  {"id":"FIN-6","desc":"Tests: persist.ts + actions logic covered; round-trip test (docx→request→autofill→approve→render) asserts only approved ships + no patient id leaks; existing 336 stay green","file":"tests/autofill-roundtrip.test.ts","passes":true},
+  {"id":"FIN-7","desc":"autofill:e2e headless driver prints request id, N answers, approved count, rendered .docx bytes, cohort N","file":"scripts/autofill-e2e.ts","passes":true}
 ]
