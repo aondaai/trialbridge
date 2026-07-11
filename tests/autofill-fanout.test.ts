@@ -56,6 +56,10 @@ describe("M3 · network fan-out across sites", () => {
     expect(r.summary.succeeded).toBe(1);
     expect(r.summary.failed).toBe(0);
     expect(r.summary.countedSites).toBe(0); // no precise count contributed
+    // …and it is visible, not silently uncounted:
+    expect(r.summary.cohortUnavailableSites).toBe(1);
+    expect(r.perSite[0].error).toMatch(/cohort unavailable/);
+    expect(r.perSite[0].result!.cohortUnavailable).toBe(true);
     const c = r.perSite[0].result!.answers.find((a) => a.archetype === "C")!;
     expect(c.metric.value).toBeNull();
     expect(c.metric.note).toMatch(/cohort unavailable/);

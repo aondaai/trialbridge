@@ -11,7 +11,7 @@
  * why the round-trip is unit-tested against the real subprocess.
  */
 
-import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { spawn, type ChildProcess } from "node:child_process";
 import { createInterface, type Interface } from "node:readline";
 
 interface Pending {
@@ -19,19 +19,39 @@ interface Pending {
   reject: (err: Error) => void;
 }
 
+export interface McpClientOptions {
+  env?: NodeJS.ProcessEnv;
+  /** Per-request timeout (ms). A live-but-silent server rejects instead of hanging forever. */
+  requestTimeoutMs?: number;
+}
+
 export class McpStdioClient {
-  private proc: ChildProcessWithoutNullStreams;
+  private proc: ChildProcess;
   private rl: Interface;
   private pending = new Map<number, Pending>();
   private nextId = 1;
   private closed = false;
+  private readonly timeoutMs: number;
 
-  constructor(command: string, args: string[], env: NodeJS.ProcessEnv = process.env) {
-    this.proc = spawn(command, args, { env, stdio: ["pipe", "pipe", "pipe"] });
-    this.rl = createInterface({ input: this.proc.stdout, terminal: false });
+  constructor(command: string, args: string[], opts: McpClientOptions = {}) {
+    this.timeoutMs = opts.requestTimeoutMs ?? 60_000;
+    // detached: the child is its own process-group leader, so close() can group-kill it (and
+    // any grandchild the tsx shim spawns). stderr → inherit: the child writes to our real
+    // stderr fd, so a full pipe buffer can never deadlock the child (a real hang mode).
+    this.proc = spawn(command, args, { env: opts.env ?? process.env, stdio: ["pipe", "pipe", "inherit"], detached: true });
+    this.rl = createInterface({ input: this.proc.stdout!, terminal: false });
     this.rl.on("line", (line) => this.onLine(line));
-    this.proc.on("exit", () => this.failAll(new Error("mcp server exited")));
-    this.proc.on("error", (e) => this.failAll(e));
+    // Writing to a dead child's stdin emits 'error' (EPIPE) — swallow it here so it can't
+    // crash the process; the in-flight request is rejected by its own write callback / timeout.
+    this.proc.stdin!.on("error", () => {});
+    this.proc.on("exit", () => {
+      this.closed = true;
+      this.failAll(new Error("mcp server exited"));
+    });
+    this.proc.on("error", (e) => {
+      this.closed = true;
+      this.failAll(e);
+    });
   }
 
   private onLine(line: string): void {
@@ -57,12 +77,24 @@ export class McpStdioClient {
   }
 
   private send(method: string, params?: Record<string, unknown>): Promise<unknown> {
-    if (this.closed) return Promise.reject(new Error("client closed"));
+    if (this.closed) return Promise.reject(new Error("mcp client closed"));
     const id = this.nextId++;
     const payload = JSON.stringify({ jsonrpc: "2.0", id, method, params }) + "\n";
     return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-      this.proc.stdin.write(payload);
+      const timer = setTimeout(() => {
+        if (this.pending.delete(id)) reject(new Error(`mcp request "${method}" timed out after ${this.timeoutMs}ms`));
+      }, this.timeoutMs);
+      // Wrap so any settle path clears the timer (prevents a dangling timer keeping the loop alive).
+      this.pending.set(id, {
+        resolve: (v) => { clearTimeout(timer); resolve(v); },
+        reject: (e) => { clearTimeout(timer); reject(e); },
+      });
+      this.proc.stdin!.write(payload, (err) => {
+        if (err) {
+          const p = this.pending.get(id);
+          if (p) { this.pending.delete(id); p.reject(err); } // reject in-flight on EPIPE etc.
+        }
+      });
     });
   }
 
@@ -70,7 +102,11 @@ export class McpStdioClient {
   async initialize(): Promise<void> {
     await this.send("initialize");
     // Fire-and-forget the initialized notification (no id → no response expected).
-    this.proc.stdin.write(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n");
+    try {
+      this.proc.stdin!.write(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n");
+    } catch {
+      /* stdin may already be gone — the handshake response already succeeded, so ignore. */
+    }
   }
 
   /** Call a tool; returns the tool result's `structuredContent` (or `content`). */
@@ -90,8 +126,13 @@ export class McpStdioClient {
 
   close(): void {
     this.closed = true;
+    this.failAll(new Error("mcp client closed")); // synchronously reject anything in flight
     this.rl.close();
-    this.proc.stdin.end();
-    this.proc.kill();
+    try { this.proc.stdin!.end(); } catch { /* already closed */ }
+    // Kill the whole process group (detached leader) so the tsx shim + its grandchild die too.
+    const pid = this.proc.pid;
+    if (pid) {
+      try { process.kill(-pid, "SIGTERM"); } catch { try { this.proc.kill("SIGTERM"); } catch { /* gone */ } }
+    }
   }
 }

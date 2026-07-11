@@ -82,11 +82,14 @@ export async function createSession(agentId: string, environmentId?: string): Pr
  * VERIFY: path (POST /v1/sessions/{sessionId}/events) and event shape.
  */
 export async function sendEvent(sessionId: string, userText: string): Promise<Response> {
-  return fetch(`${API_BASE}/v1/sessions/${sessionId}/events`, {
+  const resp = await fetch(`${API_BASE}/v1/sessions/${sessionId}/events`, {
     method: "POST",
     headers: { ...authHeaders(), accept: "text/event-stream" },
     body: JSON.stringify({ type: "user_message", content: userText }),
   });
+  // Surface an HTTP error clearly instead of handing back an error body to be consumed as SSE.
+  if (!resp.ok) throw new Error(`sendEvent failed: ${resp.status} ${await resp.text()}`);
+  return resp;
 }
 
 /**

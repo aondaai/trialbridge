@@ -39,6 +39,8 @@ export interface NetworkAutofillResult {
     totalCandidates: number;
     /** Sites whose count was suppressed (<5) and thus excluded from totalCandidates. */
     suppressedSites: number;
+    /** Sites that answered A/B/D but whose cohort tool was unavailable (C degraded). */
+    cohortUnavailableSites: number;
   };
 }
 
@@ -80,12 +82,19 @@ export async function fanOutAutofill(
   let countedSites = 0;
   let totalCandidates = 0;
   let suppressedSites = 0;
+  let cohortUnavailableSites = 0;
   for (const o of perSite) {
-    const n = o.result?.cohort?.n;
+    if (!o.result) continue;
+    // Annotate the outcome so an offline cohort tool is visible, not silently uncounted.
+    if (o.result.cohortUnavailable) {
+      cohortUnavailableSites++;
+      o.error = o.error ?? `cohort unavailable: ${o.result.cohortError ?? "unknown"}`;
+    }
+    const n = o.result.cohort?.n;
     if (typeof n === "number") {
       countedSites++;
       totalCandidates += n;
-    } else if (n === "<5" || o.result?.cohort?.suppressed) {
+    } else if (n === "<5" || o.result.cohort?.suppressed) {
       suppressedSites++;
     }
   }
@@ -100,6 +109,7 @@ export async function fanOutAutofill(
       countedSites,
       totalCandidates,
       suppressedSites,
+      cohortUnavailableSites,
     },
   };
 }

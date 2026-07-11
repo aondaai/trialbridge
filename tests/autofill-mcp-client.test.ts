@@ -30,4 +30,16 @@ describe("live seam · MCP stdio client ↔ cohort.preview server", () => {
     await client.initialize();
     await expect(client.callTool("nope.tool", {})).rejects.toThrow();
   }, 30_000);
+
+  it("times out (does not hang) against a server that never replies", async () => {
+    // A command that reads stdin but never writes a response line (`cat` echoes, but a plain
+    // sleep never replies). Use `sh -c 'while :; do :; done'`-free approach: `cat >/dev/null`.
+    client = new McpStdioClient("sh", ["-c", "cat >/dev/null"], { requestTimeoutMs: 400 });
+    await expect(client.initialize()).rejects.toThrow(/timed out/);
+  }, 10_000);
+
+  it("rejects in-flight requests when the server process dies (no hang, no crash)", async () => {
+    client = new McpStdioClient("sh", ["-c", "exit 0"], { requestTimeoutMs: 5000 });
+    await expect(client.initialize()).rejects.toThrow(); // exited → failAll
+  }, 10_000);
 });

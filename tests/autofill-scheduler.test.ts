@@ -3,6 +3,7 @@ import {
   ageInDays,
   findStaleCapabilities,
   planNightlyJob,
+  NEVER_VALIDATED_AGE,
   type CatalogRowLike,
 } from "@/lib/feasibility-autofill/mcp/scheduler";
 
@@ -16,7 +17,8 @@ describe("M4 · scheduled freshness planner", () => {
   it("ageInDays is clock-free and floors to whole days", () => {
     expect(ageInDays("2026-07-01T00:00:00Z", NOW)).toBe(10);
     expect(ageInDays("2026-07-11T00:00:00Z", NOW)).toBe(0);
-    expect(ageInDays("not-a-date", NOW)).toBe(Infinity);
+    expect(ageInDays("not-a-date", NOW)).toBe(NEVER_VALIDATED_AGE); // finite, JSON-safe sentinel
+    expect(Number.isFinite(ageInDays("not-a-date", NOW))).toBe(true);
   });
 
   it("flags rows past the 90-day window, most-stale first", () => {

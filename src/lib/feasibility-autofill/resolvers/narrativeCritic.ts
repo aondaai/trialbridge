@@ -42,13 +42,16 @@ export function heuristicCritique(draft: NarrativeDraft, ctx: NarrativeContext):
 
   const grounded = ctx.exemplars.map((e) => normalize(e.answerText)).join(" ") +
     " " + Object.values(ctx.institutionFacts ?? {}).map(normalize).join(" ");
+  // Exact numeric tokens present in the grounding (so "12" is not "found" inside "2012").
+  const groundedNums = new Set(grounded.split(/[^0-9]+/).filter(Boolean));
 
   if (draft.citations.length === 0 && body.replace(/[^a-z]/g, "").length > 40) {
     issues.push("draft asserts content but cites no prior-answer exemplars (ungrounded)");
   }
 
   for (const num of numbersIn(draft.draft)) {
-    if (num.length >= 2 && !grounded.includes(num)) {
+    const isYear = /^(19|20)\d{2}$/.test(num); // a 4-digit year is not a patient count
+    if (num.length >= 2 && !isYear && !groundedNums.has(num)) {
       issues.push(`contains a number "${num}" not supported by any exemplar/fact (possible fabricated count)`);
     }
   }

@@ -95,7 +95,12 @@ export async function buildLiveDeps(opts: {
   const tsx = opts.tsxBin ?? "./node_modules/.bin/tsx";
   const script = opts.serverScript ?? "scripts/mcp-cohort-server.ts";
   const client = new McpStdioClient(tsx, [script]);
-  await client.initialize();
+  try {
+    await client.initialize();
+  } catch (err) {
+    client.close(); // don't leak the spawned subprocess if the handshake fails/times out
+    throw err;
+  }
 
   const cohortPreview = (siteId: string, criteria: Criterion[]): Promise<CohortPreview> =>
     client.callTool<CohortPreview>("cohort.preview", { siteId, criteria });

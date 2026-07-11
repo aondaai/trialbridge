@@ -28,12 +28,15 @@ export interface RevalidationTask {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+/** Finite "effectively infinite" age for never/unparseable-validated rows — JSON-safe and sortable
+ *  (Infinity serializes to null and makes the sort comparator return NaN). ~274 years. */
+export const NEVER_VALIDATED_AGE = 100_000;
 
 /** Whole days between an ISO timestamp and `now` (floored, never negative). */
 export function ageInDays(iso: string, nowIso: string): number {
   const then = Date.parse(iso);
   const now = Date.parse(nowIso);
-  if (Number.isNaN(then) || Number.isNaN(now)) return Infinity; // unparseable → treat as stale
+  if (Number.isNaN(then) || Number.isNaN(now)) return NEVER_VALIDATED_AGE; // unparseable → treat as stale
   return Math.max(0, Math.floor((now - then) / DAY_MS));
 }
 
@@ -57,7 +60,7 @@ export function findStaleCapabilities(
         dataSourceId: row.dataSourceId,
         conceptId: row.conceptId,
         ageDays,
-        reason: ageDays === Infinity ? "never validated" : `stale: ${ageDays}d ≥ ${threshold}d threshold`,
+        reason: ageDays >= NEVER_VALIDATED_AGE ? "never validated" : `stale: ${ageDays}d ≥ ${threshold}d threshold`,
       });
     }
   }

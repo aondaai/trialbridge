@@ -71,6 +71,10 @@ export interface AutofillResult {
   provenance: ProvenanceIndex;
   /** The shared cohort count for the request (archetype C), if any C field was present. */
   cohort: CohortPreview | null;
+  /** True when a C field was present but the cohort tool failed (C degraded to unavailable). */
+  cohortUnavailable: boolean;
+  /** The cohort tool's error message, if it failed. */
+  cohortError: string | null;
 }
 
 /**
@@ -146,5 +150,12 @@ export async function orchestrateAutofill(
   const metrics = answers.map((a) => a.metric);
   assertProvenanced({ metrics });
 
-  return { siteId: request.siteId, answers, provenance: buildProvenanceIndex({ metrics }), cohort };
+  return {
+    siteId: request.siteId,
+    answers,
+    provenance: buildProvenanceIndex({ metrics }),
+    cohort,
+    cohortUnavailable: needsCohort && cohort === null,
+    cohortError,
+  };
 }
