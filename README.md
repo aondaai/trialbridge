@@ -134,7 +134,7 @@ say exactly that much and no more.
 
 ## LatAm Site Map
 
-`/map` renders ~29k physical clinical-trial sites across Brazil, Mexico, Chile,
+`/map` renders ~22.6k identifiable clinical-trial sites across Brazil, Mexico, Chile,
 and Argentina (ClinicalTrials.gov registry data; city-level coordinates), colored
 by activity status with per-country filters. The payload
 (`public/data/latam-sites.json`) is generated from the SiteMapTool pipeline
@@ -142,6 +142,8 @@ by activity status with per-country filters. The payload
 pipeline) via:
 
     npm run build-latam-map-data -- <path-to-full-sites.json>
+
+Sponsor-anonymized registry placeholders (e.g. "Local Institution - 0050") are excluded; they are per-trial noise, not identifiable facilities.
 
 ---
 

@@ -22,10 +22,13 @@ interface FullSite {
   activity_status: "active" | "dormant";
   trial_count: number;
   active_trial_count: number;
+  is_placeholder?: boolean;
 }
 
 const full = JSON.parse(readFileSync(src, "utf8")) as { sites: FullSite[] };
-const mappable = full.sites.filter((s) => s.lat != null && s.lng != null);
+const mappable = full.sites.filter(
+  (s) => s.lat != null && s.lng != null && !s.is_placeholder,
+);
 const sites = mappable.map((s) => ({
   site_id: s.site_id,
   name: s.name,
@@ -46,5 +49,5 @@ writeFileSync(
 );
 console.log(
   `wrote public/data/latam-sites.json: ${sites.length} mappable sites ` +
-    `(${full.sites.length - mappable.length} without coords excluded)`,
+    `(${full.sites.length - mappable.length} excluded: placeholders + no coords)`,
 );
