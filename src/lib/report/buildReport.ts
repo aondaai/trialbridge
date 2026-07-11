@@ -29,6 +29,8 @@ import {
   BR_MACROREGION_POPULATION,
   RegionSDInput,
 } from "@/lib/supplydemand/ratios";
+import { buildKolMap } from "@/lib/kol/score";
+import type { CompetitionData } from "@/lib/ctgov/competition";
 
 export interface BuildReportOptions {
   runId?: string;
@@ -38,6 +40,9 @@ export interface BuildReportOptions {
   months?: number;
   asOf?: string | null;
   fxRateBrlUsd?: number;
+  /** Real CT.gov competition data (R9). When source==="live", replaces the modeled
+   *  competing-trials placeholders and populates the KOL map from real investigators. */
+  competition?: CompetitionData;
 }
 
 export interface ConsultationLike {
@@ -92,11 +97,32 @@ export function buildReport(
     scoreSite(toSiteInput(site, feas.enrollableEstimate / months, profile)),
   );
 
-  // §4 Supply vs. demand, by macro-region (eligible pool from the funnel; competing
-  // trials are a MODELED placeholder until CT.gov/ReBEC is wired — R9).
-  const sdInputs = buildRegionSDInputs(sites);
+  // §4 Supply vs. demand, by macro-region. Competing trials come from CT.gov when
+  // live (registry), else a MODELED placeholder (§7.11 graceful degradation).
+  const competitionLive = opts.competition?.source === "live" ? opts.competition : undefined;
+  const sdInputs = buildRegionSDInputs(sites, competitionLive);
   const supplyDemand =
     sdInputs.length > 0 ? toSupplyDemandSummary(computeSupplyDemand(sdInputs, { asOf })) : undefined;
+
+  // §7 KOL map from real CT.gov investigators (partial signal: trial experience only;
+  // pubs/society need PubMed/ORCID — a later slice). Empty until competition is live.
+  const kolMap =
+    competitionLive && competitionLive.investigators.length > 0
+      ? buildKolMap(
+          competitionLive.investigators.slice(0, 25).map((inv) => ({
+            name: inv.name,
+            regionCode: inv.regionCode,
+            affiliation: inv.affiliation,
+            signals: {
+              trialsCount: inv.trialsCount,
+              pubsCountTa: 0,
+              societyRoles: [],
+              guidelineAuthor: false,
+              hasCnesLink: false,
+            },
+          })),
+        )
+      : undefined;
 
   return assemble({
     context: {
@@ -113,9 +139,12 @@ export function buildReport(
     country,
     sites: siteScores,
     supplyDemand,
+    kolMap,
     assumptions: [
       "Site capture rate over the eligible pool (conservative screen-to-enrol default).",
-      "Competition, CNES infrastructure, KOL and startup signals are MODELED placeholders until the CT.gov / CNES / PubMed connectors are wired (R7–R9) — sites carry LOW confidence accordingly.",
+      competitionLive
+        ? `Competition + KOL investigators are LIVE from ClinicalTrials.gov (${competitionLive.total} recruiting BR studies). CNES infrastructure and PubMed/ORCID KOL signals remain modeled until those connectors are wired.`
+        : "Competition, CNES infrastructure, KOL and startup signals are MODELED placeholders until the CT.gov / CNES / PubMed connectors are wired (R9) — sites carry LOW confidence accordingly.",
       "SUS→total correction not yet applied (ANS connector = R9).",
     ],
   });
@@ -194,19 +223,24 @@ function buildSoftening(
  * pool is real (summed from the funnel); population is IBGE; competing trials is a
  * MODELED placeholder (flat per region) until the CT.gov/ReBEC connector lands (R9).
  */
-function buildRegionSDInputs(sites: EvaluatedSite[]): RegionSDInput[] {
+function buildRegionSDInputs(sites: EvaluatedSite[], competition?: CompetitionData): RegionSDInput[] {
   const byRegion = new Map<string, number>();
   for (const s of sites) {
     const pool = s.counts.definite + s.counts.possible;
     byRegion.set(s.meta.region, (byRegion.get(s.meta.region) ?? 0) + pool);
   }
-  return Array.from(byRegion.entries()).map(([region, pool]) => ({
-    regionCode: region,
-    regionName: region,
-    eligiblePool: pool,
-    competingTrials: 4, // modeled placeholder (competingTrialsProvenance defaults to "modeled")
-    population: BR_MACROREGION_POPULATION[region] ?? 20_000_000,
-  }));
+  return Array.from(byRegion.entries()).map(([region, pool]) => {
+    const liveCount = competition?.byRegion?.[region as keyof typeof competition.byRegion];
+    return {
+      regionCode: region,
+      regionName: region,
+      eligiblePool: pool,
+      // Real CT.gov count when available (registry), else the modeled placeholder.
+      competingTrials: liveCount ?? 4,
+      competingTrialsProvenance: liveCount != null ? ("registry" as const) : ("modeled" as const),
+      population: BR_MACROREGION_POPULATION[region] ?? 20_000_000,
+    };
+  });
 }
 
 /** Map an existing EvaluatedSite → the engine's SiteInput (honest modeled placeholders). */

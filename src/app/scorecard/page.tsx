@@ -9,11 +9,23 @@ import { TopBar, CohortBar, CohortLegend } from "@/components/ui";
 import { PrintButton } from "@/components/PrintButton";
 import { buildReport } from "@/lib/report/buildReport";
 import { EngineReport } from "@/components/report/EngineReport";
+import { fetchCompetition } from "@/lib/ctgov/competition";
 
 export const dynamic = "force-dynamic";
 
 function fmt(n: number | "<5"): string {
   return n === "<5" ? "<5" : String(n);
+}
+
+/** Derive a CT.gov condition search from a protocol title (free-text query.cond). */
+function conditionQuery(title: string): string {
+  const t = title.toLowerCase();
+  if (/breast/.test(t)) return "breast cancer";
+  if (/nsclc|lung/.test(t)) return "non-small cell lung cancer";
+  if (/melanoma/.test(t)) return "melanoma";
+  if (/colorectal|\bcrc\b/.test(t)) return "colorectal cancer";
+  // Fallback: strip a leading "Phase … —" and any parenthetical, else the raw title.
+  return title.replace(/^phase\s+[ivx]+\s*[—-]\s*/i, "").replace(/\([^)]*\)/g, "").trim() || title;
 }
 
 /** Build a `/scorecard` query string, dropping empty params. */
@@ -52,6 +64,8 @@ export default async function ScorecardPage({
   if (view === "engine") {
     const allSites = await loadAllSites();
     const evaluatedSites = allSites.map((ds) => evaluateDataset(ds, consultation.criteria));
+    // R9: real competition + investigators from ClinicalTrials.gov (degrades gracefully).
+    const competition = await fetchCompetition(conditionQuery(consultation.title));
     const report = buildReport(
       {
         id: consultation.id,
@@ -61,7 +75,7 @@ export default async function ScorecardPage({
         criteria: consultation.criteria,
       },
       evaluatedSites,
-      { runId: consultation.id },
+      { runId: consultation.id, competition },
     );
 
     return (
