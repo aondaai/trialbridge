@@ -22,4 +22,5 @@ EXPOSE 3000
 
 # On boot: create/sync the SQLite schema on the mounted volume (prisma/data),
 # then serve. `db push` is idempotent, so restarts are safe. The DB starts empty.
-CMD ["sh", "-c", "./node_modules/.bin/prisma db push --skip-generate && ./node_modules/.bin/next start -H 0.0.0.0 -p 3000"]
+# Bind to $PORT when the host injects one (Render); fall back to 3000 locally.
+CMD ["sh", "-c", "./node_modules/.bin/prisma db push --skip-generate && ./node_modules/.bin/next start -H 0.0.0.0 -p ${PORT:-3000}"]
