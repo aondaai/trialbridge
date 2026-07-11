@@ -3,7 +3,7 @@
   {"id":"F0-2","desc":"xlsx→seed import script populates FormTemplate (Modelo Canonico) + CapabilityCatalog (Catalogo de Capacidade)","epic":"F0","file":"scripts/seed-autofill.ts","passes":true},
   {"id":"F0-3","epic":"F0","desc":"classifier label fixture derived from Banco de Perguntas (32 fields → archetype+concept labels)","file":"src/lib/feasibility-autofill/fixtures/questionBankLabels.ts","passes":true},
   {"id":"F1-1","epic":"F1","desc":"intake extended to emit FormField[] + template fingerprint (MSD recognition)","file":"src/lib/feasibility-autofill/ingest.ts","passes":true},
-  {"id":"F1-2","epic":"F1","desc":"classifier synonym→code→shortlist→unmapped + precision/recall vitest test vs Banco de Perguntas labels","file":"src/lib/feasibility-autofill/classify.ts","passes":false},
+  {"id":"F1-2","epic":"F1","desc":"classifier synonym→code→shortlist→unmapped + precision/recall vitest test vs Banco de Perguntas labels","file":"src/lib/feasibility-autofill/classify.ts","passes":true},
   {"id":"F2-1","epic":"F2","desc":"profileResolver (A) returns a Metric from InstitutionProfile","file":"src/lib/feasibility-autofill/resolvers/profile.ts","passes":false},
   {"id":"F2-2","epic":"F2","desc":"capabilityResolver (B) returns a Metric from CapabilityCatalog via conceptResolver","file":"src/lib/feasibility-autofill/resolvers/capability.ts","passes":false},
   {"id":"F2-3","epic":"F2","desc":"DOCX writer round-trips (fill→reopen→assert values+styling)","file":"src/lib/feasibility-autofill/render/docx.ts","passes":false},
