@@ -851,3 +851,5 @@
 .tb-arch--C { background: var(--tb-prov-modeled-subtle); color: var(--tb-prov-modeled); }
 .tb-arch--D { background: var(--cl-accent-subtle); color: var(--cl-accent-active); }
 [data-theme="dark"] .tb-arch--D { color: #E8A488; }
+/* --cl-warning has no dark override, so lift the modeled tag to match its chip twin in dark. */
+[data-theme="dark"] .tb-arch--C { color: #D9B25E; }

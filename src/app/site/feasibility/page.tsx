@@ -93,13 +93,14 @@ export default async function FeasibilityWorkspace() {
           <h2 className="cl-h3" style={{ margin: 0 }}>Como cada campo é respondido</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "var(--cl-space-3)" }}>
             {ARCHETYPES.map((a) => (
-              <div key={a.code} className="cl-card">
+              // overflow:visible so the MetricChip's provenance tooltip can escape the card.
+              <div key={a.code} className="cl-card" style={{ overflow: "visible" }}>
                 <div className="cl-card__body" style={gap(3)}>
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--cl-space-2)" }}>
                     <ArchetypeTag archetype={a.code} />
                     <strong style={{ fontSize: "var(--cl-text-sm)" }}>{a.role}</strong>
                   </div>
-                  <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.45 }}>{a.how}</p>
+                  <p className="muted" style={{ margin: 0, fontSize: "var(--cl-text-sm)", lineHeight: 1.45 }}>{a.how}</p>
                   <MetricChip metric={a.sample} size="md" />
                 </div>
               </div>
@@ -124,7 +125,7 @@ export default async function FeasibilityWorkspace() {
         {/* Canonical model */}
         <section style={gap(3)}>
           <h2 className="cl-h3" style={{ margin: 0 }}>
-            Modelo canônico <span className="muted mono" style={{ fontSize: 14 }}>({CANONICAL_SECTIONS.length} seções)</span>
+            Modelo canônico <span className="muted mono" style={{ fontSize: "var(--cl-text-sm)" }}>({CANONICAL_SECTIONS.length} seções)</span>
           </h2>
           <div className="cl-table-wrap">
             <table className="cl-table cl-table--hover">
@@ -146,7 +147,7 @@ export default async function FeasibilityWorkspace() {
                       <td>
                         <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                           <ArchetypeTag archetype={a} />
-                          <span className="muted" style={{ fontSize: 12.5 }}>{ARCH_HOW[a]}</span>
+                          <span className="muted" style={{ fontSize: "var(--cl-text-xs)" }}>{ARCH_HOW[a]}</span>
                         </span>
                       </td>
                       <td><MetricChip metric={ARCH_SEAL[a]} showValue={false} /></td>

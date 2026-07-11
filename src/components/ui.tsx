@@ -179,10 +179,13 @@ export function MetricChip({
 }) {
   const cls = PROV_CLASS[metric.provenance];
   const tip = [metric.note, metric.asOf ? `as of ${metric.asOf}` : null].filter(Boolean).join(" · ");
+  // Stable id derived from the metric key so the tooltip can be linked for screen readers.
+  const tipId = tip ? `mc-tip-${metric.key.replace(/[^\w.-]+/g, "-")}` : undefined;
   return (
     <span
       className={`tb-chip tb-chip--${cls}${size === "md" ? " tb-chip--md" : ""}`}
       tabIndex={tip ? 0 : undefined}
+      aria-describedby={tipId}
     >
       {showValue && metric.value != null && (
         <span className="tb-chip__value">{String(metric.value)}</span>
@@ -192,7 +195,7 @@ export function MetricChip({
         {CONF_GLYPH[metric.confidence]}
       </span>
       {tip && (
-        <span className="tb-chip__tip" role="tooltip">
+        <span id={tipId} className="tb-chip__tip" role="tooltip">
           {tip}
         </span>
       )}
