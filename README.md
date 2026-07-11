@@ -132,6 +132,17 @@ determined complementary-release attack across the softening toggle could still 
 suppressed cell; full DP and true federation (data never leaving origin) are **v2**. We
 say exactly that much and no more.
 
+## LatAm Site Map
+
+`/map` renders ~29k physical clinical-trial sites across Brazil, Mexico, Chile,
+and Argentina (ClinicalTrials.gov registry data; city-level coordinates), colored
+by activity status with per-country filters. The payload
+(`public/data/latam-sites.json`) is generated from the SiteMapTool pipeline
+(github.com/aondaai/trialbridge branch `feat/latam-site-map` holds the full
+pipeline) via:
+
+    npm run build-latam-map-data -- <path-to-full-sites.json>
+
 ---
 
 ## Data provenance (important)
