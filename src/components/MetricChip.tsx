@@ -8,7 +8,7 @@
  */
 
 import type { Metric } from "@/lib/metric";
-import { SEAL_UI, Confidence } from "@/lib/metric";
+import { SEAL_UI, Confidence, CONFIDENCE_GLYPH } from "@/lib/metric";
 
 const CONFIDENCE_DOT: Record<Confidence, string> = {
   [Confidence.HIGH]: "var(--cl-success)",
@@ -106,6 +106,52 @@ export function MetricChip({
           opacity: 0.9,
         }}
       />
+    </span>
+  );
+}
+
+/**
+ * SealPill — the design-system evidence seal: a subtle-tinted rounded pill carrying
+ * an optional mono value, the seal label, and the confidence glyph (● ◐ ○). This is
+ * the signature "every number shows its basis" treatment for headline + evidence
+ * metrics; dense tables use plain tabular numbers instead.
+ */
+export function SealPill({
+  metric,
+  showValue = true,
+}: {
+  metric: Metric;
+  showValue?: boolean;
+}) {
+  const seal = SEAL_UI[metric.provenance];
+  const hasValue = showValue && metric.value != null;
+  return (
+    <span
+      title={tooltip(metric)}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 5,
+        fontSize: 11,
+        fontWeight: 500,
+        lineHeight: 1,
+        padding: "3px 8px",
+        borderRadius: 999,
+        background: seal.subtle,
+        color: seal.color,
+        whiteSpace: "nowrap",
+      }}
+    >
+      {hasValue && (
+        <span style={{ fontFamily: "var(--cl-font-mono)", fontWeight: 600 }}>
+          {formatValue(metric)}
+          {unitSuffixFor(metric)}
+        </span>
+      )}
+      <span>{seal.label}</span>
+      <span aria-hidden style={{ fontSize: 8 }}>
+        {CONFIDENCE_GLYPH[metric.confidence]}
+      </span>
     </span>
   );
 }

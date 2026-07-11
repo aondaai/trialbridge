@@ -150,8 +150,15 @@ export function buildReport(
   const sdInputs = est
     ? buildRealRegionSDInputs(est, competitionLive)
     : buildRegionSDInputs(sites, competitionLive);
-  const supplyDemand =
-    sdInputs.length > 0 ? toSupplyDemandSummary(computeSupplyDemand(sdInputs, { asOf })) : undefined;
+  const supplyDemand = sdInputs.length > 0
+    ? {
+        ...toSupplyDemandSummary(computeSupplyDemand(sdInputs, { asOf })),
+        // Real per-state eligible pools (DataSUS) drive the §4 Brazil tile-map.
+        ufPools: est
+          ? est.byRegion.map((r) => ({ uf: r.region, eligible: Math.round(r.estimatedN) }))
+          : undefined,
+      }
+    : undefined;
 
   // §7 KOL map. Prefer deep-web-enriched investigators (Parallel pipe) when supplied;
   // otherwise derive from CT.gov with trial experience only (pubs/society need the
@@ -163,6 +170,25 @@ export function buildReport(
         ? ctgovToKolInputs(competitionLive)
         : [];
   const kolMap = kolInputs.length > 0 ? buildKolMap(kolInputs) : undefined;
+  // Per-state KOL counts for the §7 Brazil tile-map: match each investigator's CNES to
+  // its directory UF and tally. Only investigators with a resolved UF are counted
+  // (honest — an unmatched affiliation isn't placed on the map).
+  if (kolMap && opts.directorySites) {
+    const cnesToUf = new Map(
+      opts.directorySites.filter((s) => s.cnes && s.uf).map((s) => [s.cnes as string, s.uf as string]),
+    );
+    const byUf = new Map<string, number>();
+    for (const inv of kolInputs) {
+      const uf = inv.cnes ? cnesToUf.get(inv.cnes) : undefined;
+      if (!uf) continue;
+      byUf.set(uf, (byUf.get(uf) ?? 0) + 1);
+    }
+    if (byUf.size > 0) {
+      kolMap.ufCounts = Array.from(byUf.entries())
+        .map(([uf, count]) => ({ uf, count }))
+        .sort((a, b) => b.count - a.count);
+    }
+  }
 
   // §5/§6 site rankings. Prefer the REAL directory (oncology sites, scored from directory
   // signals + CT.gov competition per region + KOL links); fall back to the synthetic sites.
