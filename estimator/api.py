@@ -25,7 +25,7 @@ from typing import List, Optional
 
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -35,6 +35,7 @@ from trialbridge.estimator import (
     fill_speed, national_fill_speed,
 )
 from trialbridge.protocols import hero_protocol_real
+from trialbridge.auth import require_token
 # Governance backbone — the /query layer routes through these (guardrail, coverage, registry).
 from trialbridge.query import route, Intent, FindingOverImputedError
 from trialbridge.coverage import CalibratedCoverage, CALIBRATED_UFS_14
@@ -49,7 +50,19 @@ FILL_SPEED_TARGET_N = 50  # a typical single-region Phase II cohort size — ill
 DATASUS_BASE_DIR = os.environ.get("TB_DATASUS_BASE_DIR", "data/datasus_base")
 PROPRIETARY_GLOB = os.environ["TB_PROPRIETARY_GLOB"]
 
-app = FastAPI(title="TrialBridge Feasibility API", version="0.2.0")
+# docs_url/redoc_url/openapi_url disabled: once the access gate is on, leaving the
+# auto-generated Swagger/OpenAPI schema public would disclose the full API surface to
+# unauthenticated callers. Closed here rather than separately gated.
+app = FastAPI(title="TrialBridge Feasibility API", version="0.2.0",
+              docs_url=None, redoc_url=None, openapi_url=None)
+
+# ---- access gate --------------------------------------------------------------
+# Optional shared-secret bearer auth (see trialbridge/auth.py). Data endpoints carry
+# `dependencies=_gated`; /health is left open so Render's health check keeps passing.
+# The gate activates only when TB_ESTIMATOR_TOKEN is set on the service — the web app
+# (src/lib/estimator/client.ts) sends the same token from its own TB_ESTIMATOR_TOKEN,
+# so enabling it is a zero-downtime two-step (ship code, then set the env var on both).
+_gated = [Depends(require_token)]
 
 # Loaded once at import time. DataSUS side = Asset 3 (materialized aggregate);
 # proprietary side = Asset 2 (row-level depth, backs Observed N).
@@ -244,7 +257,7 @@ def _observed_response(intent_str: str, res, sites, note: str, confidence: str,
 _UI_PATH = Path(__file__).parent / "ui" / "index.html"
 
 
-@app.get("/")
+@app.get("/", dependencies=_gated)
 def ui():
     return FileResponse(_UI_PATH)
 
@@ -254,7 +267,7 @@ def health():
     return {"status": "ok", "protocol_id": _protocol.protocol_id}
 
 
-@app.get("/protocol")
+@app.get("/protocol", dependencies=_gated)
 def get_protocol():
     return {
         "protocol_id": _protocol.protocol_id,
@@ -263,17 +276,17 @@ def get_protocol():
     }
 
 
-@app.post("/feasibility/estimate", response_model=FeasibilityResponse)
+@app.post("/feasibility/estimate", response_model=FeasibilityResponse, dependencies=_gated)
 def feasibility_estimate():
     return _run(exclude_depth_ids=None)
 
 
-@app.post("/soften", response_model=FeasibilityResponse)
+@app.post("/soften", response_model=FeasibilityResponse, dependencies=_gated)
 def soften(req: SoftenRequest):
     return _run(exclude_depth_ids=req.exclude_depth_ids)
 
 
-@app.post("/query", response_model=QueryResponse)
+@app.post("/query", response_model=QueryResponse, dependencies=_gated)
 def query(req: QueryRequest):
     """Semantic layer routed through trialbridge.query.route() — governance LIVE:
     FIND is structurally barred from the imputed pathway (guardrail), Estimated N is
