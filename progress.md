@@ -110,3 +110,7 @@ Two-agent adversarial review of the final feature state surfaced bugs the per-ta
 - IMPORTANT: `reMap` had no busy-guard/abort → a stale response could revert a correction; and "List site" wasn't gated on a pending re-map. Added AbortController + busy guard + `<select disabled={busy}>`, and lifted `busy` to the page via `onBusyChange` to gate the submit button.
 - MINOR: `.txt` uploads (advertised in `accept`) now accepted by the adapter.
 - Ship-as-is: streamed-body size cap matches the existing /api/intake posture (content-length + post-read file.size).
+
+## Feasibility Autofill (autonomous /goal run)
+
+- [2026-07-11T03:36Z] DONE F0-1 — 11 Prisma models added (siteId-scoped), db push synced clean, all 3 gates green (tsc 0, 218 tests, next build). Baseline was green before changes.

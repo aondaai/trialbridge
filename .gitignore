@@ -54,3 +54,8 @@ yarn-error.log*
 
 # git worktrees for isolated agent work
 /.claude/worktrees/
+
+# large local data mirrors (never commit — see memory: DataSUS/proprietary bases)
+/data/omop-sus/
+/data/omop-sus-last10pct/
+/data/omop_full/

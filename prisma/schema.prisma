@@ -82,3 +82,198 @@ model Response {
   @@unique([consultationId, siteId])
   @@index([consultationId])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Feasibility Autofill module (docs/feasibility-autofill-reconciliation.md, F0).
+// SQLite-flavored: enums and jsonb from the spec are stored as String (JSON where
+// noted), matching the existing Patient.data convention. Multi-tenant isolation is
+// by siteId on every top-level entity; request-owned rows inherit it via requestId.
+// The privacy invariant holds: CohortDefinition stores a COUNT, never patient rows.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Archetype A source of truth — the institution cadastre. One per site (versioned).
+model InstitutionProfile {
+  id                 String   @id @default(cuid())
+  siteId             String
+  legalName          String
+  address            String   @default("")
+  email              String   @default("")
+  phone              String   @default("")
+  website            String   @default("")
+  /// anonymized | pseudonymized | identifiable
+  anonymizationLevel String   @default("anonymized")
+  lgpdBasis          String   @default("")
+  ethicsCommittee    String   @default("")
+  contractingDaysEst Int?
+  acceptsEsignature  Boolean  @default(false)
+  /// JSON: {data_dictionary:bool, flowchart:bool, ...}
+  materials          String   @default("{}")
+  version            Int      @default(1)
+  updatedAt          DateTime @default(now())
+
+  @@index([siteId])
+}
+
+/// Archetype A — study-team roles present at the site (PM, epi, biostat, SME…).
+model InstitutionTeam {
+  id      String  @id @default(cuid())
+  siteId  String
+  role    String
+  present Boolean @default(false)
+  notes   String  @default("")
+
+  @@index([siteId])
+}
+
+/// A site database (a site may hold several: claims|emr|pharmacy|hospital|registry|lab|nlp_text).
+model DataSource {
+  id               String   @id @default(cuid())
+  siteId           String
+  name             String
+  /// JSON string[] of kinds.
+  kind             String   @default("[]")
+  coverageNote     String   @default("")
+  updateFrequency  String   @default("")
+  patientCountEst  Int?
+  updatedAt        DateTime @default(now())
+
+  @@index([siteId])
+}
+
+/// Archetype B — the capability catalog (crown-jewel repository). One row per
+/// (data source, canonical concept). Seeded from QuestionBank "Catálogo de Capacidade".
+model CapabilityCatalog {
+  id                   String   @id @default(cuid())
+  siteId               String
+  dataSourceId         String
+  /// Canonical concept key (resolved via src/lib/omop/conceptResolver).
+  conceptId            String
+  /// yes | no | partial
+  available            String   @default("partial")
+  sourceField          String   @default("")
+  identificationMethod String   @default("")
+  completenessValue    Float?
+  /// high | moderate | low
+  completenessQual     String   @default("moderate")
+  notes                String   @default("")
+  version              Int      @default(1)
+  lastValidatedAt      DateTime @default(now())
+
+  @@unique([dataSourceId, conceptId])
+  @@index([siteId])
+}
+
+/// A recognized sponsor form layout (fingerprint → structure). Cross-site by design.
+model FormTemplate {
+  id          String   @id @default(cuid())
+  fingerprint String   @unique
+  name        String
+  /// JSON canonical section/field structure.
+  structure   String   @default("{}")
+  createdAt   DateTime @default(now())
+}
+
+/// An incoming sponsor feasibility request landing in a site's inbox (archetype router root).
+model FeasibilityRequest {
+  id              String   @id @default(cuid())
+  siteId          String
+  sponsorId       String?
+  studyTitle      String
+  protocolId      String?
+  therapeuticArea String?
+  /// ISO date-range string "start/end".
+  indexWindow     String   @default("")
+  /// JSON structured inclusion/exclusion criteria (matcher Criterion[] shape).
+  criteria        String   @default("[]")
+  originalFileKey String?
+  templateId      String?
+  status          String   @default("received")
+  createdAt       DateTime @default(now())
+
+  @@index([siteId])
+}
+
+/// One field of a parsed feasibility form, tagged with its archetype + concept.
+model FormField {
+  id        String  @id @default(cuid())
+  requestId String
+  section   String
+  label     String
+  /// checkbox | yes_no_partial | text | number | matrix_cell
+  cellType  String  @default("text")
+  /// A | B | C | D
+  archetype String
+  conceptId String?
+  /// JSON provenance/source pointer.
+  sourceRef String?
+  orderIdx  Int     @default(0)
+
+  @@index([requestId])
+}
+
+/// A proposed/approved answer for a FormField — carries a serialized Metric as provenance.
+model FieldAnswer {
+  id         String   @id @default(cuid())
+  fieldId    String
+  /// JSON answer value.
+  value      String   @default("null")
+  /// JSON-serialized Metric (src/lib/metric.ts) — the mandatory provenance seal.
+  provenance String
+  /// high | medium | low
+  confidence String   @default("low")
+  /// JSON Kahn flags {conformance, completeness, plausibility}.
+  dqFlags    String   @default("{}")
+  /// proposed | approved | edited | rejected
+  status     String   @default("proposed")
+  reviewerId String?
+  version    Int      @default(1)
+  updatedAt  DateTime @default(now())
+
+  @@index([fieldId])
+}
+
+/// Archetype C — a materialized cohort count for a request. COUNT only, never rows.
+model CohortDefinition {
+  id          String   @id @default(cuid())
+  requestId   String
+  /// JSON criteria set.
+  criteria    String   @default("[]")
+  /// JSON compiled SQL / OMOP cohort spec.
+  sqlOrOmop   String   @default("{}")
+  resultCount Int?
+  suppressed  Boolean  @default(false)
+  generatedAt DateTime @default(now())
+
+  @@index([requestId])
+}
+
+/// Archetype D — RAG memory. Approved narrative answers, indexed for retrieval.
+/// No PHI: stores answer TEXT, never patient data (LGPD invariant, spec §9).
+model PriorFormAnswer {
+  id         String   @id @default(cuid())
+  siteId     String
+  section    String
+  label      String
+  conceptId  String?
+  answerText String
+  /// JSON number[] embedding (nullable; embeddings live in the estimator, not pgvector).
+  embedding  String?
+  approvedAt DateTime @default(now())
+
+  @@index([siteId])
+}
+
+/// Governance — every mutating action writes an audit row with an actor + diff.
+model AuditLog {
+  id       String   @id @default(cuid())
+  siteId   String?
+  entity   String
+  entityId String
+  action   String
+  actor    String
+  /// JSON before/after diff.
+  diff     String   @default("{}")
+  at       DateTime @default(now())
+
+  @@index([entity, entityId])
+}
