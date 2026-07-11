@@ -531,3 +531,27 @@ class FullProprietary:
             for site, dx, ab, sex, n in rows
             if ab is not None and n >= self.min_cell
         ]
+
+
+class MaterializedProprietary:
+    """Reads the pre-materialized proprietary FINDING base (Asset 2, aggregate).
+
+    Built by scripts/materialize_datasus.py from the full 6.68M-patient iHealth base.
+    Small (~KB, min-cell suppressed, no PHI rows), ships in the image — lets the query
+    layer serve finding-level Observed N by site without the 58GB base. Exposes
+    .records() (BaseRecord strata) so finding.finding_n_by_site() works over it, and
+    carries provenance. This is the deploy-time adapter for FullProprietary.
+    """
+
+    def __init__(self, base_dir: str):
+        import json
+        from pathlib import Path
+
+        base = Path(base_dir)
+        with (base / "records.json").open() as f:
+            self._records = [BaseRecord(**r) for r in json.load(f)]
+        prov_path = base / "provenance.json"
+        self.provenance = json.load(prov_path.open()) if prov_path.exists() else {}
+
+    def records(self) -> List[BaseRecord]:
+        return self._records

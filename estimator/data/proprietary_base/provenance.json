@@ -1,0 +1,9 @@
+{
+  "as_of": "2026-07-11",
+  "origin": "observed",
+  "source": "parquet_ihealth (6.68M)",
+  "level": "checkable finding",
+  "national_breast_finding_n": 29477,
+  "n_sites": 13,
+  "n_strata": 147
+}
