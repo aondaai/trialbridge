@@ -91,3 +91,14 @@ Phases landed: 0 (ctgov+paste, pre-existing) · 1 (universal document funnel) ·
 - [polish-B] Trust-driven flagging banner in the verify table: TrustChip + "N of M rows flagged for verification", emphasized (amber border) for low-trust sources or any flagged rows.
 - [polish-C] locateEligibility START_RE/EXCLUSION_RE now absorb label+adjective prefixes ("E.3 ", "Principal ") so EU CTR "E.3 Principal inclusion criteria" is found → the euctr live path no longer always falls back to cache. +test.
 - [verify] Browser-verified in Docker (:3080): ATLAS "Try a sample" → structured lane → provenance badge "Atlas · structured · medium trust" → Step 3 "Structured import — no LLM parse" → banner "4 of 4 rows flagged" → rows use `eq` NOT `exists` (the critical exclude-everyone fix, live). 45 intake tests, typecheck clean, next build OK, web image redeployed. Commit 933858b, pushed to aondaai.
+
+## Site-side EHR intake (CSV/XLSX → Patient[]) — subagent-driven build (2026-07-10)
+Mirror of the sponsor intake, for Camila. Spec docs/superpowers/specs/2026-07-10-site-ehr-intake-design.md, plan docs/superpowers/plans/2026-07-10-site-ehr-intake.md. Built via subagent-driven-development: 7 TDD tasks, fresh implementer + reviewer per task, opus final whole-branch review.
+- New `src/lib/patient-intake/`: `csv.ts` (dep-free RFC-4180 parser), `types.ts`+`headerMap.ts` (heuristic column→field: Dx→diagnosis, HER-2 Status→her2, Perf Status→ecog, Creatinine (mg/dL)→creatinine, unknown clinical→biomarker), `normalize.ts` (per-field null-on-failure normalizers; labs canonicalized via matcher/units.ts), `csvAdapter.ts`+`registry.ts`+`index.ts` (rows→Patient[] + stats + trust; reuses the sponsor XLSX reader `xlsxRows`).
+- `scripts/generate-messy-csv.ts` → committed `data/sample-ehr.csv` (odd headers, g/L hemoglobin, blanks) from the seeded synthetic panel.
+- `POST /api/patient-intake` (mirror of /api/intake: 25MB cap, 413/400/422; site-local, no LLM).
+- `/site/new` rewritten: upload/paste EHR → mapping table (heuristic pre-fill, correctable dropdowns) → preview + stats + TrustChip → "List site". Fully REPLACES the paste-Patient-JSON path (parsePatientsJson removed; slugify kept).
+- Honesty preserved end-to-end: unparseable cell / unmappable column → null/ignored + counted in stats → matcher `unknown` → "possible", never wrongly excluded.
+- Reviews: every task spec✅+quality-approved; Task 5 Important fix (Sex column F/M); final review Approved-to-merge with fix wave bf5c254 (dup-id write crash → ensureUniquePatientIds; dead const; trust=low on 0 columns). Full suite 216/216, tsc clean, next build OK.
+- E2E verified live in Docker (:3080): paste CSV → "3 rows · 11 mapped · 0 ignored · 2 unknown" + medium trust + mapping table → submit → site + 3 patients written; DB round-trip lossless (hgb g/L→g/dL, her2 neg→negative + blank→null, stage "Stage II"→"II").
+- Commits: f2c7064..bf5c254 (on feat/scorecard-reconciliation).
