@@ -21,7 +21,8 @@
     "db:push": "./node_modules/.bin/prisma db push",
     "postinstall": "./node_modules/.bin/prisma generate",
     "enrich-kols": "./node_modules/.bin/tsx scripts/enrich-kols.ts",
-    "import-sites": "./node_modules/.bin/tsx scripts/import-sites.ts"
+    "import-sites": "./node_modules/.bin/tsx scripts/import-sites.ts",
+    "enrich-sites": "./node_modules/.bin/tsx scripts/enrich-sites.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

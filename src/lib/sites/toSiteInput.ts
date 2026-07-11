@@ -15,6 +15,7 @@ import type { SiteInput } from "@/lib/scoring/site";
 import type { TrialProfile } from "@/lib/scoring/weights";
 import type { KolInvestigatorInput } from "@/lib/kol/score";
 import { kolScore } from "@/lib/kol/score";
+import type { SiteInfra } from "@/lib/sites/infraEnrich";
 
 export interface SiteInputContext {
   profile: TrialProfile;
@@ -22,6 +23,8 @@ export interface SiteInputContext {
   competingByRegion: Partial<Record<string, number>>;
   /** Best KOL score per CNES, from the cross-referenced investigators. */
   kolByCnes?: Map<string, number>;
+  /** Real deep-web-researched infrastructure per CNES (Part B), when available. */
+  infraByCnes?: Map<string, SiteInfra>;
   daysToFpiBudget?: number;
 }
 
@@ -39,9 +42,26 @@ export function kolScoreByCnes(investigators: KolInvestigatorInput[]): Map<strin
 export function directorySiteToSiteInput(site: DirectorySite, ctx: SiteInputContext): SiteInput {
   const piCount = site.piCount ?? 0;
   const insp = site.inspections;
-  // Infra-fit proxy from real capability flags until Part B fills equipment (PET/linac/MRI).
-  const capabilityFlags = [site.centralLabExams, site.centralLabImaging, site.oncology, site.edcExperience];
-  const present = capabilityFlags.filter(Boolean).length;
+
+  // Infra-fit: REAL deep-web-researched equipment (Part B) when we have it — the five
+  // oncology-core items (CACON/UNACON, radiotherapy, on-site imaging, ICU, GCP pharmacy);
+  // otherwise a coarser proxy from the directory's capability flags.
+  const realInfra = site.cnes ? ctx.infraByCnes?.get(site.cnes) : undefined;
+  let requiredEquipment: number;
+  let present: number;
+  if (realInfra) {
+    requiredEquipment = 5;
+    present = [
+      realInfra.caconOrUnacon,
+      realInfra.linearAccelerator,
+      realInfra.petCt || realInfra.mri,
+      realInfra.icuBeds > 0,
+      realInfra.gcpPharmacy,
+    ].filter(Boolean).length;
+  } else {
+    requiredEquipment = 4;
+    present = [site.centralLabExams, site.centralLabImaging, site.oncology, site.edcExperience].filter(Boolean).length;
+  }
 
   return {
     cnes: site.cnes ?? site.id,
@@ -66,7 +86,7 @@ export function directorySiteToSiteInput(site: DirectorySite, ctx: SiteInputCont
 
     competingTrialsInCatchment: (site.region && ctx.competingByRegion[site.region]) || 3,
 
-    requiredEquipment: 4,
+    requiredEquipment,
     presentEquipment: present,
 
     kolScore0100: site.cnes ? ctx.kolByCnes?.get(site.cnes) ?? null : null,

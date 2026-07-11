@@ -54,6 +54,8 @@ export interface BuildReportOptions {
   directorySites?: DirectorySite[];
   /** How many ranked sites to keep in §5 (default 20). */
   maxRankedSites?: number;
+  /** Real deep-web-researched infrastructure per CNES (Part B). */
+  siteInfraByCnes?: Map<string, import("@/lib/sites/infraEnrich").SiteInfra>;
 }
 
 /** Map CT.gov investigators → trial-experience-only KOL inputs (pre-enrichment). */
@@ -147,7 +149,7 @@ export function buildReport(
     const ranked = rankSites(
       opts.directorySites
         .filter((s) => s.oncology)
-        .map((s) => scoreSite(directorySiteToSiteInput(s, { profile, competingByRegion, kolByCnes }))),
+        .map((s) => scoreSite(directorySiteToSiteInput(s, { profile, competingByRegion, kolByCnes, infraByCnes: opts.siteInfraByCnes }))),
     );
     siteScores = ranked.slice(0, opts.maxRankedSites ?? 20);
   } else {
