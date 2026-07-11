@@ -9,11 +9,13 @@ import { loadRenderAnswers } from "@/lib/feasibility-autofill/persist";
 import { buildExportDocx } from "@/lib/feasibility-autofill/render/exportDocx";
 import type { AnswerRecord } from "@/lib/feasibility-autofill/render/diff";
 
+const SITE = "site-ihealth-demo"; // authenticated tenant (no auth yet — scope the lookup to it)
+
 export async function GET(req: Request): Promise<Response> {
   const id = new URL(req.url).searchParams.get("req");
   if (!id) return new Response("missing ?req", { status: 400 });
 
-  const request = await prisma.feasibilityRequest.findUnique({ where: { id } });
+  const request = await prisma.feasibilityRequest.findFirst({ where: { id, siteId: SITE } });
   if (!request) return new Response("unknown request", { status: 404 });
 
   const answers = await loadRenderAnswers(id);

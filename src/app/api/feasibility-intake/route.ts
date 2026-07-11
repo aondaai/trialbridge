@@ -29,7 +29,12 @@ export async function POST(req: Request): Promise<Response> {
         text = String(form.get("text") || "");
       }
     } else {
-      const body = (await req.json()) as { text?: string; filename?: string; siteId?: string; sponsorId?: string };
+      let body: { text?: string; filename?: string; siteId?: string; sponsorId?: string };
+      try {
+        body = (await req.json()) as typeof body;
+      } catch {
+        return NextResponse.json({ error: "invalid JSON body" }, { status: 400 });
+      }
       text = body.text ?? "";
       filename = body.filename;
       siteId = body.siteId ?? DEMO_SITE_ID;

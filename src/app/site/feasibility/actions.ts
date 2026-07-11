@@ -24,13 +24,14 @@ import type { Criterion } from "@/lib/matcher/types";
 import { loadLearnedSynonyms, persistLearnedSynonym, persistApprovedNarrative } from "@/lib/feasibility-autofill/learnPersist";
 
 const ACTOR = "camila"; // the site coordinator (a human — required for approving D)
+const SITE = "site-ihealth-demo"; // the authenticated tenant (no auth yet — scope everything to it)
 const NOW = () => new Date().toISOString();
 
-/** Load a FieldAnswer (+ its field's archetype) into the pure ReviewAnswer shape. */
+/** Load a FieldAnswer (+ its field's archetype) into the pure ReviewAnswer shape. Tenant-scoped. */
 async function toReviewAnswer(faId: string) {
-  const fa = await prisma.fieldAnswer.findUnique({ where: { id: faId } });
+  const fa = await prisma.fieldAnswer.findFirst({ where: { id: faId, siteId: SITE } });
   if (!fa) return null;
-  const ff = await prisma.formField.findUnique({ where: { id: fa.fieldId } });
+  const ff = await prisma.formField.findFirst({ where: { id: fa.fieldId, siteId: SITE } });
   if (!ff) return null;
   const ra: ReviewAnswer = {
     fieldId: fa.id,
@@ -54,8 +55,11 @@ async function writeAudit(entityId: string, action: string, siteId: string, befo
 /** US-2: run the orchestrator on a received request (in-process deps, no key) and persist answers. */
 export async function runAutofill(formData: FormData): Promise<void> {
   const requestId = String(formData.get("requestId"));
-  const request = await prisma.feasibilityRequest.findUnique({ where: { id: requestId } });
+  const request = await prisma.feasibilityRequest.findFirst({ where: { id: requestId, siteId: SITE } });
   if (!request) return;
+  // Re-filling discards any prior (incl. approved) answers — record that in the audit trail.
+  const priorApproved = await prisma.fieldAnswer.count({ where: { siteId: SITE, fieldId: { in: (await prisma.formField.findMany({ where: { requestId }, select: { id: true } })).map((f) => f.id) }, status: "approved" } });
+  if (priorApproved > 0) await writeAudit(requestId, "autofill-reset", SITE, { approvedAnswers: priorApproved }, { approvedAnswers: 0 });
   const fields = await prisma.formField.findMany({ where: { requestId }, orderBy: { orderIdx: "asc" } });
   const drafts: FormFieldDraft[] = fields.map((f) => ({
     section: f.section, label: f.label, cellType: f.cellType as CellType, archetypeHint: f.archetype as Archetype, orderIdx: f.orderIdx,
@@ -77,12 +81,15 @@ export async function approveField(formData: FormData): Promise<void> {
   await prisma.fieldAnswer.update({ where: { id: faId }, data: { status: next.status, reviewerId: next.reviewerId, version: next.version } });
   await writeAudit(faId, "approve", loaded.fa.siteId, { status: loaded.ra.status }, { status: next.status });
 
-  // US-6 learn: an APPROVED D answer becomes a prior-form exemplar for future drafts.
+  // US-6 learn: an APPROVED D answer becomes a prior-form exemplar. Index the CURRENT value
+  // (the human's edit if editField changed it), not the original draft in sourceRef.
   if (loaded.ff.archetype === "D") {
+    const current = safeParse(loaded.fa.value); // FieldAnswer.value = the (possibly edited) answer text
     const ref = safeParse(loaded.ff.sourceRef ?? "null") as { narrativeDraft?: string | null } | null;
-    if (ref?.narrativeDraft) {
+    const answerText = typeof current === "string" && current.trim() ? current : ref?.narrativeDraft ?? "";
+    if (answerText.trim()) {
       await persistApprovedNarrative(
-        { siteId: loaded.fa.siteId, section: loaded.ff.section, label: loaded.ff.label, answerText: ref.narrativeDraft, status: "approved" },
+        { siteId: loaded.fa.siteId, section: loaded.ff.section, label: loaded.ff.label, answerText, status: "approved" },
         NOW(),
       );
     }
@@ -130,8 +137,8 @@ export async function editField(formData: FormData): Promise<void> {
 
 export async function approveHighConfidence(formData: FormData): Promise<void> {
   const requestId = String(formData.get("requestId"));
-  const fields = await prisma.formField.findMany({ where: { requestId } });
-  const answers = await prisma.fieldAnswer.findMany({ where: { fieldId: { in: fields.map((f) => f.id) } } });
+  const fields = await prisma.formField.findMany({ where: { requestId, siteId: SITE } });
+  const answers = await prisma.fieldAnswer.findMany({ where: { siteId: SITE, fieldId: { in: fields.map((f) => f.id) } } });
   const archByField = new Map(fields.map((f) => [f.id, f.archetype as Archetype]));
   const ras: ReviewAnswer[] = answers.map((a) => ({
     fieldId: a.id, archetype: archByField.get(a.fieldId) ?? "D",

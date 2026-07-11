@@ -61,11 +61,11 @@ afterAll(async () => {
 });
 
 describe("FIN-6 · full round-trip (docx → request → autofill → approve → export)", () => {
-  it("autofills every field and computes a cohort count", async () => {
+  it("autofills every field and computes the exact cohort count", async () => {
     const answers = await loadRenderAnswers(requestId);
     expect(answers.length).toBeGreaterThanOrEqual(16);
     const cohort = answers.find((a) => a.archetype === "C");
-    expect(cohort?.metric.value).toBeDefined(); // 5 breast/adult → 5 candidates
+    expect(cohort?.metric.value).toBe(5); // 5 breast/adult patients → 5 candidates (not suppressed)
   });
 
   it("the exported .docx ships ONLY approved answers, and no D draft leaks", async () => {
@@ -75,9 +75,12 @@ describe("FIN-6 · full round-trip (docx → request → autofill → approve �
     expect(approvedCount).toBeGreaterThan(0);
     expect(withheldCount).toBeGreaterThan(0); // D + low-confidence held back
     const text = docxToText(bytes);
-    // No proposed/D answer value appears in the export.
+    // A withheld answer's "label: value" line must not appear (labels are unique → no value-collision
+    // false positives), and every D draft (unique long text) must be absent.
     for (const a of answers) {
-      if (a.status !== "approved" && a.metric.value) expect(text).not.toContain(String(a.metric.value));
+      if (a.status === "approved") continue;
+      if (a.metric.value) expect(text).not.toContain(`${a.label}: ${String(a.metric.value)}`);
+      if (a.archetype === "D" && a.narrativeDraft) expect(text).not.toContain(a.narrativeDraft);
     }
     expect(text).not.toMatch(/\{\{.*\}\}/);
   });

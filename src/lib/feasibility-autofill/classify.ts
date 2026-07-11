@@ -73,8 +73,8 @@ type Matcher = { concept: string; len: number; test: (n: string) => boolean };
 
 /**
  * Build synonym matchers from a concept→terms map. A multi-word synonym matches as a substring;
- * a single token matches on WORD BOUNDARIES, so a 2–3 letter synonym ("mi", "dii", "ic") can't
- * shadow-match inside a longer word ("genômico"). Longer synonyms win ties (more specific).
+ * a single token matches on WORD BOUNDARIES, so a 2–3 letter synonym ("dii", "ic", "avc") can't
+ * shadow-match inside a longer word ("genômico", "clínica"). Longer synonyms win ties (more specific).
  */
 function buildMatchers(map: Record<string, string[]>): Matcher[] {
   const out: Matcher[] = [];
