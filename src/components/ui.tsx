@@ -211,3 +211,31 @@ export function ArchetypeTag({ archetype }: { archetype: "A" | "B" | "C" | "D" }
     </span>
   );
 }
+
+/** DQBadge — the worst-of-three Kahn flag (conformance/completeness/plausibility). */
+const DQ_UI: Record<"pass" | "warn" | "fail", { cls: string; label: string }> = {
+  pass: { cls: "success", label: "DQ ok" },
+  warn: { cls: "warning", label: "DQ atenção" },
+  fail: { cls: "danger", label: "DQ falha" },
+};
+export function DQBadge({ worst, title }: { worst: "pass" | "warn" | "fail"; title?: string }) {
+  const ui = DQ_UI[worst];
+  return (
+    <span className={`cl-badge cl-badge--${ui.cls}`} title={title}>
+      <span className="cl-badge__dot" />
+      {ui.label}
+    </span>
+  );
+}
+
+/** StatusBadge — HITL state of an answer. */
+const STATUS_UI: Record<string, { cls: string; label: string }> = {
+  proposed: { cls: "neutral", label: "Proposto" },
+  approved: { cls: "success", label: "Aprovado" },
+  edited: { cls: "warning", label: "Editado" },
+  rejected: { cls: "danger", label: "Rejeitado" },
+};
+export function StatusBadge({ status }: { status: string }) {
+  const ui = STATUS_UI[status] ?? STATUS_UI.proposed;
+  return <span className={`cl-badge cl-badge--${ui.cls}`}>{ui.label}</span>;
+}

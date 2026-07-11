@@ -2,163 +2,193 @@
  * Feasibility Autofill — review workspace (F4-3, Camila track).
  *
  * On-brand with the TrialBridge design system (claude.css tokens, the cl- and tb- component
- * classes, MetricChip provenance seals, cohort palette). Reads the seeded canonical template + the
- * site's catalog/profile and lays out each section with its archetype and how it's answered.
- * The HITL invariant (D is LLM-drafted and never auto-approved) is stated in the UI and
- * enforced in src/lib/feasibility-autofill/review.ts.
+ * classes, MetricChip provenance seals, cohort palette). Renders a LIVE autofill run: it reads
+ * the persisted FieldAnswers for the site's latest request and lays them out section by section
+ * — each with its archetype, provenance seal, DQ badge, status, and (for D) the LLM draft +
+ * adversarial critique. Approve / edit / reject flow through server actions and the pure
+ * review.ts HITL logic, where archetype-D is never auto-approved.
  */
 
 import { prisma } from "@/lib/db";
-import { TopBar, PrivacyBanner, MetricChip, ArchetypeTag } from "@/components/ui";
-import { CANONICAL_SECTIONS, primaryArchetype } from "@/lib/feasibility-autofill/canonicalTemplate";
-import { siteDeclared, modeled, Confidence, type Metric } from "@/lib/metric";
-import type { Archetype } from "@/lib/feasibility-autofill/fixtures/questionBankLabels";
+import {
+  TopBar,
+  PrivacyBanner,
+  MetricChip,
+  ArchetypeTag,
+  DQBadge,
+  StatusBadge,
+} from "@/components/ui";
+import { loadRenderAnswers, type RenderAnswer } from "@/lib/feasibility-autofill/persist";
+import { CANONICAL_SECTIONS } from "@/lib/feasibility-autofill/canonicalTemplate";
+import { approveField, rejectField, editField, approveHighConfidence } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 const DEMO_SITE_ID = "site-ihealth-demo";
-
-/** How each archetype is answered — the routing legend (site-declared vs modeled). */
-const ARCHETYPES: Array<{ code: Archetype; role: string; how: string; sample: Metric }> = [
-  { code: "A", role: "Perfil da instituição", how: "Lookup determinístico no cadastro.",
-    sample: siteDeclared("profile.institution_name", "iHealth (demo)", Confidence.HIGH, { note: "Perfil da instituição" }) },
-  { code: "B", role: "Catálogo de capacidade", how: "Lookup por conceito clínico; não mapeado é sinalizado.",
-    sample: siteDeclared("capability.ibd", "yes", Confidence.HIGH, { note: "NLP (NER) + assertion detection" }) },
-  { code: "C", role: "Contagem de pacientes", how: "Query na base — agregada, <5 suprimido.",
-    sample: modeled("cohort.candidates", "42", Confidence.HIGH, { unit: "pacientes", note: "definite + possible, agregada" }) },
-  { code: "D", role: "Narrativa", how: "Rascunho por LLM, ancorado em respostas anteriores. Revisão humana obrigatória.",
-    sample: modeled("narrative.limitacoes", "rascunho", Confidence.LOW, { note: "Proposto — nunca aprovado automaticamente" }) },
-];
-
-/** A representative (value-less) provenance seal per archetype, for the section table. */
-const ARCH_SEAL: Record<Archetype, Metric> = {
-  A: siteDeclared("s", null, Confidence.HIGH),
-  B: siteDeclared("s", null, Confidence.HIGH),
-  C: modeled("s", null, Confidence.HIGH),
-  D: modeled("s", null, Confidence.LOW),
-};
-const ARCH_HOW: Record<Archetype, string> = {
-  A: "Lookup no perfil",
-  B: "Lookup no catálogo",
-  C: "Contagem na base",
-  D: "Rascunho por LLM",
-};
-
 const gap = (n: number) => ({ display: "grid", gap: `var(--cl-space-${n})` }) as const;
 
 export default async function FeasibilityWorkspace() {
-  const [requests, catalogCount, profile, template] = await Promise.all([
-    prisma.feasibilityRequest.findMany({ where: { siteId: DEMO_SITE_ID }, orderBy: { createdAt: "desc" } }),
-    prisma.capabilityCatalog.count({ where: { siteId: DEMO_SITE_ID } }),
-    prisma.institutionProfile.findFirst({ where: { siteId: DEMO_SITE_ID } }),
-    prisma.formTemplate.findFirst({ orderBy: { createdAt: "desc" } }),
-  ]).catch(() => [[], 0, null, null] as const);
+  const request = await prisma.feasibilityRequest
+    .findFirst({ where: { siteId: DEMO_SITE_ID }, orderBy: { createdAt: "desc" } })
+    .catch(() => null);
+  const answers = request ? await loadRenderAnswers(request.id) : [];
 
-  const stats: Array<{ label: string; value: string }> = [
-    { label: "Perfil da instituição", value: profile ? "Configurado" : "Pendente" },
-    { label: "Catálogo de capacidade", value: `${catalogCount} conceitos` },
-    { label: "Template reconhecido", value: template ? "Modelo canônico" : "—" },
-    { label: "Solicitações na caixa", value: String(requests.length) },
-  ];
+  // Group answers by section, preserving canonical order.
+  const bySection = new Map<string, RenderAnswer[]>();
+  for (const a of answers) {
+    (bySection.get(a.section) ?? bySection.set(a.section, []).get(a.section)!).push(a);
+  }
+  const orderedSections = CANONICAL_SECTIONS.map((s) => s.name).filter((n) => bySection.has(n));
+
+  const cohort = answers.find((a) => a.archetype === "C")?.metric;
+  const total = answers.length;
+  const approved = answers.filter((a) => a.status === "approved").length;
+  const pct = total ? Math.round((approved / total) * 100) : 0;
 
   return (
     <>
       <TopBar active="site" />
-      <main className="wrap" style={{ ...gap(6) }}>
+      <main className="wrap" style={gap(6)}>
         <header style={gap(2)}>
           <h1 style={{ margin: 0 }}>Feasibility autofill — bancada de revisão</h1>
           <p className="muted" style={{ margin: 0, maxWidth: 640 }}>
-            Cada campo do formulário é roteado para um dos quatro arquétipos. A, B e C são
-            determinísticos e carregam proveniência; D é rascunho por LLM e exige aprovação
-            humana — nunca aprovado automaticamente.
+            Cada campo é roteado para um dos quatro arquétipos e respondido com proveniência.
+            A, B e C são determinísticos; D é rascunho por LLM e exige aprovação humana — nunca
+            aprovado automaticamente.
           </p>
         </header>
 
         <PrivacyBanner variant="site" />
 
-        {/* Summary stats */}
-        <section
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--cl-space-3)" }}
-        >
-          {stats.map((s) => (
-            <div key={s.label} className="cl-card cl-card--flat" style={{ padding: "var(--cl-space-4) var(--cl-space-5)" }}>
-              <div className="tb-stat__label">{s.label}</div>
-              <div className="tb-stat tb-stat--sm">{s.value}</div>
-            </div>
-          ))}
-        </section>
-
-        {/* Archetype legend */}
-        <section style={gap(3)}>
-          <h2 className="cl-h3" style={{ margin: 0 }}>Como cada campo é respondido</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "var(--cl-space-3)" }}>
-            {ARCHETYPES.map((a) => (
-              // overflow:visible so the MetricChip's provenance tooltip can escape the card.
-              <div key={a.code} className="cl-card" style={{ overflow: "visible" }}>
-                <div className="cl-card__body" style={gap(3)}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--cl-space-2)" }}>
-                    <ArchetypeTag archetype={a.code} />
-                    <strong style={{ fontSize: "var(--cl-text-sm)" }}>{a.role}</strong>
-                  </div>
-                  <p className="muted" style={{ margin: 0, fontSize: "var(--cl-text-sm)", lineHeight: 1.45 }}>{a.how}</p>
-                  <MetricChip metric={a.sample} size="md" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Inbox / empty state */}
-        {requests.length === 0 && (
+        {answers.length === 0 || !request ? (
           <div className="cl-alert cl-alert--info">
             <span className="cl-alert__icon">📥</span>
             <div>
-              <p className="cl-alert__title">Nenhuma solicitação de feasibility ainda</p>
+              <p className="cl-alert__title">Nenhuma solicitação preenchida ainda</p>
               <p className="cl-alert__body">
-                Quando um patrocinador enviar um formulário, ele aparece aqui para revisão seção a
-                seção — com proveniência, contagens agregadas e rascunhos para aprovar.
+                Rode <span className="mono">npm run db:seed-demo-request</span> para carregar uma
+                solicitação de exemplo, ou aguarde um patrocinador enviar um formulário.
               </p>
             </div>
           </div>
-        )}
+        ) : (
+          <>
+            {/* Request summary */}
+            <section className="cl-card">
+              <div className="cl-card__header">
+                <div>
+                  <h2 className="cl-card__title">{request.studyTitle}</h2>
+                  <p className="muted" style={{ margin: "4px 0 0", fontSize: "var(--cl-text-sm)" }}>
+                    {request.sponsorId} · {request.therapeuticArea} ·{" "}
+                    <span className="mono">{request.indexWindow}</span>
+                  </p>
+                </div>
+                <form action={approveHighConfidence}>
+                  <input type="hidden" name="requestId" value={request.id} />
+                  <button className="cl-btn cl-btn--primary cl-btn--sm" type="submit">
+                    Aprovar alta confiança
+                  </button>
+                </form>
+              </div>
+              <div
+                className="cl-card__body"
+                style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--cl-space-5)", alignItems: "end" }}
+              >
+                <div>
+                  <div className="tb-stat__label">Pacientes candidatos</div>
+                  <div className="tb-stat">{cohort?.value ?? "—"}</div>
+                  {cohort && <div style={{ marginTop: 6 }}><MetricChip metric={cohort} showValue={false} /></div>}
+                </div>
+                <div>
+                  <div className="tb-stat__label">Revisão — {approved}/{total} aprovados</div>
+                  <div className="cl-progress" style={{ marginTop: 8 }}>
+                    <div className="cl-progress__bar" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              </div>
+            </section>
 
-        {/* Canonical model */}
-        <section style={gap(3)}>
-          <h2 className="cl-h3" style={{ margin: 0 }}>
-            Modelo canônico <span className="muted mono" style={{ fontSize: "var(--cl-text-sm)" }}>({CANONICAL_SECTIONS.length} seções)</span>
-          </h2>
-          <div className="cl-table-wrap">
-            <table className="cl-table cl-table--hover">
-              <thead>
-                <tr>
-                  <th style={{ width: 44 }}>#</th>
-                  <th>Seção</th>
-                  <th style={{ width: 96 }}>Arquétipo</th>
-                  <th style={{ width: 260 }}>Proveniência</th>
-                </tr>
-              </thead>
-              <tbody>
-                {CANONICAL_SECTIONS.map((s) => {
-                  const a = primaryArchetype(s);
-                  return (
-                    <tr key={s.idx}>
-                      <td className="mono" style={{ color: "var(--cl-text-muted)" }}>{s.idx}</td>
-                      <td style={{ fontWeight: 500 }}>{s.name}</td>
-                      <td>
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                          <ArchetypeTag archetype={a} />
-                          <span className="muted" style={{ fontSize: "var(--cl-text-xs)" }}>{ARCH_HOW[a]}</span>
-                        </span>
-                      </td>
-                      <td><MetricChip metric={ARCH_SEAL[a]} showValue={false} /></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
+            {/* Answers grouped by canonical section */}
+            {orderedSections.map((section) => (
+              <section key={section} className="cl-card">
+                <div className="cl-card__header">
+                  <h2 className="cl-card__title" style={{ fontSize: "var(--cl-text-md)" }}>{section}</h2>
+                </div>
+                <div style={gap(0)}>
+                  {bySection.get(section)!.map((a) => (
+                    <FieldRow key={a.fieldId} a={a} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </>
+        )}
       </main>
     </>
+  );
+}
+
+function FieldRow({ a }: { a: RenderAnswer }) {
+  const actionable = a.status === "proposed" || a.status === "edited";
+  return (
+    <div style={{ padding: "var(--cl-space-4) var(--cl-space-5)", borderTop: "1px solid var(--cl-border)", display: "grid", gap: "var(--cl-space-3)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--cl-space-3)", flexWrap: "wrap" }}>
+        <ArchetypeTag archetype={a.archetype} />
+        <span style={{ flex: 1, minWidth: 180, fontSize: "var(--cl-text-sm)", fontWeight: 500 }}>{a.label}</span>
+        <MetricChip metric={a.metric} />
+        <DQBadge worst={a.dqWorst} title={`conformance ${a.dq.conformance} · completeness ${a.dq.completeness} · plausibility ${a.dq.plausibility}`} />
+        <StatusBadge status={a.status} />
+      </div>
+
+      {/* D: show the draft + the adversarial critique */}
+      {a.archetype === "D" && a.narrativeDraft && (
+        <div style={gap(2)}>
+          <p className="muted" style={{ margin: 0, fontSize: "var(--cl-text-sm)", lineHeight: 1.5 }}>{a.narrativeDraft}</p>
+          {a.critique && (
+            <div className={`cl-alert ${a.critique.grounded ? "cl-alert--success" : "cl-alert--warning"}`} style={{ fontSize: "var(--cl-text-xs)" }}>
+              <span className="cl-alert__icon">{a.critique.grounded ? "✓" : "⚠"}</span>
+              <div>
+                <p className="cl-alert__title" style={{ fontSize: "var(--cl-text-xs)" }}>
+                  Crítica de fundamentação: {a.critique.grounded ? "fundamentado" : "revisar"}
+                </p>
+                {a.critique.issues.length > 0 && (
+                  <ul style={{ margin: "4px 0 0", paddingLeft: 16 }}>
+                    {a.critique.issues.map((iss, i) => (
+                      <li key={i}>{iss}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* HITL actions */}
+      {actionable && (
+        <div style={{ display: "flex", gap: "var(--cl-space-2)", flexWrap: "wrap", alignItems: "center" }}>
+          <form action={approveField}>
+            <input type="hidden" name="fieldId" value={a.fieldId} />
+            <button className="cl-btn cl-btn--secondary cl-btn--sm" type="submit">Aprovar</button>
+          </form>
+          <form action={rejectField}>
+            <input type="hidden" name="fieldId" value={a.fieldId} />
+            <button className="cl-btn cl-btn--ghost cl-btn--sm" type="submit">Rejeitar</button>
+          </form>
+          {a.archetype === "D" && (
+            <details style={{ marginLeft: "auto" }}>
+              <summary className="cl-btn cl-btn--ghost cl-btn--sm" style={{ listStyle: "none" }}>Editar</summary>
+              <form action={editField} style={{ marginTop: "var(--cl-space-2)", display: "grid", gap: "var(--cl-space-2)" }}>
+                <input type="hidden" name="fieldId" value={a.fieldId} />
+                <textarea className="cl-textarea" name="value" defaultValue={a.narrativeDraft ?? ""} rows={3} />
+                <button className="cl-btn cl-btn--secondary cl-btn--sm" type="submit" style={{ justifySelf: "start" }}>
+                  Salvar edição
+                </button>
+              </form>
+            </details>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
