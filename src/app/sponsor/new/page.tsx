@@ -219,9 +219,10 @@ export default function NewConsultationPage() {
         )}
 
         <div className="card">
-          <h2>Or: fetch from ClinicalTrials.gov (classic)</h2>
+          <h2>Alternative · classic ClinicalTrials.gov fetch</h2>
           <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
-            Pull the eligibility text straight from a real NCT record instead of pasting it.
+            Same as the Registry ID mode in Step 1 — pulls the eligibility text straight from a
+            real NCT record. Kept as the one-field shortcut.
           </p>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <input

@@ -137,7 +137,7 @@ export function IntakePanel({
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: 2 }}>Bring your protocol — any format</h2>
+      <h2 style={{ marginBottom: 2 }}>Step 1 · Bring your protocol — any format</h2>
       <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
         Upload a document, paste a registry id, or drop in structured eligibility. We detect the
         format, extract the criteria, and show you where they came from and how much to trust them.
