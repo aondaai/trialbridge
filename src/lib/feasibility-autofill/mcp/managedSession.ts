@@ -29,12 +29,14 @@ export async function createFeasibilityEnvironment(client: Anthropic, name = "tr
  * A/B/D orchestration is carried by the agent's system prompt; C is the one model-callable MCP tool
  * (aggregates only). Returns the agent id.
  */
-export async function createFeasibilityAgent(client: Anthropic, cohortTunnelUrl: string): Promise<string> {
+export async function createFeasibilityAgent(client: Anthropic, cohortTunnelUrl?: string): Promise<string> {
+  // With a tunnel, C is a live MCP tool call; without one, C is pre-computed site-side and passed
+  // to the agent as aggregate context (same residency guarantee — patient rows never reach cloud).
   const agent = await client.beta.agents.create({
     model: FEASIBILITY_AGENT.model,
     name: "trialbridge-feasibility",
     system: FEASIBILITY_AGENT.systemPrompt,
-    mcp_servers: [{ type: "url", name: COHORT_MCP_SERVER, url: cohortTunnelUrl }],
+    ...(cohortTunnelUrl ? { mcp_servers: [{ type: "url" as const, name: COHORT_MCP_SERVER, url: cohortTunnelUrl }] } : {}),
     metadata: FEASIBILITY_AGENT.metadata,
     betas,
   });
