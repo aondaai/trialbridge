@@ -57,3 +57,9 @@ yarn-error.log*
 /data/kol-enrichment.json
 /data/site-directory.json
 /data/site-infra.json
+
+# Committed demo data (behind Basic Auth; contact PII stripped from the directory)
+# so a fresh deploy renders §5/§6/§7 with the real ABRACRO/ACESSE sites, not synthetic.
+!/data/site-directory.json
+!/data/site-infra.json
+!/data/kol-enrichment.json
