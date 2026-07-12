@@ -45,6 +45,7 @@ export async function submitCapacity(formData: FormData) {
   await upsertResponse(resp);
 
   revalidatePath("/site");
+  revalidatePath("/site/respond");
   revalidatePath("/sponsor");
 }
 
@@ -56,5 +57,6 @@ export async function withdrawCapacity(formData: FormData) {
   const all = await loadResponses();
   await writeResponses(all.filter((r) => !(r.consultationId === consultationId && r.siteId === siteId)));
   revalidatePath("/site");
+  revalidatePath("/site/respond");
   revalidatePath("/sponsor");
 }
