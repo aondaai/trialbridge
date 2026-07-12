@@ -44,6 +44,9 @@ export type CriterionValue = string | number | (string | number)[] | null;
  */
 export type Evaluability = "pass_able" | "partial" | "not_evaluable";
 
+/** How the real base can answer a criterion. See src/lib/basefit/registry.ts. */
+export type BaseFit = "checkable" | "depth" | "nlp_extractable" | "not_answerable";
+
 export interface Criterion {
   /** Stable id, referenced by the matcher and the softening UI. */
   id: string;
@@ -67,6 +70,10 @@ export interface Criterion {
   groupLabel?: string;
   /** Optional data-source evaluability tag — see `Evaluability`. */
   evaluability?: Evaluability;
+  /** Base-fit tier — which real data source (if any) answers this. */
+  baseFit?: BaseFit;
+  /** nlp_extractable rows only: pt-BR clinical-text phrases the NLP layer would search. */
+  nlpTerms?: string[];
 }
 
 /** Per-criterion, per-patient outcome. `pass` always means "good for eligibility". */
