@@ -26,12 +26,24 @@ export interface LocatedEligibility {
   note: string;
 }
 
-/** Headings that mark the START of the eligibility block. */
-const START_RE =
-  /(?:^|\n)[ \t>*#\-]*((?:key\s+)?inclusion\s+criteria|(?:key\s+)?eligibility(?:\s+criteria)?|patient\s+selection|study\s+population)\b/i;
+/**
+ * Headings that mark the START of the eligibility block. The optional prefixes
+ * absorb section labels and adjectives seen in real documents AND registries —
+ * e.g. the EU CTR download uses "E.3 Principal inclusion criteria" and
+ * "E.4 Principal exclusion criteria" (letter/number label + "principal"), which
+ * plain "inclusion criteria" heading detection would miss (so the euctr live
+ * path used to always fall back to cache).
+ */
+const LABEL = String.raw`(?:[a-z]?\.?\d[\d.]*\s+)?`; // "E.3 ", "3. ", "4.1.1 "
+const ADJ = String.raw`(?:(?:principal|main|key)\s+)?`;
+
+const START_RE = new RegExp(
+  `(?:^|\\n)[ \\t>*#\\-]*${LABEL}${ADJ}(inclusion\\s+criteria|eligibility(?:\\s+criteria)?|patient\\s+selection|study\\s+population)\\b`,
+  "i",
+);
 
 /** The exclusion heading (used to know we've captured both halves). */
-const EXCLUSION_RE = /(?:^|\n)[ \t>*#\-]*(?:key\s+)?exclusion\s+criteria\b/i;
+const EXCLUSION_RE = new RegExp(`(?:^|\\n)[ \\t>*#\\-]*${LABEL}${ADJ}exclusion\\s+criteria\\b`, "i");
 
 /**
  * Section titles that mean "eligibility is over" — cut the capture here.
