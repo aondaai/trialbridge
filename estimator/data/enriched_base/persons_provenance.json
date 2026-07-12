@@ -1,0 +1,8 @@
+{
+  "asset": "datasus_enriched_persons",
+  "grain": "synthetic patient",
+  "n_persons": 380517,
+  "n_stratum_fallback": 0,
+  "seed": 7,
+  "note": "Synthetic cohort: DataSUS demographic skeleton x proprietary joint depth sample. imputed_depth=true on every row \u2014 NOT localizable patients."
+}

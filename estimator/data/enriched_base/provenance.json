@@ -1,0 +1,56 @@
+{
+  "as_of": "2026-07-09",
+  "asset": "datasus_enriched_aggregate",
+  "grain": "uf x dx x age_band x sex",
+  "base": {
+    "origin": "observed",
+    "source": "DataSUS OMOP (omop_full)",
+    "note": "DataSUS national base cohort counts (real)"
+  },
+  "depth": {
+    "origin": "imputed",
+    "source": "proprietary NLP->OMOP depth (complete-case)",
+    "model_version": "enrich-718eeb87",
+    "shrink_alpha": 20.0,
+    "convenio_filter": "all-comers (SUS + private) \u2014 SUS-only variant pending re-extraction",
+    "note": "NATIONAL depth rate applied per UF (direct standardization); per-UF calibrated depth is Trilha B step 3"
+  },
+  "coverage_ufs": [
+    "AC",
+    "AL",
+    "AM",
+    "AP",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MG",
+    "MS",
+    "MT",
+    "PA",
+    "PB",
+    "PE",
+    "PI",
+    "PR",
+    "RJ",
+    "RN",
+    "RO",
+    "RR",
+    "RS",
+    "SC",
+    "SE",
+    "SP",
+    "TO"
+  ],
+  "n_cells": 135,
+  "national_breast": {
+    "base_cohort": 380517,
+    "estimated_n": 4756.68,
+    "est_ci": [
+      4197.03,
+      5316.33
+    ]
+  }
+}

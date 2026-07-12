@@ -1,0 +1,2432 @@
+[
+ {
+  "uf": "AC",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 309,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 2.441,
+  "est_ci": [
+   0.0,
+   6.6931
+  ]
+ },
+ {
+  "uf": "AC",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 326,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 4.3301,
+  "est_ci": [
+   0.9596,
+   7.7006
+  ]
+ },
+ {
+  "uf": "AC",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 256,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 3.7024,
+  "est_ci": [
+   1.3346,
+   6.0703
+  ]
+ },
+ {
+  "uf": "AC",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 159,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 2.556,
+  "est_ci": [
+   1.0043,
+   4.1076
+  ]
+ },
+ {
+  "uf": "AC",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 122,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 0.9008,
+  "est_ci": [
+   0.0,
+   1.8756
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 445,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 3.5154,
+  "est_ci": [
+   0.0,
+   9.6389
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1072,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 14.2389,
+  "est_ci": [
+   3.1556,
+   25.3222
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1493,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 21.5927,
+  "est_ci": [
+   7.7832,
+   35.4022
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1263,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 20.3032,
+  "est_ci": [
+   7.9777,
+   32.6286
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1008,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 7.4424,
+  "est_ci": [
+   0.0,
+   15.4964
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 312,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 2.4647,
+  "est_ci": [
+   0.0,
+   6.758
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 874,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 11.6089,
+  "est_ci": [
+   2.5727,
+   20.6451
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1157,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 16.7332,
+  "est_ci": [
+   6.0316,
+   27.4349
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1031,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 16.5737,
+  "est_ci": [
+   6.5123,
+   26.6351
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 820,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 6.0544,
+  "est_ci": [
+   0.0,
+   12.6062
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 68,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 0.5372,
+  "est_ci": [
+   0.0,
+   1.4729
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 181,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 2.4041,
+  "est_ci": [
+   0.5328,
+   4.2755
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 248,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 3.5867,
+  "est_ci": [
+   1.2929,
+   5.8806
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 179,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 2.8775,
+  "est_ci": [
+   1.1307,
+   4.6243
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 108,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 0.7974,
+  "est_ci": [
+   0.0,
+   1.6603
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 2487,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 19.6468,
+  "est_ci": [
+   0.0,
+   53.8693
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 5497,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 73.0141,
+  "est_ci": [
+   16.1811,
+   129.847
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 6311,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 91.2735,
+  "est_ci": [
+   32.9,
+   149.6471
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 5299,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 85.1833,
+  "est_ci": [
+   33.4711,
+   136.8954
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 4170,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 30.7887,
+  "est_ci": [
+   0.0,
+   64.107
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 1026,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 8.1052,
+  "est_ci": [
+   0.0,
+   22.2235
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1977,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 26.2596,
+  "est_ci": [
+   5.8195,
+   46.6996
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 2314,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 33.4665,
+  "est_ci": [
+   12.0632,
+   54.8698
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1941,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 31.2022,
+  "est_ci": [
+   12.2603,
+   50.1442
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1560,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 11.5181,
+  "est_ci": [
+   0.0,
+   23.9825
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 337,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 2.6622,
+  "est_ci": [
+   0.0,
+   7.2995
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 783,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 10.4002,
+  "est_ci": [
+   2.3049,
+   18.4956
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1114,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 16.1113,
+  "est_ci": [
+   5.8074,
+   26.4153
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 940,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 15.1108,
+  "est_ci": [
+   5.9375,
+   24.2841
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 760,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 5.6114,
+  "est_ci": [
+   0.0,
+   11.6838
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 684,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 5.4035,
+  "est_ci": [
+   0.0,
+   14.8157
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1781,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 23.6562,
+  "est_ci": [
+   5.2426,
+   42.0698
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 2275,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 32.9024,
+  "est_ci": [
+   11.8598,
+   53.945
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 2130,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 34.2405,
+  "est_ci": [
+   13.4541,
+   55.0268
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1673,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 12.3524,
+  "est_ci": [
+   0.0,
+   25.7197
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 778,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 6.1461,
+  "est_ci": [
+   0.0,
+   16.8518
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1988,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 26.4057,
+  "est_ci": [
+   5.8519,
+   46.9594
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 2644,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 38.2391,
+  "est_ci": [
+   13.7835,
+   62.6948
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 2382,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 38.2915,
+  "est_ci": [
+   15.0459,
+   61.5371
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1812,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 13.3787,
+  "est_ci": [
+   0.0,
+   27.8566
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 1267,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 10.0091,
+  "est_ci": [
+   0.0,
+   27.4437
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1752,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 23.271,
+  "est_ci": [
+   5.1572,
+   41.3847
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1911,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 27.638,
+  "est_ci": [
+   9.9623,
+   45.3138
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1488,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 23.9201,
+  "est_ci": [
+   9.3989,
+   38.4413
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 968,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 7.1471,
+  "est_ci": [
+   0.0,
+   14.8814
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 4402,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 34.775,
+  "est_ci": [
+   0.0,
+   95.3489
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 10248,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 136.1193,
+  "est_ci": [
+   30.1663,
+   242.0724
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 14964,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 216.4185,
+  "est_ci": [
+   78.0091,
+   354.8279
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 15722,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 252.7366,
+  "est_ci": [
+   99.3079,
+   406.1653
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 14567,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 107.5537,
+  "est_ci": [
+   0.0,
+   223.9441
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 387,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 3.0572,
+  "est_ci": [
+   0.0,
+   8.3826
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 982,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 13.0434,
+  "est_ci": [
+   2.8906,
+   23.1962
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1418,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 20.508,
+  "est_ci": [
+   7.3922,
+   33.6238
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1370,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 22.0232,
+  "est_ci": [
+   8.6536,
+   35.3929
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1089,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 8.0405,
+  "est_ci": [
+   0.0,
+   16.7416
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 653,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 5.1586,
+  "est_ci": [
+   0.0,
+   14.1442
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1276,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 16.9485,
+  "est_ci": [
+   3.7561,
+   30.1409
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1658,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 23.979,
+  "est_ci": [
+   8.6433,
+   39.3147
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1567,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 25.1901,
+  "est_ci": [
+   9.8979,
+   40.4822
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1060,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 7.8264,
+  "est_ci": [
+   0.0,
+   16.2958
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 621,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 4.9058,
+  "est_ci": [
+   0.0,
+   13.4511
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1315,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 17.4665,
+  "est_ci": [
+   3.8709,
+   31.0622
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1525,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 22.0555,
+  "est_ci": [
+   7.95,
+   36.161
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1255,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 20.1746,
+  "est_ci": [
+   7.9272,
+   32.4219
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 966,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 7.1323,
+  "est_ci": [
+   0.0,
+   14.8507
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 518,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 4.0921,
+  "est_ci": [
+   0.0,
+   11.2201
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1366,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 18.1439,
+  "est_ci": [
+   4.021,
+   32.2669
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1973,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 28.5347,
+  "est_ci": [
+   10.2855,
+   46.784
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 1739,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 27.955,
+  "est_ci": [
+   10.9844,
+   44.9257
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1527,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 11.2744,
+  "est_ci": [
+   0.0,
+   23.4752
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 1525,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 12.0472,
+  "est_ci": [
+   0.0,
+   33.0321
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 3297,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 43.7925,
+  "est_ci": [
+   9.7051,
+   77.8799
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 4347,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 62.869,
+  "est_ci": [
+   22.6614,
+   103.0765
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 3857,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 62.0026,
+  "est_ci": [
+   24.3627,
+   99.6425
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 3356,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 24.7786,
+  "est_ci": [
+   0.0,
+   51.5931
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 309,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 2.441,
+  "est_ci": [
+   0.0,
+   6.6931
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 865,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 11.4894,
+  "est_ci": [
+   2.5462,
+   20.4325
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1174,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 16.9791,
+  "est_ci": [
+   6.1202,
+   27.838
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 955,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 15.352,
+  "est_ci": [
+   6.0322,
+   24.6717
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 775,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 5.7221,
+  "est_ci": [
+   0.0,
+   11.9144
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 2166,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 17.111,
+  "est_ci": [
+   0.0,
+   46.9163
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 3904,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 51.855,
+  "est_ci": [
+   11.4919,
+   92.2181
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 5075,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 73.3977,
+  "est_ci": [
+   26.4566,
+   120.3389
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 4737,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 76.1489,
+  "est_ci": [
+   29.9212,
+   122.3766
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 4120,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 30.4195,
+  "est_ci": [
+   0.0,
+   63.3384
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 2164,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 17.0952,
+  "est_ci": [
+   0.0,
+   46.873
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 4511,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 59.9175,
+  "est_ci": [
+   13.2787,
+   106.5563
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 6832,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 98.8086,
+  "est_ci": [
+   35.616,
+   162.0011
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 7870,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 126.513,
+  "est_ci": [
+   49.7108,
+   203.3152
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 7849,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 57.9522,
+  "est_ci": [
+   0.0,
+   120.6657
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 1119,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 8.8399,
+  "est_ci": [
+   0.0,
+   24.2379
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 1945,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 25.8345,
+  "est_ci": [
+   5.7254,
+   45.9437
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 2590,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 37.4582,
+  "est_ci": [
+   13.502,
+   61.4144
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 2248,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 36.1374,
+  "est_ci": [
+   14.1995,
+   58.0753
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 1667,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 12.3081,
+  "est_ci": [
+   0.0,
+   25.6274
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 300,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 2.3699,
+  "est_ci": [
+   0.0,
+   6.4981
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 742,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 9.8556,
+  "est_ci": [
+   2.1842,
+   17.5271
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 902,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 13.0453,
+  "est_ci": [
+   4.7022,
+   21.3883
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 780,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 12.5388,
+  "est_ci": [
+   4.9269,
+   20.1507
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 536,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 3.9575,
+  "est_ci": [
+   0.0,
+   8.2401
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 55,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 0.4345,
+  "est_ci": [
+   0.0,
+   1.1913
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 125,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 1.6603,
+  "est_ci": [
+   0.368,
+   2.9527
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 155,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 2.2417,
+  "est_ci": [
+   0.808,
+   3.6754
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 125,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 2.0094,
+  "est_ci": [
+   0.7896,
+   3.2293
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 71,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 0.5242,
+  "est_ci": [
+   0.0,
+   1.0915
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 2658,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 20.9977,
+  "est_ci": [
+   0.0,
+   57.5732
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 5036,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 66.8908,
+  "est_ci": [
+   14.8241,
+   118.9575
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 6489,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 93.8479,
+  "est_ci": [
+   33.8279,
+   153.8678
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 6651,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 106.9171,
+  "est_ci": [
+   42.011,
+   171.8233
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 6255,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 46.183,
+  "est_ci": [
+   0.0,
+   96.1605
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 1193,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 9.4245,
+  "est_ci": [
+   0.0,
+   25.8408
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 2866,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 38.0677,
+  "est_ci": [
+   8.4364,
+   67.699
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 3984,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 57.619,
+  "est_ci": [
+   20.7691,
+   94.469
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 3672,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 59.0287,
+  "est_ci": [
+   23.1942,
+   94.8632
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 3132,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 23.1247,
+  "est_ci": [
+   0.0,
+   48.1494
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 638,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 5.0401,
+  "est_ci": [
+   0.0,
+   13.8193
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 982,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 13.0434,
+  "est_ci": [
+   2.8906,
+   23.1962
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 1168,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 16.8923,
+  "est_ci": [
+   6.0889,
+   27.6957
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 803,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 12.9085,
+  "est_ci": [
+   5.0721,
+   20.7449
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 624,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 4.6072,
+  "est_ci": [
+   0.0,
+   9.593
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 8397,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 66.3347,
+  "est_ci": [
+   0.0,
+   181.8821
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 16928,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 224.8466,
+  "est_ci": [
+   49.8297,
+   399.8636
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 22632,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 327.3178,
+  "est_ci": [
+   117.9832,
+   536.6524
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 23118,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 371.6298,
+  "est_ci": [
+   146.0247,
+   597.235
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 21482,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 158.6098,
+  "est_ci": [
+   0.0,
+   330.2511
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "breast_cancer",
+  "age_band": "18-39",
+  "sex": "F",
+  "base_count": 103,
+  "depth_rate": 0.0079,
+  "depth_ci": [
+   0.00163,
+   0.037387
+  ],
+  "depth_eff_n": 139,
+  "est_eligible": 0.8137,
+  "est_ci": [
+   0.0,
+   2.231
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "breast_cancer",
+  "age_band": "40-49",
+  "sex": "F",
+  "base_count": 268,
+  "depth_rate": 0.013283,
+  "depth_ci": [
+   0.006196,
+   0.028244
+  ],
+  "depth_eff_n": 451,
+  "est_eligible": 3.5597,
+  "est_ci": [
+   0.7889,
+   6.3305
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "breast_cancer",
+  "age_band": "50-59",
+  "sex": "F",
+  "base_count": 334,
+  "depth_rate": 0.014463,
+  "depth_ci": [
+   0.007693,
+   0.027026
+  ],
+  "depth_eff_n": 620,
+  "est_eligible": 4.8305,
+  "est_ci": [
+   1.7412,
+   7.9198
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "breast_cancer",
+  "age_band": "60-69",
+  "sex": "F",
+  "base_count": 241,
+  "depth_rate": 0.016075,
+  "depth_ci": [
+   0.00882,
+   0.029123
+  ],
+  "depth_eff_n": 618,
+  "est_eligible": 3.8742,
+  "est_ci": [
+   1.5223,
+   6.226
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "breast_cancer",
+  "age_band": "70+",
+  "sex": "F",
+  "base_count": 167,
+  "depth_rate": 0.007383,
+  "depth_ci": [
+   0.002616,
+   0.020659
+  ],
+  "depth_eff_n": 421,
+  "est_eligible": 1.233,
+  "est_ci": [
+   0.0,
+   2.5674
+  ]
+ }
+]
