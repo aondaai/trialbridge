@@ -21,6 +21,7 @@ export const DEPTH_FEATURES: ReadonlySet<string> = new Set([
 const ALIASES: Readonly<Record<string, string>> = {
   her2_status: "her2",
   lvef: "ejection_fraction",
+  diagnosis: "dx",
 };
 
 export interface NlpConcept {
