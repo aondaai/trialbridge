@@ -12,6 +12,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Criterion } from "@/lib/matcher/types";
+import type { BaseFit } from "@/lib/matcher/types";
+import { summarizeBaseFit } from "@/lib/basefit/registry";
 import type { OmopCriterion } from "@/lib/omop/types";
 import { HERO_PROTOCOL_TEXT, HERO_META } from "@/data/hero-protocol";
 import { TopBar } from "@/components/ui";
@@ -333,6 +335,15 @@ export default function NewConsultationPage() {
                         <>All {rows.length} rows above the confidence threshold — spot-check and post.</>
                       )}
                     </span>
+                    {(() => {
+                      const bf = summarizeBaseFit(rows);
+                      return (
+                        <span style={{ fontSize: 12.5, opacity: 0.85, width: "100%" }}>
+                          <strong>{bf.answerableToday + bf.viaNlp} of {bf.total}</strong> answerable against your base
+                          ({bf.answerableToday} today, {bf.viaNlp} via NLP extraction); {bf.needReview} need review.
+                        </span>
+                      );
+                    })()}
                   </div>
                 );
               })()}
@@ -340,7 +351,7 @@ export default function NewConsultationPage() {
                 <table className="data">
                   <thead>
                     <tr>
-                      <th>Kind</th><th>Field</th><th>Op</th><th>Value</th><th>Unit</th><th>Conf.</th><th></th>
+                      <th>Kind</th><th>Field</th><th>Op</th><th>Value</th><th>Unit</th><th>Base fit</th><th>Conf.</th><th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -372,6 +383,7 @@ export default function NewConsultationPage() {
                             />
                           </td>
                           <td className="mono muted">{r.unit ?? "—"}</td>
+                          <td><BaseFitBadge fit={r.baseFit} terms={r.nlpTerms} /></td>
                           <td className="num">
                             {low ? <span className="badge-low">{r.confidence.toFixed(2)} · verify</span> : r.confidence.toFixed(2)}
                           </td>
@@ -491,3 +503,20 @@ const selStyle: React.CSSProperties = {
   padding: "4px 8px",
   fontSize: 13,
 };
+
+const BASE_FIT_BADGE: Record<BaseFit, { label: string; bg: string; fg: string }> = {
+  checkable: { label: "checkable", bg: "rgba(22,163,74,0.12)", fg: "#15803d" },
+  depth: { label: "depth", bg: "rgba(22,163,74,0.12)", fg: "#15803d" },
+  nlp_extractable: { label: "needs NLP", bg: "rgba(180,83,9,0.14)", fg: "#b45309" },
+  not_answerable: { label: "n/a", bg: "var(--panel-2)", fg: "var(--muted, #888)" },
+};
+
+function BaseFitBadge({ fit, terms }: { fit?: BaseFit; terms?: string[] }) {
+  const s = BASE_FIT_BADGE[fit ?? "not_answerable"];
+  const title = fit === "nlp_extractable" && terms?.length ? `NLP terms: ${terms.join(", ")}` : undefined;
+  return (
+    <span title={title} style={{ background: s.bg, color: s.fg, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>
+      {s.label}
+    </span>
+  );
+}
