@@ -1,155 +1,163 @@
-import { getConsultation, loadResponses } from "@/lib/store";
+import Link from "next/link";
+import { prisma } from "@/lib/db";
 import { loadSite } from "@/lib/data/sites";
+import { getConsultation, loadResponses } from "@/lib/store";
 import { evaluateDataset } from "@/lib/service";
 import { HERO_META } from "@/data/hero-protocol";
-import { estimateFeasibility } from "@/lib/feasibility";
-import { TopBar, PrivacyBanner, Chip, CohortLegend, CriterionResultList } from "@/components/ui";
-import { submitCapacity, withdrawCapacity } from "./actions";
-import type { Cohort } from "@/lib/matcher/types";
+import { loadRenderAnswers } from "@/lib/feasibility-autofill/persist";
+import { TopBar, PrivacyBanner } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
-export default async function SitePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ c?: string; site?: string }>;
-}) {
-  const { c, site } = await searchParams;
-  // This screen is Camila's site by default — same persona, any consultation.
-  const SITE_ID = site || "site-a";
-  const consultation = await getConsultation(c || HERO_META.id);
-  if (!consultation) {
-    return (
-      <>
-        <TopBar active="site" />
-        <main className="wrap">
-          <p>
-            No open consultation yet. A sponsor needs to post a protocol first —
-            head to the <a href="/sponsor/new">sponsor console</a>.
-          </p>
-        </main>
-      </>
-    );
+// Camila's demo identities. The structured-DB / OMOP deliverable is anchored on
+// her live site (site-a); the feasibility demo runs on the iHealth demo site.
+const SITE_ID = "site-a";
+const FEASIBILITY_SITE_ID = "site-ihealth-demo";
+
+export default async function SiteHub() {
+  // Live signals — each guarded so the hub renders on a totally empty DB too.
+  const ds = await loadSite(SITE_ID).catch(() => null);
+  const patientCount = ds?.patients.length ?? 0;
+
+  const consultation = await getConsultation(HERO_META.id).catch(() => undefined);
+  let matchSummary: { total: number; definite: number; possible: number } | null = null;
+  let alreadySubmitted = false;
+  if (ds && consultation) {
+    const evaluated = evaluateDataset(ds, consultation.criteria);
+    matchSummary = {
+      total: evaluated.counts.total,
+      definite: evaluated.counts.definite,
+      possible: evaluated.counts.possible,
+    };
+    const responses = await loadResponses(consultation.id).catch(() => []);
+    alreadySubmitted = responses.some((r) => r.siteId === SITE_ID);
   }
 
-  const ds = await loadSite(SITE_ID);
-  if (!ds) {
-    return (
-      <>
-        <TopBar active="site" />
-        <main className="wrap">
-          <p>
-            No site found for <code>{SITE_ID}</code>. A site needs to be listed
-            (with its patient records uploaded) before it can respond —{" "}
-            <a href="/site/new">List your site →</a>
-          </p>
-        </main>
-      </>
-    );
-  }
-  const evaluated = evaluateDataset(ds, consultation.criteria);
-  const { counts } = evaluated;
-  const responsesForConsultation = await loadResponses(consultation.id);
-  const alreadySubmitted = responsesForConsultation.some((r) => r.siteId === SITE_ID);
-  const feas = estimateFeasibility({
-    definite: counts.definite,
-    possible: counts.possible,
-    monthlyIncidence: ds.site.monthlyIncidence,
-    months: 6,
-  });
-
-  // A few example patients per cohort so a viewer can explain any verdict in 10s.
-  const example = (cohort: Cohort) => evaluated.evals.find((e) => e.cohort === cohort);
-  const examples = [example("definite"), example("possible"), example("excluded")].filter(Boolean);
+  const requests = await prisma.feasibilityRequest
+    .findMany({ where: { siteId: FEASIBILITY_SITE_ID }, orderBy: { createdAt: "desc" } })
+    .catch(() => []);
+  const latestRequest = requests[0] ?? null;
+  const feasibilityAnswers = latestRequest ? await loadRenderAnswers(latestRequest.id).catch(() => []) : [];
+  const feasibilityApproved = feasibilityAnswers.filter((a) => a.status === "approved").length;
 
   return (
     <>
       <TopBar active="site" />
       <main className="wrap">
-        <h1 style={{ marginBottom: 2 }}>Open consultation for {ds.site.name}</h1>
-        <p className="muted" style={{ marginTop: 0 }}>
-          {ds.site.city}, {ds.site.country}{ds.site.persona ? ` · ${ds.site.persona}` : ""}
+        <h1 style={{ marginBottom: 2 }}>Your site — Dra. Camila Rocha</h1>
+        <p className="muted" style={{ marginTop: 0, maxWidth: 680 }}>
+          Two things TrialBridge does for your center, from the data you already have.
+          Patient records stay here — sponsors only ever see aggregate counts.
         </p>
 
         <PrivacyBanner variant="site" />
 
-        {/* The consultation Camila discovered */}
+        {/* ---- Deliverable 1: structured database + OMOP ---- */}
         <div className="card">
-          <h2>{consultation.title}</h2>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+            <span className="tb-stat tb-stat--sm" style={{ color: "var(--brand)" }}>1</span>
+            <h2 style={{ margin: 0 }}>Structured database + OMOP</h2>
+          </div>
           <p className="sub">
-            Posted by {consultation.sponsorName} · ref {consultation.nct}
+            Upload the data you have — messy CSV or EHR export — and we structure it into a clean,
+            clinical-trial-ready patient database, then code it to the OMOP Common Data Model
+            (concepts, vocabularies, CDM tables). Two deliverables: a structured DB and an OMOP DB.
           </p>
-        </div>
 
-        {/* Private matcher run */}
-        <div className="card">
-          <h2>Matched against your patients ({counts.total} records)</h2>
-          <p className="sub">
-            Deterministic, criterion-by-criterion — no black box. Row-level detail
-            below is visible to you only.
-          </p>
-          <div className="grid2" style={{ marginBottom: 8 }}>
-            <div>
-              <div className="muted" style={{ fontSize: 13 }}>Confirmed / possible / excluded</div>
-              <div style={{ display: "flex", gap: 8, alignItems: "baseline", marginTop: 4 }}>
-                <span className="tb-stat" style={{ color: "var(--definite)" }}>{counts.definite}</span>
-                <span className="tb-stat tb-stat--sm" style={{ color: "var(--possible)" }}>{counts.possible}</span>
-                <span className="tb-stat tb-stat--sm muted">{counts.excluded}</span>
+          {patientCount > 0 ? (
+            <div className="grid2" style={{ margin: "8px 0 12px" }}>
+              <div>
+                <div className="muted" style={{ fontSize: 13 }}>Structured patient records</div>
+                <div className="tb-stat" style={{ color: "var(--definite)" }}>{patientCount}</div>
+                <div className="muted" style={{ fontSize: 12 }}>{ds?.site.name}</div>
               </div>
-              <CohortLegend />
-            </div>
-            <div>
-              <div className="muted" style={{ fontSize: 13 }}>≈ enrollable over 6 months (funnel-discounted)</div>
-              <div className="tb-stat" style={{ color: "var(--brand)" }}>~{feas.enrollableEstimate}</div>
-              <div className="muted" style={{ fontSize: 12 }}>
-                {counts.definite + counts.possible} screening pool · {ds.site.monthlyIncidence}/mo incident
+              <div>
+                <div className="muted" style={{ fontSize: 13 }}>Coded to OMOP CDM</div>
+                <div className="tb-stat" style={{ color: "var(--brand)" }}>ready</div>
+                <div className="muted" style={{ fontSize: 12 }}>concepts · vocabularies · CDM tables</div>
               </div>
             </div>
+          ) : (
+            <p className="muted" style={{ fontSize: 13 }}>
+              No data uploaded yet — start by listing your site and dropping an export.
+            </p>
+          )}
+
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+            <Link href="/site/new" className="cl-btn cl-btn--primary no-print">
+              {patientCount > 0 ? "Upload / re-structure data →" : "Upload data →"}
+            </Link>
+            {patientCount > 0 && (
+              <Link href="/site/database" className="cl-btn cl-btn--secondary no-print">
+                View structured DB + OMOP →
+              </Link>
+            )}
           </div>
         </div>
 
-        {/* Auditable per-patient breakdown */}
+        {/* ---- Deliverable 2: feasibility autofill (multi-agent) ---- */}
         <div className="card">
-          <h2>Why each patient did or didn&apos;t match</h2>
-          <p className="sub">One example per cohort. Every rule shows the source sentence and the observed value.</p>
-          {examples.map((e) => (
-            <div key={e!.patientId} style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 4 }}>
-                <Chip cohort={e!.cohort} />
-                <span className="mono muted" style={{ fontSize: 13 }}>{e!.patientId}</span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+            <span className="tb-stat tb-stat--sm" style={{ color: "var(--brand)" }}>2</span>
+            <h2 style={{ margin: 0 }}>Feasibility autofill — multi-agent</h2>
+          </div>
+          <p className="sub">
+            Drop a pharma feasibility questionnaire and our multi-agent architecture fills it,
+            field by field: A (site profile) and B (capabilities) and C (candidate cohort) are
+            deterministic; D drafts narrative answers with an adversarial critic. You review and
+            approve — D is never auto-approved — then export a .docx.
+          </p>
+
+          {latestRequest ? (
+            <div className="grid2" style={{ margin: "8px 0 12px" }}>
+              <div>
+                <div className="muted" style={{ fontSize: 13 }}>Latest request</div>
+                <div style={{ fontWeight: 600, marginTop: 2 }}>{latestRequest.studyTitle}</div>
+                <div className="muted" style={{ fontSize: 12 }}>
+                  {latestRequest.sponsorId} · {feasibilityAnswers.length} fields autofilled
+                  {feasibilityApproved > 0 ? ` · ${feasibilityApproved} approved` : ""}
+                </div>
               </div>
-              <CriterionResultList results={e!.results} />
+              <div>
+                <div className="muted" style={{ fontSize: 13 }}>Inbox</div>
+                <div className="tb-stat" style={{ color: "var(--brand)" }}>{requests.length}</div>
+                <div className="muted" style={{ fontSize: 12 }}>request{requests.length === 1 ? "" : "s"} received</div>
+              </div>
             </div>
-          ))}
+          ) : (
+            <p className="muted" style={{ fontSize: 13 }}>
+              No feasibility request yet — open the workspace to drop a sponsor form.
+            </p>
+          )}
+
+          <div style={{ marginTop: 4 }}>
+            <Link href="/site/feasibility" className="cl-btn cl-btn--primary no-print">
+              Open feasibility workspace →
+            </Link>
+          </div>
         </div>
 
-        {/* Submit / withdraw */}
+        {/* ---- Secondary: respond to an open sponsor consultation ---- */}
         <div className="card">
-          <h2>Proof of capacity</h2>
-          {alreadySubmitted ? (
-            <>
-              <p>
-                <Chip cohort="definite">submitted</Chip> Your aggregate counts are now
-                visible to the sponsor — <strong>no patient rows left this site</strong>.
-              </p>
-              <form action={withdrawCapacity}>
-                <input type="hidden" name="consultationId" value={consultation.id} />
-                <input type="hidden" name="siteId" value={SITE_ID} />
-                <button className="btn soft no-print" type="submit">Withdraw (reset demo)</button>
-              </form>
-            </>
+          <h2 style={{ margin: 0 }}>Respond to a sponsor consultation</h2>
+          <p className="sub">
+            When a sponsor posts a protocol, match it privately against your patients and submit
+            proof of capacity — aggregate counts only, no rows leave your site.
+          </p>
+          {matchSummary ? (
+            <p className="muted" style={{ fontSize: 13 }}>
+              Open: <strong>{consultation?.title}</strong> — {matchSummary.definite} confirmed /{" "}
+              {matchSummary.possible} possible across {matchSummary.total} records
+              {alreadySubmitted ? " · submitted ✓" : ""}.
+            </p>
           ) : (
-            <>
-              <p className="sub">
-                Submits only counts + your bottleneck criterion — same-day, one click.
-              </p>
-              <form action={submitCapacity}>
-                <input type="hidden" name="consultationId" value={consultation.id} />
-                <input type="hidden" name="siteId" value={SITE_ID} />
-                <button className="cl-btn cl-btn--primary" type="submit">Submit proof of capacity →</button>
-              </form>
-            </>
+            <p className="muted" style={{ fontSize: 13 }}>No open consultation right now.</p>
           )}
+          <div style={{ marginTop: 4 }}>
+            <Link href="/site/respond" className="cl-btn cl-btn--secondary no-print">
+              {alreadySubmitted ? "Review your response →" : "Match & respond →"}
+            </Link>
+          </div>
         </div>
       </main>
     </>
