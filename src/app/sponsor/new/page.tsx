@@ -15,10 +15,12 @@ import type { Criterion } from "@/lib/matcher/types";
 import type { OmopCriterion } from "@/lib/omop/types";
 import { HERO_PROTOCOL_TEXT, HERO_META } from "@/data/hero-protocol";
 import { TopBar } from "@/components/ui";
+import { IntakePanel, TrustChip, type IntakeResultClient } from "./IntakePanel";
+import type { Provenance } from "@/lib/intake";
 
 interface ParseResult {
   criteria: Criterion[];
-  source: "claude" | "cached";
+  source: "claude" | "cached" | "structured";
   model?: string;
   note: string;
 }
@@ -58,6 +60,43 @@ export default function NewConsultationPage() {
   const [omopRows, setOmopRows] = useState<OmopCriterion[] | null>(null);
   const [mappingOmop, setMappingOmop] = useState(false);
 
+  // Provenance of the last universal-intake ingest (which format, how, trust tier).
+  const [provenance, setProvenance] = useState<Provenance | null>(null);
+
+  /**
+   * Route an /api/intake result into the existing flow's two lanes:
+   *  - preParsedCriteria (structured) → jump straight to the verify table
+   *  - eligibilityText (document/registry) → prefill the parse step
+   */
+  function handleIntake(r: IntakeResultClient) {
+    setError(null);
+    setProvenance(r.provenance);
+    setOmopRows(null);
+    setCtResult(null); // supersede any prior classic CT.gov fetch banner
+    if (r.metadata.title) setTitle(r.metadata.title);
+
+    const fromCtGov = r.metadata.sourceRegistry === "clinicaltrials.gov";
+    setNct(fromCtGov ? r.metadata.sourceId : "");
+
+    if (r.preParsedCriteria && r.preParsedCriteria.length > 0) {
+      // Structured lane — no LLM parse; the verify table is the trust moment.
+      setText(r.eligibilityText ?? "");
+      setRows(r.preParsedCriteria);
+      setResult({
+        criteria: r.preParsedCriteria,
+        source: "structured",
+        note: `Structured import via ${r.provenance.adapter} — skipped the LLM parse. ${r.provenance.note ?? ""}`,
+      });
+      setTextMatchesNct(false);
+    } else {
+      // Document / registry lane — hand the eligibility text to the parse step.
+      setText(r.eligibilityText ?? "");
+      setRows([]);
+      setResult(null);
+      setTextMatchesNct(fromCtGov);
+    }
+  }
+
   async function fetchFromCtGov() {
     setFetchingCt(true);
     setError(null);
@@ -70,6 +109,7 @@ export default function NewConsultationPage() {
       if (!res.ok) throw new Error((await res.json()).error ?? "ClinicalTrials.gov fetch failed");
       const r = (await res.json()) as CtGovFetchResult;
       setCtResult(r);
+      setProvenance(null); // supersede any prior universal-intake provenance badge
       setText(r.protocol.eligibilityCriteria);
       if (r.protocol.title) setTitle(r.protocol.title);
       setNct(r.protocol.nctId);
@@ -158,14 +198,28 @@ export default function NewConsultationPage() {
     <>
       <TopBar active="sponsor" />
       <main className="wrap">
-        <h1 style={{ marginBottom: 2 }}>Post a consultation from protocol text</h1>
+        <h1 style={{ marginBottom: 2 }}>Post a consultation — bring your protocol in any format</h1>
         <p className="muted" style={{ marginTop: 0 }}>
-          Paste eligibility criteria. Claude parses them into machine-checkable
-          rules; you verify before posting. <Link href="/sponsor">← back</Link>
+          Upload a document, paste a registry id, or drop in structured eligibility. We detect the
+          format and extract machine-checkable rules; you verify before posting.{" "}
+          <Link href="/sponsor">← back</Link>
         </p>
 
+        <IntakePanel onResult={handleIntake} onError={setError} />
+
+        {provenance && (
+          <div className="privacy" style={{ marginBottom: 4, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span className="lock">📥</span>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <strong style={{ textTransform: "capitalize" }}>{provenance.adapter}</strong> · {provenance.extraction}
+              <div className="muted" style={{ fontSize: 12 }}>{provenance.note}</div>
+            </div>
+            <TrustChip trust={provenance.trust} />
+          </div>
+        )}
+
         <div className="card">
-          <h2>Step 1 · Fetch from ClinicalTrials.gov (optional)</h2>
+          <h2>Or: fetch from ClinicalTrials.gov (classic)</h2>
           <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
             Pull the eligibility text straight from a real NCT record instead of pasting it.
           </p>
@@ -225,14 +279,49 @@ export default function NewConsultationPage() {
         {result && (
           <>
             <div className="card">
-              <h2>Step 3 · Verify parsed criteria</h2>
-              <div className="privacy" style={{ marginBottom: 12 }}>
-                <span className="lock">{result.source === "claude" ? "🤖" : "📦"}</span>
+              <h2>Step 3 · Verify {result.source === "structured" ? "imported" : "parsed"} criteria</h2>
+              <div className="privacy" style={{ marginBottom: 10 }}>
+                <span className="lock">{result.source === "claude" ? "🤖" : result.source === "structured" ? "🧬" : "📦"}</span>
                 <div>
-                  <strong>{result.source === "claude" ? `Parsed by ${result.model}` : "Cached parse"}.</strong>{" "}
+                  <strong>
+                    {result.source === "claude"
+                      ? `Parsed by ${result.model}`
+                      : result.source === "structured"
+                        ? "Structured import — no LLM parse"
+                        : "Cached parse"}
+                    .
+                  </strong>{" "}
                   {result.note}
                 </div>
               </div>
+              {/* Trust-driven flagging: how much of THIS import needs a human. */}
+              {(() => {
+                const flagged = rows.filter((r) => r.confidence < 0.75).length;
+                const trust = provenance?.trust;
+                const emphasize = trust === "low" || flagged > 0;
+                return (
+                  <div
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+                      marginBottom: 12, padding: "8px 12px", borderRadius: 8,
+                      border: `1px solid ${emphasize ? "rgba(180,83,9,0.35)" : "var(--border)"}`,
+                      background: emphasize ? "rgba(251,191,36,0.08)" : "var(--panel-2)",
+                    }}
+                  >
+                    {provenance && <TrustChip trust={provenance.trust} />}
+                    <span style={{ fontSize: 13 }}>
+                      {flagged > 0 ? (
+                        <>
+                          <strong>{flagged} of {rows.length}</strong> row{flagged === 1 ? "" : "s"} flagged for verification
+                          {trust === "low" && " — low-trust source, review every row"}.
+                        </>
+                      ) : (
+                        <>All {rows.length} rows above the confidence threshold — spot-check and post.</>
+                      )}
+                    </span>
+                  </div>
+                );
+              })()}
               <div className="table-scroll">
                 <table className="data">
                   <thead>
@@ -297,7 +386,25 @@ export default function NewConsultationPage() {
               <button className="btn soft" onClick={mapToOmop} disabled={mappingOmop || rows.length === 0}>
                 {mappingOmop ? "Mapping…" : "Map to OMOP →"}
               </button>
-              {omopRows && (
+              {omopRows && (() => {
+                const coded = omopRows.length;
+                const resolved = omopRows.filter((o) => o.concept.verified).length;
+                const dxJoined = omopRows.filter((o) => o.icd10Prefixes && o.icd10Prefixes.length > 0).length;
+                return (
+                <>
+                <div className="privacy" style={{ marginTop: 10, alignItems: "flex-start" }}>
+                  <span className="lock">🗺️</span>
+                  <div style={{ fontSize: 12.5 }}>
+                    <strong>{coded} criteria coded</strong> to OMOP domains + vocabularies.{" "}
+                    {resolved > 0
+                      ? `${resolved} carry a resolved standard concept_id`
+                      : "No standard concept_ids yet — resolving them just needs a vocabulary bundle dropped in (data/vocab-index.json); the domain/table/vocabulary coding above is already done"}
+                    {dxJoined > 0 && `, and ${dxJoined} diagnosis ${dxJoined === 1 ? "row carries" : "rows carry"} the CID-10 join prefixes for the DataSUS base cohort`}.
+                    <div className="muted" style={{ marginTop: 2 }}>
+                      &ldquo;Needs mapping&rdquo; below is the expected state without a vocabulary bundle, not a failure — the coding is honest about what is verified vs. still placeholder.
+                    </div>
+                  </div>
+                </div>
                 <div className="table-scroll" style={{ marginTop: 10 }}>
                   <table className="data">
                     <thead>
@@ -329,7 +436,9 @@ export default function NewConsultationPage() {
                     </tbody>
                   </table>
                 </div>
-              )}
+                </>
+                );
+              })()}
               <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
                 See <code>docs/omop-vocabulary-mapping.md</code> for which concepts are verified vs. placeholder, and why.
               </p>

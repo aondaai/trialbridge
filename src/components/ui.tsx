@@ -5,6 +5,7 @@
  */
 import Link from "next/link";
 import type { Criterion, CriterionResult, Cohort } from "@/lib/matcher/types";
+import { Provenance, Confidence, type Metric } from "@/lib/metric";
 
 export function TopBar({ active }: { active?: "home" | "sponsor" | "site" | "map" }) {
   return (
@@ -142,4 +143,102 @@ export function CriterionResultList({ results }: { results: CriterionResult[] })
       ))}
     </div>
   );
+}
+
+/**
+ * MetricChip — the evidence-provenance seal (TrialBridge design system). Every quantitative
+ * value a sponsor/coordinator sees renders through one, so hard fact (site-declared / registry)
+ * reads apart from estimate (modeled) at a glance. Maps the metric.ts Provenance enum onto the
+ * design system's provenance classes + tokens.
+ */
+const PROV_CLASS: Record<Provenance, string> = {
+  [Provenance.PEER_REVIEWED]: "peer",
+  [Provenance.REGISTRY_GOV]: "registry",
+  [Provenance.SITE_DECLARED]: "declared",
+  [Provenance.MODELED]: "modeled",
+  [Provenance.VENDOR]: "vendor",
+};
+const PROV_LABEL: Record<Provenance, string> = {
+  [Provenance.PEER_REVIEWED]: "Peer-reviewed",
+  [Provenance.REGISTRY_GOV]: "Registry / gov",
+  [Provenance.SITE_DECLARED]: "Site-declared",
+  [Provenance.MODELED]: "Modeled",
+  [Provenance.VENDOR]: "Vendor benchmark",
+};
+const CONF_GLYPH: Record<Confidence, string> = {
+  [Confidence.HIGH]: "●",
+  [Confidence.MEDIUM]: "◐",
+  [Confidence.LOW]: "○",
+};
+
+export function MetricChip({
+  metric,
+  showValue = true,
+  size = "sm",
+}: {
+  metric: Metric;
+  showValue?: boolean;
+  size?: "sm" | "md";
+}) {
+  const cls = PROV_CLASS[metric.provenance];
+  const tip = [metric.note, metric.asOf ? `as of ${metric.asOf}` : null].filter(Boolean).join(" · ");
+  // Stable id derived from the metric key so the tooltip can be linked for screen readers.
+  const tipId = tip ? `mc-tip-${metric.key.replace(/[^\w.-]+/g, "-")}` : undefined;
+  return (
+    <span
+      className={`tb-chip tb-chip--${cls}${size === "md" ? " tb-chip--md" : ""}`}
+      tabIndex={tip ? 0 : undefined}
+      aria-describedby={tipId}
+    >
+      {showValue && metric.value != null && (
+        <span className="tb-chip__value">{String(metric.value)}</span>
+      )}
+      <span className="tb-chip__seal">{PROV_LABEL[metric.provenance]}</span>
+      <span className="tb-chip__conf" aria-label={`confidence ${metric.confidence}`}>
+        {CONF_GLYPH[metric.confidence]}
+      </span>
+      {tip && (
+        <span id={tipId} className="tb-chip__tip" role="tooltip">
+          {tip}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** ArchetypeTag — the A/B/C/D routing lane. Colour encodes deterministic (A/B/C) vs LLM (D). */
+export function ArchetypeTag({ archetype }: { archetype: "A" | "B" | "C" | "D" }) {
+  return (
+    <span className={`tb-arch tb-arch--${archetype}`} title={`Arquétipo ${archetype}`}>
+      {archetype}
+    </span>
+  );
+}
+
+/** DQBadge — the worst-of-three Kahn flag (conformance/completeness/plausibility). */
+const DQ_UI: Record<"pass" | "warn" | "fail", { cls: string; label: string }> = {
+  pass: { cls: "success", label: "DQ ok" },
+  warn: { cls: "warning", label: "DQ atenção" },
+  fail: { cls: "danger", label: "DQ falha" },
+};
+export function DQBadge({ worst, title }: { worst: "pass" | "warn" | "fail"; title?: string }) {
+  const ui = DQ_UI[worst];
+  return (
+    <span className={`cl-badge cl-badge--${ui.cls}`} title={title}>
+      <span className="cl-badge__dot" />
+      {ui.label}
+    </span>
+  );
+}
+
+/** StatusBadge — HITL state of an answer. */
+const STATUS_UI: Record<string, { cls: string; label: string }> = {
+  proposed: { cls: "neutral", label: "Proposto" },
+  approved: { cls: "success", label: "Aprovado" },
+  edited: { cls: "warning", label: "Editado" },
+  rejected: { cls: "danger", label: "Rejeitado" },
+};
+export function StatusBadge({ status }: { status: string }) {
+  const ui = STATUS_UI[status] ?? STATUS_UI.proposed;
+  return <span className={`cl-badge cl-badge--${ui.cls}`}>{ui.label}</span>;
 }

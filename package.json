@@ -12,7 +12,14 @@
     "test": "./node_modules/.bin/vitest run",
     "test:watch": "./node_modules/.bin/vitest",
     "generate-data": "./node_modules/.bin/tsx scripts/generate-data.ts",
+    "generate-messy-csv": "./node_modules/.bin/tsx scripts/generate-messy-csv.ts",
     "db:seed": "./node_modules/.bin/tsx prisma/seed.ts",
+    "db:seed-autofill": "./node_modules/.bin/tsx scripts/seed-autofill.ts",
+    "mcp:cohort": "./node_modules/.bin/tsx scripts/mcp-cohort-server.ts",
+    "autofill:run": "./node_modules/.bin/tsx scripts/autofill-run.ts",
+    "db:seed-demo-prior": "./node_modules/.bin/tsx scripts/seed-demo-prior.ts",
+    "db:seed-demo-request": "./node_modules/.bin/tsx scripts/seed-demo-request.ts",
+    "autofill:e2e": "./node_modules/.bin/tsx scripts/autofill-e2e.ts",
     "demo": "./node_modules/.bin/tsx scripts/demo.ts",
     "demo:intake": "./node_modules/.bin/tsx scripts/demo-intake.ts",
     "build-vocab-index": "./node_modules/.bin/tsx scripts/build-vocab-index.ts",
@@ -23,7 +30,8 @@
     "postinstall": "./node_modules/.bin/prisma generate",
     "enrich-kols": "./node_modules/.bin/tsx scripts/enrich-kols.ts",
     "import-sites": "./node_modules/.bin/tsx scripts/import-sites.ts",
-    "enrich-sites": "./node_modules/.bin/tsx scripts/enrich-sites.ts"
+    "enrich-sites": "./node_modules/.bin/tsx scripts/enrich-sites.ts",
+    "mca:smoke": "./node_modules/.bin/tsx scripts/mca-smoke.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

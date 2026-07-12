@@ -57,3 +57,8 @@ yarn-error.log*
 /data/kol-enrichment.json
 /data/site-directory.json
 /data/site-infra.json
+
+# large local data mirrors (never commit — see memory: DataSUS/proprietary bases)
+/data/omop-sus/
+/data/omop-sus-last10pct/
+/data/omop_full/

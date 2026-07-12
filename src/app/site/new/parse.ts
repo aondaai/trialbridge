@@ -2,7 +2,7 @@
  * Pure helpers for the site-onboarding form (`/site/new`). Kept dependency-free
  * (no Prisma, no "use server") so they're unit-testable without a DB — see
  * tests/site-onboarding.test.ts. The server action in ./actions.ts is a thin
- * wrapper around these plus the two `@/lib/data/sites` DB calls.
+ * wrapper around this plus the two `@/lib/data/sites` DB calls.
  */
 
 import type { Patient } from "@/lib/matcher/types";
@@ -22,57 +22,34 @@ export function slugify(name: string): string {
 }
 
 /**
- * Parse + validate the pasted `patientsJson` field. Accepts either a bare JSON
- * array of patients, or an object with a `patients` array — the shape of the
- * generated `data/site-*.json` files. Throws a descriptive `Error` on any
- * invalid shape. Every returned patient has `siteId` overwritten to `siteId`
- * (same normalization `replacePatients` relies on), regardless of whatever
- * the pasted JSON carried.
+ * `replacePatients` (src/lib/data/sites.ts) keys DB rows `${siteId}:${p.id}`.
+ * A CSV with a repeated MRN — or a source id that happens to collide with a
+ * generated `row-N` placeholder — would otherwise produce duplicate keys and
+ * blow up the `$transaction` with a unique-constraint error. Per spec:
+ * "Duplicate/blank id → generate a stable synthetic id; never drop a row
+ * silently." Blank ids are filled in first (by row position), then any id
+ * that duplicates an id already claimed (case-sensitive, in array order) is
+ * suffixed with `-2`, `-3`, … until it's unique. Only `id` is touched.
  */
-export function parsePatientsJson(raw: string, siteId: string): Patient[] {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new Error("Patient records field is not valid JSON.");
-  }
+export function ensureUniquePatientIds(patients: Patient[]): Patient[] {
+  const withFilledIds = patients.map((p, i) => ({
+    ...p,
+    id: p.id || `row-${i + 1}`,
+  }));
 
-  let candidates: unknown;
-  if (Array.isArray(parsed)) {
-    candidates = parsed;
-  } else if (
-    parsed &&
-    typeof parsed === "object" &&
-    Array.isArray((parsed as { patients?: unknown }).patients)
-  ) {
-    candidates = (parsed as { patients: unknown }).patients;
-  } else {
-    throw new Error(
-      "Patient records must be a JSON array of patients, or an object with a \"patients\" array (the shape of a generated data/site-*.json file).",
-    );
-  }
-
-  const list = candidates as unknown[];
-  if (list.length === 0) {
-    throw new Error("Patient records must contain at least one patient.");
-  }
-
-  const seenIds = new Set<string>();
-  list.forEach((el, i) => {
-    if (
-      !el ||
-      typeof el !== "object" ||
-      typeof (el as { id?: unknown }).id !== "string" ||
-      (el as { id: string }).id.trim() === ""
-    ) {
-      throw new Error(`Patient at index ${i} is missing a string "id".`);
+  const seen = new Set<string>();
+  return withFilledIds.map((p) => {
+    if (!seen.has(p.id)) {
+      seen.add(p.id);
+      return p;
     }
-    const id = (el as { id: string }).id;
-    if (seenIds.has(id)) {
-      throw new Error(`Duplicate patient id "${id}" in pasted records — ids must be unique within a site.`);
+    let n = 2;
+    let candidate = `${p.id}-${n}`;
+    while (seen.has(candidate)) {
+      n++;
+      candidate = `${p.id}-${n}`;
     }
-    seenIds.add(id);
+    seen.add(candidate);
+    return { ...p, id: candidate };
   });
-
-  return list.map((el) => ({ ...(el as Record<string, unknown>), siteId }) as Patient);
 }
