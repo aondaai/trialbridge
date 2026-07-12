@@ -238,7 +238,7 @@ function FunnelSection({ report }: { report: Report }) {
         sub="The base cohort narrowing to a protocol-eligible estimate — the patient-pool spine the whole report rests on." />
       <div style={{ ...card, background: "linear-gradient(180deg, var(--cl-info-subtle), transparent 62%)" }}>
         <FunnelRow label="Base cohort" sub="row-level records" widthPct={100} value={bigValue(f.basePopulationMetric)} metric={f.basePopulationMetric} tone="var(--cl-info)" />
-        <FunnelRow label="Estimated eligible" sub={ci ? `95% CI ${Math.round(ci[0]).toLocaleString("en-US")}–${Math.round(ci[1]).toLocaleString("en-US")}` : "protocol-eligible"} widthPct={pct} value={bigValue(f.eligiblePoolMetric)} metric={f.eligiblePoolMetric} tone="var(--cl-warning)" />
+        <FunnelRow label="Statistically characterized" sub={ci ? `transported estimate · 95% CI ${Math.round(ci[0]).toLocaleString("en-US")}–${Math.round(ci[1]).toLocaleString("en-US")}` : "protocol-eligible estimate"} widthPct={pct} value={bigValue(f.eligiblePoolMetric)} metric={f.eligiblePoolMetric} tone="var(--cl-warning)" />
         <div style={{ display: "flex", alignItems: "center", gap: 10, borderTop: "1px solid var(--cl-border)", paddingTop: 12, marginTop: 4, fontSize: 13, color: "var(--cl-text-secondary)" }}>
           <span>Projected enrollment</span>
           <SealPill metric={f.projectedPatientsPerMonthMetric} />
@@ -328,7 +328,7 @@ function SupplySection({ report }: { report: Report }) {
           <BrazilTileMap
             data={tiles}
             rgb="31,157,107"
-            legend="Darker = more protocol-eligible patients (DataSUS estimate) · outlined = deepest three pools"
+            legend="Darker = larger statistically characterized DataSUS population · outlined = deepest three pools"
             caption={<SealPill metric={sd.regions[0].eligiblePoolMetric} showValue={false} />}
           />
         )}

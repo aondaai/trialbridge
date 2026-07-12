@@ -7,7 +7,7 @@ import Link from "next/link";
 import type { Criterion, CriterionResult, Cohort } from "@/lib/matcher/types";
 import { Provenance, Confidence, type Metric } from "@/lib/metric";
 
-export function TopBar({ active }: { active?: "home" | "sponsor" | "site" | "map" }) {
+export function TopBar({ active }: { active?: "home" | "sponsor" | "reports" | "site" | "map" }) {
   return (
     <div className="topbar no-print">
       <Link href="/" className="brand">
@@ -17,6 +17,9 @@ export function TopBar({ active }: { active?: "home" | "sponsor" | "site" | "map
       <nav className="navlinks">
         <Link href="/sponsor" className={active === "sponsor" ? "active" : ""}>
           Sponsor (Marcus)
+        </Link>
+        <Link href="/reports" className={active === "reports" ? "active" : ""}>
+          Reports
         </Link>
         <Link href="/site" className={active === "site" ? "active" : ""}>
           Site (Camila)

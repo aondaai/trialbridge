@@ -10,7 +10,6 @@ import { PrintButton } from "@/components/PrintButton";
 import { buildReport, ctgovToKolInputs } from "@/lib/report/buildReport";
 import { EngineReport } from "@/components/report/EngineReport";
 import { fetchCompetition } from "@/lib/ctgov/competition";
-import { fetchNationalEstimate } from "@/lib/estimator/client";
 import { applyEnrichment } from "@/lib/kol/enrich";
 import { enrichmentsForNames } from "@/lib/kol/enrichmentStore";
 import { loadDirectory } from "@/lib/sites/loadDirectory";
@@ -34,6 +33,17 @@ function conditionQuery(title: string): string {
   return title.replace(/^phase\s+[ivx]+\s*[—-]\s*/i, "").replace(/\([^)]*\)/g, "").trim() || title;
 }
 
+function protocolPhase(title: string): string {
+  const t=title.toLowerCase();
+  if(/phase\s*1\s*\/\s*1b|phase\s*i\s*\/\s*ib/.test(t)) return "I/Ib";
+  if(/phase\s*1\s*\/\s*2|phase\s*i\s*\/\s*ii/.test(t)) return "I/II";
+  if(/phase\s*3|phase\s*iii/.test(t)) return "III";
+  if(/phase\s*2|phase\s*ii/.test(t)) return "II";
+  if(/phase\s*1b|phase\s*ib/.test(t)) return "Ib";
+  if(/phase\s*1|phase\s*i/.test(t)) return "I";
+  return "Not specified";
+}
+
 /** Build a `/scorecard` query string, dropping empty params. */
 function scorecardHref(params: { c?: string; view?: string; site?: string }): string {
   const sp = new URLSearchParams();
@@ -55,7 +65,7 @@ export default async function ScorecardPage({
   if (!consultation) {
     return (
       <>
-        <TopBar />
+        <TopBar active="reports" />
         <main className="wrap">
           <p>
             {c
@@ -68,16 +78,28 @@ export default async function ScorecardPage({
   }
 
   if (view === "engine") {
+    const nationalEstimate = consultation.estimateResult ?? null;
+    if (!nationalEstimate || nationalEstimate.protocolId !== consultation.id) {
+      const coverage = consultation.estimateProtocol?.coverage;
+      return (
+        <><TopBar active="reports"/><main className="wrap">
+          <h1>Feasibility report — quantitative layer not ready</h1>
+          <div className="card">
+            <h2>Decision and ranking are withheld</h2>
+            <p className="sub">TrialBridge does not convert unavailable supply into a measured zero. A validated diagnosis/CID cohort is required before proprietary finding and statistical transport to DataSUS can support scores, forecasts or a go/no-go recommendation.</p>
+            <p><strong>Status:</strong> {consultation.estimateStatus ?? "pending"}</p>
+            {consultation.estimateError && <p className="badge-low">{consultation.estimateError}</p>}
+            {coverage && <p className="muted">Coverage: {coverage.applied} of {coverage.total} criteria compiled · {coverage.nlpPending} NLP pending · {coverage.manualReview} require review.</p>}
+            <p className="no-print"><Link className="cl-btn cl-btn--secondary" href={`/sponsor?c=${consultation.id}`}>Return to consultation →</Link></p>
+          </div>
+        </main></>
+      );
+    }
     const allSites = await loadAllSites();
     const evaluatedSites = allSites.map((ds) => evaluateDataset(ds, consultation.criteria));
-    // R9: real competition + investigators from ClinicalTrials.gov, and the REAL
-    // national patient pools from the DataSUS estimator (both degrade gracefully —
-    // a null estimate falls back to the synthetic-cohort pools, honestly labeled).
+    // Web/registry grounding runs only after the first-party quantitative spine is valid.
     const condition = conditionQuery(consultation.title);
-    const [competition, nationalEstimate] = await Promise.all([
-      fetchCompetition(condition),
-      fetchNationalEstimate(),
-    ]);
+    const competition = await fetchCompetition(condition);
 
     // Deep-web KOL enrichment (publications, society roles, guideline authorship) is
     // PRECOMPUTED by `npm run enrich-kols` (the Parallel Task API takes ~1 min/physician,
@@ -105,6 +127,7 @@ export default async function ScorecardPage({
       evaluatedSites,
       {
         runId: consultation.id,
+        displayPhase: protocolPhase(consultation.title),
         competition,
         nationalEstimate,
         kolInvestigators,
@@ -116,7 +139,7 @@ export default async function ScorecardPage({
 
     return (
       <>
-        <TopBar />
+        <TopBar active="reports" />
         <main className="wrap">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
             <h1 style={{ margin: 0 }}>Feasibility & site scorecard</h1>
@@ -127,10 +150,22 @@ export default async function ScorecardPage({
             <Link href={scorecardHref({ c })} className="no-print">per-site scorecard →</Link>{" "}
             <Link href={scorecardHref({ view: "brasil", c })} className="no-print">· regional breakdown →</Link>
           </p>
+          {nationalEstimate && (
+            <div className="card">
+              <h2>Three-view first-party supply</h2>
+              <div className="grid2">
+                <div><div className="muted">Coorte Proprietária Observada</div><div className="tb-stat tb-stat--sm">{(nationalEstimate.proprietaryFindingTotal??0).toLocaleString("en-US")}</div><div className="muted">across {nationalEstimate.proprietaryFindingBySite?.length??0} hospitals · aggregate, localizable supply</div></div>
+                <div><div className="muted">População DataSUS Estatisticamente Caracterizada</div><div className="tb-stat">{Math.round(nationalEstimate.estimatedN).toLocaleString("en-US")}</div><div className="muted">transported aggregate estimate · 95% CI {Math.round(nationalEstimate.ciLo).toLocaleString("en-US")}–{Math.round(nationalEstimate.ciHi).toLocaleString("en-US")}</div></div>
+              </div>
+              <div className="table-scroll" style={{marginTop:12}}><table className="data"><thead><tr><th>Hospital code</th><th className="num">With diagnosis</th><th className="num">Checkable match</th></tr></thead><tbody>{(nationalEstimate.proprietaryFindingBySite??[]).map(s=><tr key={s.site}><td><strong className="mono">{s.site}</strong></td><td className="num">{s.withDiagnosis.toLocaleString("en-US")}</td><td className="num"><strong>{s.findingN.toLocaleString("en-US")}</strong></td></tr>)}</tbody></table></div>
+              <p className="muted" style={{fontSize:12}}>Hospitals remain pseudonymized by their proprietary source codes. CNES resolution is intentionally deferred and is not required for this production release.</p>
+              <p className="muted" style={{fontSize:12}}>No individual linkage is performed. The proprietary SUS slice calibrates aggregate characteristics transported to the observed DataSUS population; it is not added to the DataSUS total.</p>
+            </div>
+          )}
           <EngineReport report={report} />
           <p className="muted" style={{ fontSize: 12 }}>
             Generated by TrialBridge (Elegível). Counts only — no patient rows.
-            Synthetic/de-identified data; {consultation.sourceNote}
+            {nationalEstimate ? " Proprietary observed aggregates + statistically characterized DataSUS population; " : " Synthetic/de-identified fallback; "}{consultation.sourceNote}
           </p>
         </main>
       </>
@@ -146,7 +181,7 @@ export default async function ScorecardPage({
 
     return (
       <>
-        <TopBar />
+        <TopBar active="reports" />
         <main className="wrap">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
             <h1 style={{ margin: 0 }}>Feasibility scorecard — Brazil, by region</h1>
@@ -228,7 +263,7 @@ export default async function ScorecardPage({
   if (!ds) {
     return (
       <>
-        <TopBar />
+        <TopBar active="reports" />
         <main className="wrap">
           <p>
             No site data available yet.{" "}
@@ -251,7 +286,7 @@ export default async function ScorecardPage({
 
   return (
     <>
-      <TopBar />
+      <TopBar active="reports" />
       <main className="wrap">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
           <h1 style={{ margin: 0 }}>Feasibility scorecard</h1>

@@ -14,7 +14,7 @@ import Link from "next/link";
 import type { Criterion } from "@/lib/matcher/types";
 import type { BaseFit } from "@/lib/matcher/types";
 import { summarizeBaseFit } from "@/lib/basefit/registry";
-import type { OmopCriterion } from "@/lib/omop/types";
+import { compileEstimatorProtocol } from "@/lib/estimator/protocol";
 import { HERO_PROTOCOL_TEXT, HERO_META } from "@/data/hero-protocol";
 import { TopBar } from "@/components/ui";
 import { IntakePanel, TrustChip, type IntakeResultClient } from "./IntakePanel";
@@ -72,8 +72,7 @@ export default function NewConsultationPage() {
   const [fetchingCt, setFetchingCt] = useState(false);
   const [ctResult, setCtResult] = useState<CtGovFetchResult | null>(null);
 
-  const [omopRows, setOmopRows] = useState<OmopCriterion[] | null>(null);
-  const [mappingOmop, setMappingOmop] = useState(false);
+  const [showQueryPlan, setShowQueryPlan] = useState(false);
 
   // Provenance of the last universal-intake ingest (which format, how, trust tier).
   const [provenance, setProvenance] = useState<Provenance | null>(null);
@@ -86,7 +85,7 @@ export default function NewConsultationPage() {
   function handleIntake(r: IntakeResultClient) {
     setError(null);
     setProvenance(r.provenance);
-    setOmopRows(null);
+    setShowQueryPlan(false);
     setCtResult(null); // supersede any prior classic CT.gov fetch banner
     if (r.metadata.title) setTitle(r.metadata.title);
 
@@ -131,30 +130,11 @@ export default function NewConsultationPage() {
       setTextMatchesNct(true);
       setResult(null);
       setRows([]);
-      setOmopRows(null);
+      setShowQueryPlan(false);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setFetchingCt(false);
-    }
-  }
-
-  async function mapToOmop() {
-    setMappingOmop(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/omop", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ criteria: rows }),
-      });
-      if (!res.ok) throw new Error(await errorFrom(res, "OMOP mapping failed"));
-      const { omopCriteria } = (await res.json()) as { omopCriteria: OmopCriterion[] };
-      setOmopRows(omopCriteria);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setMappingOmop(false);
     }
   }
 
@@ -202,7 +182,7 @@ export default function NewConsultationPage() {
       });
       if (!res.ok) throw new Error(await errorFrom(res, "post failed"));
       const { id } = (await res.json()) as { id: string };
-      router.push(`/sponsor?c=${id}`);
+      router.push(`/reports/${encodeURIComponent(id)}`);
     } catch (e) {
       setError((e as Error).message);
       setPosting(false);
@@ -401,74 +381,7 @@ export default function NewConsultationPage() {
               </p>
             </div>
 
-            <div className="card">
-              <h2>Step 3b · OMOP mapping preview</h2>
-              <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
-                Codes each criterion to an OMOP CDM domain/table + vocabulary — the shape a
-                future matcher needs to query real OMOP databases (DataSUS, DoctorAssistant
-                NLP→OMOP) instead of only the synthetic patients. Preview only — posting still
-                sends the criteria as today.
-              </p>
-              <button className="btn soft" onClick={mapToOmop} disabled={mappingOmop || rows.length === 0}>
-                {mappingOmop ? "Mapping…" : "Map to OMOP →"}
-              </button>
-              {omopRows && (() => {
-                const coded = omopRows.length;
-                const resolved = omopRows.filter((o) => o.concept.verified).length;
-                const dxJoined = omopRows.filter((o) => o.icd10Prefixes && o.icd10Prefixes.length > 0).length;
-                return (
-                <>
-                <div className="privacy" style={{ marginTop: 10, alignItems: "flex-start" }}>
-                  <span className="lock">🗺️</span>
-                  <div style={{ fontSize: 12.5 }}>
-                    <strong>{coded} criteria coded</strong> to OMOP domains + vocabularies.{" "}
-                    {resolved > 0
-                      ? `${resolved} carry a resolved standard concept_id`
-                      : "No standard concept_ids yet — resolving them just needs a vocabulary bundle dropped in (data/vocab-index.json); the domain/table/vocabulary coding above is already done"}
-                    {dxJoined > 0 && `, and ${dxJoined} diagnosis ${dxJoined === 1 ? "row carries" : "rows carry"} the CID-10 join prefixes for the DataSUS base cohort`}.
-                    <div className="muted" style={{ marginTop: 2 }}>
-                      &ldquo;Needs mapping&rdquo; below is the expected state without a vocabulary bundle, not a failure — the coding is honest about what is verified vs. still placeholder.
-                    </div>
-                  </div>
-                </div>
-                <div className="table-scroll" style={{ marginTop: 10 }}>
-                  <table className="data">
-                    <thead>
-                      <tr>
-                        <th>Field</th><th>Domain</th><th>Table</th><th>Vocabulary</th>
-                        <th>Concept</th><th>Assertion</th><th>Mapped?</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {omopRows.map((o) => (
-                        <tr key={o.criterionId}>
-                          <td className="mono">{o.sourceField}</td>
-                          <td>{o.concept.domain}</td>
-                          <td className="mono">{o.concept.table}</td>
-                          <td>{o.concept.vocabularyId}</td>
-                          <td className="mono">
-                            {o.concept.needsMapping ? "0 (unmapped)" : o.concept.conceptId}
-                          </td>
-                          <td className="mono">{o.assertion}</td>
-                          <td>
-                            {o.concept.verified ? (
-                              <span>✅ verified</span>
-                            ) : (
-                              <span className="badge-low">⏳ needs mapping</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                </>
-                );
-              })()}
-              <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
-                See <code>docs/omop-vocabulary-mapping.md</code> for which concepts are verified vs. placeholder, and why.
-              </p>
-            </div>
+            <QueryPlanCard rows={rows} open={showQueryPlan} onToggle={() => setShowQueryPlan((v) => !v)} />
 
             <div className="card">
               <h2>Step 4 · Post</h2>
@@ -492,6 +405,80 @@ export default function NewConsultationPage() {
         )}
       </main>
     </>
+  );
+}
+
+function queryPlanMeta(c: Criterion): { source: string; method: string; status: string } {
+  switch (c.baseFit) {
+    case "checkable":
+      return {
+        source: "Proprietary + DataSUS",
+        method: c.field === "diagnosis" || c.field === "dx" ? "CID-10 cohort" : "structured demographic",
+        status: "included",
+      };
+    case "depth":
+      return { source: "Proprietary", method: "validated depth feature", status: "included" };
+    case "nlp_extractable":
+      return { source: "Proprietary DuckDB", method: "clinical-text proxy", status: "NLP proxy pending" };
+    default:
+      return { source: "Site", method: "site confirmation", status: "not in initial estimate" };
+  }
+}
+
+function QueryPlanCard({ rows, open, onToggle }: { rows: Criterion[]; open: boolean; onToggle: () => void }) {
+  const compiled = compileEstimatorProtocol("preview", rows);
+  const applied = new Map(compiled.criteria.map((c) => [c.id, c]));
+  const omitted = new Map(compiled.coverage.omitted.map((c) => [c.id, c.reason]));
+  const bf = summarizeBaseFit(rows);
+  return (
+    <div className="card">
+      <h2>Step 3b · Data coverage &amp; query plan</h2>
+      <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
+        Preview which source and method will answer each verified criterion after posting.
+        DataSUS/OMOP translation is automatic inside its compiler; proprietary finding runs over DuckDB.
+      </p>
+      <div className="privacy" style={{ marginBottom: 10, alignItems: "flex-start" }}>
+        <span className="lock">🧭</span>
+        <div style={{ fontSize: 12.5 }}>
+          <strong>{compiled.coverage.applied} of {compiled.coverage.total}</strong> criteria enter the initial estimate ·{" "}
+          {bf.viaNlp} searchable by DuckDB text proxy · {bf.needReview} require site confirmation or review.
+          {compiled.coverage.applied < compiled.coverage.total && (
+            <div className="muted" style={{ marginTop: 2 }}>The national result will be labeled partial until omitted criteria are resolved.</div>
+          )}
+        </div>
+      </div>
+      <button className="btn soft" onClick={onToggle} disabled={rows.length === 0}>
+        {open ? "Hide query plan ↑" : "Review query plan →"}
+      </button>
+      {open && (
+        <div className="table-scroll" style={{ marginTop: 10 }}>
+          <table className="data">
+            <thead><tr><th>Criterion</th><th>Source</th><th>Method</th><th>Query detail</th><th>Initial calculation</th></tr></thead>
+            <tbody>
+              {rows.map((c) => {
+                const meta = queryPlanMeta(c);
+                const compiledCriterion = applied.get(c.id);
+                const detail = compiledCriterion?.field === "dx"
+                  ? `CID-10 concept: ${JSON.stringify(compiledCriterion.value)}`
+                  : c.baseFit === "nlp_extractable" && c.nlpTerms?.length
+                    ? c.nlpTerms.join(", ")
+                    : `${c.field} ${c.operator} ${JSON.stringify(c.value)}`;
+                return (
+                  <tr key={c.id}>
+                    <td>{c.rawText}</td><td>{meta.source}</td><td>{meta.method}</td>
+                    <td className="mono" style={{ fontSize: 11.5 }}>{detail}</td>
+                    <td>{compiledCriterion ? <span>✅ included</span> : <span className="badge-low">{omitted.get(c.id) ?? meta.status}</span>}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
+        Posting saves this verified plan, then starts proprietary finding, depth qualification and DataSUS expansion.
+      </p>
+    </div>
   );
 }
 

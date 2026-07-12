@@ -6,7 +6,9 @@
  * and deltas — a fully serializable view model safe to hand to a client component.
  */
 
-import { getConsultation, loadResponses, StoredResponse } from "@/lib/store";
+import { getConsultation, loadResponses, StoredResponse, type EstimateStatus } from "@/lib/store";
+import type { CompiledProtocol } from "@/lib/estimator/protocol";
+import type { NationalEstimate } from "@/lib/estimator/client";
 import { loadAllSites } from "@/lib/data/sites";
 import { evaluateDataset, EvaluatedSite, biomarkerMissingness, regionBreakdown, RegionRow } from "@/lib/service";
 import { aggregate } from "@/lib/matcher/aggregate";
@@ -59,6 +61,7 @@ export interface SponsorView {
     sourceNote?: string;
     criteria: Criterion[];
     heroBottleneckHandle?: string;
+    estimateStatus?:EstimateStatus; estimateProtocol?:CompiledProtocol; estimateResult?:NationalEstimate; estimateError?:string;
   };
   responded: {
     siteId: string;
@@ -190,6 +193,7 @@ export async function buildSponsorView(consultationId: string): Promise<SponsorV
       sourceNote: consultation.sourceNote,
       criteria: consultation.criteria,
       heroBottleneckHandle: consultation.heroBottleneckHandle,
+      estimateStatus:consultation.estimateStatus,estimateProtocol:consultation.estimateProtocol,estimateResult:consultation.estimateResult,estimateError:consultation.estimateError,
     },
     responded,
     waitingOn,
