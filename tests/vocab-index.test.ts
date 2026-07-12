@@ -61,6 +61,58 @@ describe("buildVocabIndexFromConcepts", () => {
     expect(index["Eastern Cooperative Oncology Group Performance Status"].conceptId).toBe(4009630);
   });
 
+  it("rejects a degenerate tiny substring match (regression: 'O'/'I' universal-substring bug)", () => {
+    // A 1-char standard concept name is a substring of almost every long field
+    // name; with 'shortest wins' it used to spuriously resolve everything.
+    const degenerate = parseConceptTsv(
+      [
+        "concept_id\tconcept_name\tdomain_id\tvocabulary_id\tconcept_class_id\tstandard_concept\tconcept_code",
+        "4106482\tO\tMeas Value\tSNOMED\tQualifier Value\tS\tX1",
+        "4225195\tI\tMeas Value\tSNOMED\tQualifier Value\tS\tX2",
+      ].join("\n"),
+    );
+    const { index, unmatched } = buildVocabIndexFromConcepts(degenerate, ["Hemoglobin", "HER2 status (IHC/ISH)"]);
+    expect(index["Hemoglobin"]).toBeUndefined();
+    expect(index["HER2 status (IHC/ISH)"]).toBeUndefined();
+    expect(unmatched.sort()).toEqual(["HER2 status (IHC/ISH)", "Hemoglobin"]);
+  });
+
+  it("resolves only within the field's declared vocabulary (no cross-vocabulary contradiction)", () => {
+    // "creatinine" exists in the fixture only as… nothing here, so build a
+    // focused fixture: a RxNorm drug vs a LOINC lab, same-ish name.
+    const rows2 = parseConceptTsv(
+      [
+        "concept_id\tconcept_name\tdomain_id\tvocabulary_id\tconcept_class_id\tstandard_concept\tconcept_code",
+        "19071968\tcreatinine\tDrug\tRxNorm\tIngredient\tS\tD1",
+        "3016723\tSerum creatinine measurement\tMeasurement\tLOINC\tLab Test\tS\t2160-0",
+      ].join("\n"),
+    );
+    // Field declares LOINC → the RxNorm drug must not win, even though its name
+    // is the shorter substring.
+    const { index } = buildVocabIndexFromConcepts(rows2, [
+      { conceptName: "Serum creatinine", vocabularyId: "LOINC" },
+    ]);
+    expect(index["Serum creatinine"]).toMatchObject({ vocabularyId: "LOINC", conceptId: 3016723 });
+  });
+
+  it("exact-only mode ignores substring candidates (deployed-index policy)", () => {
+    const { index, unmatched } = buildVocabIndexFromConcepts(
+      rows,
+      ["Serum creatinine"],
+      { allowSubstring: false },
+    );
+    expect(index["Serum creatinine"]).toBeUndefined();
+    expect(unmatched).toEqual(["Serum creatinine"]);
+  });
+
+  it("never resolves a field whose declared vocabulary is None (e.g. age)", () => {
+    const { index, unmatched } = buildVocabIndexFromConcepts(rows, [
+      { conceptName: "Eastern Cooperative Oncology Group Performance Status", vocabularyId: "None" },
+    ]);
+    expect(index["Eastern Cooperative Oncology Group Performance Status"]).toBeUndefined();
+    expect(unmatched).toHaveLength(1);
+  });
+
   it("reports fields with no candidate as unmatched, not a false positive", () => {
     const { index, unmatched } = buildVocabIndexFromConcepts(rows, ["Totally absent concept xyz"]);
     expect(index["Totally absent concept xyz"]).toBeUndefined();

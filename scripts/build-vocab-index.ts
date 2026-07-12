@@ -34,9 +34,23 @@ function main() {
 
   const content = readFileSync(CONCEPT_CSV, "utf8");
   const concepts = parseConceptTsv(content);
-  const conceptNames = Object.values(FIELD_CONCEPT_MAP).map((f) => f.conceptName);
+  // Pass each field's declared vocabulary so a match can only come from the
+  // vocabulary the OMOP preview claims for that row (no LOINC-row/SNOMED-concept
+  // contradictions). De-duplicate by conceptName (several fields share one).
+  const fields = Array.from(
+    new Map(
+      Object.values(FIELD_CONCEPT_MAP).map((f) => [
+        f.conceptName,
+        { conceptName: f.conceptName, vocabularyId: f.vocabularyId },
+      ]),
+    ).values(),
+  );
+  const conceptNames = fields.map((f) => f.conceptName);
 
-  const { index, unmatched } = buildVocabIndexFromConcepts(concepts, conceptNames);
+  // Deployed index is exact-only: every committed entry is a verbatim standard
+  // concept name in the field's declared vocabulary. Substring guesses stay out
+  // (they need human curation first — docs/omop-vocabulary-mapping.md).
+  const { index, unmatched } = buildVocabIndexFromConcepts(concepts, fields, { allowSubstring: false });
 
   writeFileSync(OUT_PATH, JSON.stringify(index, null, 2) + "\n");
 
