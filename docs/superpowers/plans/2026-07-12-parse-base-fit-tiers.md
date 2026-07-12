@@ -92,6 +92,10 @@ describe("reconcileBaseFit", () => {
     expect(r.nlpTerms).toContain("HIV");
     expect(r.nlpTerms!.length).toBeGreaterThan(0);
   });
+  it("treats stage and prior_lines as nlp_extractable, not depth", () => {
+    expect(reconcileBaseFit("stage").baseFit).toBe("nlp_extractable");
+    expect(reconcileBaseFit("prior_lines").baseFit).toBe("nlp_extractable");
+  });
   it("treats unknown fields as not_answerable", () => {
     expect(reconcileBaseFit("able_to_swallow").baseFit).toBe("not_answerable");
     expect(reconcileBaseFit("able_to_swallow").nlpTerms).toBeUndefined();
@@ -126,14 +130,22 @@ describe("catalog integrity", () => {
 });
 
 describe("estimator drift guard", () => {
-  it("every depth feature exists in the estimator's real vocabulary", () => {
-    const root = resolve(process.cwd(), "estimator", "trialbridge");
-    const src =
-      readFileSync(join(root, "protocols.py"), "utf8") +
-      readFileSync(join(root, "schema.py"), "utf8");
+  // Assert against the REAL protocol (hero_protocol_real in protocols.py), NOT
+  // schema.py's type-comment — so a feature the base doesn't actually extract
+  // (e.g. stage/prior_lines) cannot silently pass by matching a comment.
+  it("every depth feature is used by the estimator's real protocol", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "estimator", "trialbridge", "protocols.py"),
+      "utf8",
+    );
     for (const feature of DEPTH_FEATURES) {
       expect(src, feature).toContain(`"${feature}"`);
     }
+  });
+  it("depth is exactly the 4 really-extracted features", () => {
+    expect([...DEPTH_FEATURES].sort()).toEqual(
+      ["autoimmune", "ecog", "her2", "metastatic"],
+    );
   });
 });
 ```
@@ -159,8 +171,12 @@ import type { BaseFit, Evaluability } from "@/lib/matcher/types";
 
 export const CHECKABLE_FIELDS: ReadonlySet<string> = new Set(["dx", "age", "sex"]);
 
+// Exactly the features the REAL proprietary NLP extraction produces
+// (estimator/trialbridge/data.py RealProprietary SELECT; protocols.py
+// hero_protocol_real). stage / prior_lines are NOT extracted — they live in
+// NLP_CATALOG (extractable, not yet a feature).
 export const DEPTH_FEATURES: ReadonlySet<string> = new Set([
-  "her2", "ecog", "metastatic", "stage", "prior_lines", "autoimmune",
+  "her2", "ecog", "metastatic", "autoimmune",
 ]);
 
 /** Legacy/alternate field names → canonical registry key. */
@@ -185,6 +201,8 @@ export const NLP_CATALOG: Readonly<Record<string, NlpConcept>> = {
   interstitial_lung_disease: { label: "Interstitial lung disease", termsPtBr: ["doença pulmonar intersticial", "DPI", "pneumonite intersticial"] },
   significant_cardiac_disease: { label: "Significant cardiac disease", termsPtBr: ["doença cardíaca", "cardiopatia", "insuficiência cardíaca"] },
   ejection_fraction: { label: "LV ejection fraction", termsPtBr: ["fração de ejeção", "FEVE", "fração de ejeção do ventrículo esquerdo"] },
+  stage: { label: "Tumor stage", termsPtBr: ["estadiamento", "estádio", "estágio clínico", "EC IV", "doença avançada"] },
+  prior_lines: { label: "Prior lines of therapy", termsPtBr: ["linha de tratamento", "linhas prévias", "terapia prévia", "linhas anteriores", "tratamento sistêmico prévio"] },
 };
 
 export function evaluabilityFor(baseFit: BaseFit): Evaluability {
@@ -365,8 +383,8 @@ In `src/lib/parse.ts`, inside `SYSTEM_PROMPT`, replace the `- "field" is a snake
 ```
 - "field" is a snake_case attribute from the base's answerable vocabulary. Prefer the most specific:
   · checkable (DataSUS aggregates): age, sex, dx
-  · depth (proprietary NLP features): her2, ecog, metastatic, stage, prior_lines, autoimmune
-  · nlp_extractable (clinical-text concepts): hiv, hepatitis_b, hepatitis_c, active_hepatitis, diabetes, solid_organ_transplant, interstitial_lung_disease, significant_cardiac_disease, ejection_fraction
+  · depth (proprietary NLP features): her2, ecog, metastatic, autoimmune
+  · nlp_extractable (clinical-text concepts): hiv, hepatitis_b, hepatitis_c, active_hepatitis, diabetes, solid_organ_transplant, interstitial_lung_disease, significant_cardiac_disease, ejection_fraction, stage, prior_lines
   For a named comorbidity, use its nlp_extractable key with exists/not_exists — NEVER dump it into diagnosis eq "<prose>". If nothing fits, use a concise snake_case key for the concept; it will be treated as not-answerable.
 ```
 

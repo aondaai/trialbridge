@@ -36,8 +36,8 @@ Every parsed criterion is tagged with one tier, mirroring the estimator's own
 | Tier | Meaning | Fields / examples | Confidence effect |
 |---|---|---|---|
 | `checkable` | Answerable from DataSUS aggregates | `dx`, `age`, `sex` | high |
-| `depth` | Existing proprietary NLP feature | `her2`, `ecog`, `metastatic`, `stage`, `prior_lines`, `autoimmune` | high |
-| `nlp_extractable` | Concept the NLP layer *could* extract from clinical text but doesn't yet; carries a pt-BR phrase set | HIV, hepatite B/C, diabetes, transplante de órgão, doença pulmonar intersticial | medium (~0.6–0.7): "understood, extractable once added" |
+| `depth` | Existing proprietary NLP feature (exactly what `RealProprietary` extracts) | `her2`, `ecog`, `metastatic`, `autoimmune` | high |
+| `nlp_extractable` | Concept the NLP layer *could* extract from clinical text but doesn't yet; carries a pt-BR phrase set | HIV, hepatite B/C, diabetes, transplante de órgão, doença pulmonar intersticial, **stage**, **prior_lines** | medium (~0.6–0.7): "understood, extractable once added" |
 | `not_answerable` | Genuinely out of reach from this base | "able to swallow oral medication", labs with no cutoff, nested/temporal logic | low |
 
 **Honesty rule:** rows that are genuinely unspecified in the source (e.g. "adequate organ
@@ -49,9 +49,11 @@ grounded confidence, not maximized confidence.
 `src/lib/basefit/registry.ts` is the single source of truth:
 
 - **checkable**: `dx`, `age`, `sex`.
-- **depth**: `her2`, `ecog`, `metastatic`, `stage`, `prior_lines`, `autoimmune` — **derived
-  from / guarded against** the estimator's real vocabulary so we never claim a feature the
-  base doesn't have.
+- **depth**: `her2`, `ecog`, `metastatic`, `autoimmune` — exactly the features
+  `RealProprietary` extracts (`estimator/trialbridge/data.py`) and `hero_protocol_real`
+  uses (`protocols.py`). **Guarded against** the real protocol so we never claim a feature
+  the base doesn't have. (`stage`/`prior_lines` are *not* extracted today → they live in the
+  nlp_extractable catalog.)
 - **nlp_extractable catalog**: a map of `condition_key → { termsPtBr: string[], label }`.
   Seeded with the comorbidities that appear in real oncology protocols (IAM1363 set: HIV,
   hepatitis B/C, diabetes, solid-organ transplant, interstitial lung disease, significant
