@@ -47,6 +47,8 @@ export interface BuildReportOptions {
   runId?: string;
   profile?: TrialProfile;
   phase?: "II" | "III";
+  /** Protocol phase shown in the report; scoring still uses the II/III cost profile. */
+  displayPhase?: string;
   targetSampleSize?: number;
   months?: number;
   asOf?: string | null;
@@ -128,10 +130,9 @@ export function buildReport(
   const funnel = est
     ? buildRealFunnel(est, consultation.criteria)
     : buildFunnel(syntheticPool, nationalPpm, recordsReviewed, consultation.criteria);
-  const softening =
-    est && est.bottlenecks.some((b) => b.gain > 0)
-      ? buildRealSoftening(est, phase)
-      : buildSoftening(sites, consultation.criteria, phase);
+  // Once a real estimator result exists, never fall back to synthetic-patient
+  // softening. An empty real bottleneck list is an honest empty state.
+  const softening = est ? buildRealSoftening(est, phase) : buildSoftening(sites, consultation.criteria, phase);
 
   const country = scoreCountry(
     brazilCountryInput({
@@ -219,7 +220,7 @@ export function buildReport(
       runId: opts.runId ?? "run_preview",
       protocolTitle: consultation.title,
       indication: consultation.nct ?? consultation.id,
-      phase,
+      phase: opts.displayPhase ?? phase,
       sponsor: consultation.sponsorName,
       fxRateBrlUsd: opts.fxRateBrlUsd ?? 5.4,
       asOf,
@@ -355,7 +356,7 @@ function buildRealRegionSDInputs(
       regionName: p.region,
       eligiblePool: p.eligible,
       eligiblePoolSourceRefs: src,
-      eligiblePoolNote: `Real DataSUS estimate (UF-level estimates summed; base cohort ${p.baseCohort.toLocaleString("en-US")}).`,
+      eligiblePoolNote: `Aggregate estimate statistically transported to the observed DataSUS population (UF-level estimates summed; base cohort ${p.baseCohort.toLocaleString("en-US")}).`,
       competingTrials: liveCount ?? 4,
       competingTrialsProvenance: liveCount != null ? ("registry" as const) : ("modeled" as const),
       population: BR_MACROREGION_POPULATION[p.region] ?? 20_000_000,

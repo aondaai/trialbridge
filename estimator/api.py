@@ -21,7 +21,7 @@ Endpoints:
 from __future__ import annotations
 
 import os
-from typing import List, Optional
+from typing import Any, List, Literal, Optional
 
 from pathlib import Path
 
@@ -41,6 +41,7 @@ from trialbridge.query import route, Intent, FindingOverImputedError
 from trialbridge.coverage import CalibratedCoverage, CALIBRATED_UFS_14
 from trialbridge.registry import make_version
 from trialbridge.finding import finding_n_by_site
+from trialbridge.schema import Criterion, Protocol
 
 FILL_SPEED_TARGET_N = 50  # a typical single-region Phase II cohort size — illustrative default
 
@@ -101,6 +102,12 @@ class ObservedSiteOut(BaseModel):
     observed_n: int
 
 
+class FindingSiteOut(BaseModel):
+    site: str
+    with_dx: int
+    finding_n: int
+
+
 class BottleneckOut(BaseModel):
     criterion_id: str
     text: str
@@ -131,10 +138,51 @@ class FeasibilityResponse(BaseModel):
     datasus_source: str
     datasus_as_of: Optional[str] = None
     coverage_ufs: List[str] = []
+    # Aggregate-only finding layer over the full 6.68M proprietary base.
+    proprietary_finding_total: int
+    proprietary_finding_by_site: List[FindingSiteOut]
+    proprietary_finding_source: str
+    proprietary_finding_as_of: Optional[str] = None
 
 
 class SoftenRequest(BaseModel):
     exclude_depth_ids: Optional[List[str]] = None
+
+
+class ProtocolCriterionIn(BaseModel):
+    id: str
+    text: str
+    type: Literal["inclusion", "exclusion"]
+    kind: Literal["checkable", "depth"]
+    field: str
+    op: Literal["in", "eq", "lte", "gte", "between", "is_true", "is_false"]
+    value: Any = None
+    assertion: Literal["PRESENT", "ABSENT"] = "PRESENT"
+
+
+class ProtocolIn(BaseModel):
+    protocol_id: str
+    criteria: List[ProtocolCriterionIn]
+
+
+class EstimateRequest(BaseModel):
+    protocol: Optional[ProtocolIn] = None
+
+
+def _protocol_from_request(data: ProtocolIn) -> Protocol:
+    allowed = {
+        "checkable": {"dx", "age_band", "sex"},
+        "depth": {"her2", "ecog", "metastatic", "stage", "prior_lines", "autoimmune"},
+    }
+    criteria = []
+    for c in data.criteria:
+        if c.field not in allowed[c.kind]:
+            raise ValueError(f"field {c.field!r} is not available for {c.kind}")
+        criteria.append(Criterion(c.id, c.text, c.type, c.kind, c.field, c.op,
+                                   c.value, c.assertion))
+    if not criteria:
+        raise ValueError("protocol must contain at least one supported criterion")
+    return Protocol(protocol_id=data.protocol_id, criteria=criteria)
 
 
 # ---- semantic query layer: count (Asset 3) vs find (Asset 2) ----------------
@@ -168,21 +216,25 @@ class QueryResponse(BaseModel):
     provenance: Provenance
 
 
-def _run(exclude_depth_ids: Optional[List[str]]) -> FeasibilityResponse:
+def _run(exclude_depth_ids: Optional[List[str]], protocol: Optional[Protocol] = None) -> FeasibilityResponse:
+    active_protocol = protocol or _protocol
     exclude = set(exclude_depth_ids) if exclude_depth_ids else None
-    ests = estimate(_protocol, _datasus, _proprietary_complete, exclude_depth_ids=exclude)
+    ests = estimate(active_protocol, _datasus, _proprietary_complete, exclude_depth_ids=exclude)
     nat, lo, hi = national_total(ests)
     base_total = sum(e.base_cohort for e in ests)
 
-    observed = observed_n_by_site(_protocol, _proprietary_all, exclude_depth_ids=exclude)
-    bottlenecks = rank_bottlenecks(_protocol, _datasus, _proprietary_complete)
+    observed = observed_n_by_site(active_protocol, _proprietary_all, exclude_depth_ids=exclude)
+    bottlenecks = rank_bottlenecks(active_protocol, _datasus, _proprietary_complete)
+    findings = finding_n_by_site(active_protocol, _prop_finding)
 
-    fspeed = fill_speed(_protocol, _datasus, _proprietary_complete, dx="breast_cancer",
+    dx_criterion = next((c for c in active_protocol.checkable() if c.field == "dx"), None)
+    dx_value = dx_criterion.value[0] if dx_criterion and isinstance(dx_criterion.value, list) else "breast_cancer"
+    fspeed = fill_speed(active_protocol, _datasus, _proprietary_complete, dx=dx_value,
                          target_n=FILL_SPEED_TARGET_N, exclude_depth_ids=exclude)
     nat_months = national_fill_speed(fspeed, target_n=FILL_SPEED_TARGET_N)
 
     return FeasibilityResponse(
-        protocol_id=_protocol.protocol_id,
+        protocol_id=active_protocol.protocol_id,
         national_estimated_n=nat,
         national_ci_lo=lo,
         national_ci_hi=hi,
@@ -211,6 +263,13 @@ def _run(exclude_depth_ids: Optional[List[str]]) -> FeasibilityResponse:
         datasus_source=_datasus.provenance.get("source", "DataSUS (materialized)"),
         datasus_as_of=_datasus.provenance.get("as_of"),
         coverage_ufs=_datasus.provenance.get("coverage_ufs", []),
+        proprietary_finding_total=sum(s.finding_n for s in findings),
+        proprietary_finding_by_site=[
+            FindingSiteOut(site=s.site, with_dx=s.with_dx, finding_n=s.finding_n)
+            for s in findings if s.finding_n >= 5
+        ],
+        proprietary_finding_source=_prop_finding.provenance.get("source", "materialized 6.68M proprietary base"),
+        proprietary_finding_as_of=_prop_finding.provenance.get("as_of"),
     )
 
 
@@ -277,8 +336,12 @@ def get_protocol():
 
 
 @app.post("/feasibility/estimate", response_model=FeasibilityResponse, dependencies=_gated)
-def feasibility_estimate():
-    return _run(exclude_depth_ids=None)
+def feasibility_estimate(req: EstimateRequest = EstimateRequest()):
+    try:
+        protocol = _protocol_from_request(req.protocol) if req.protocol else None
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return _run(exclude_depth_ids=None, protocol=protocol)
 
 
 @app.post("/soften", response_model=FeasibilityResponse, dependencies=_gated)

@@ -20,6 +20,7 @@
 
 const BASE_URL = process.env.TB_ESTIMATOR_URL ?? "http://127.0.0.1:8421";
 const TIMEOUT_MS = 8000;
+import type { CompiledProtocol } from "@/lib/estimator/protocol";
 
 /**
  * Shared-secret bearer token for the estimator's access gate. Optional: when unset
@@ -60,6 +61,12 @@ export interface EstimatorBottleneck {
   gain: number;
 }
 
+export interface ProprietaryFindingSite {
+  site: string;
+  withDiagnosis: number;
+  findingN: number;
+}
+
 export interface NationalEstimate {
   protocolId: string;
   estimatedN: number;
@@ -78,6 +85,11 @@ export interface NationalEstimate {
   asOf: string | null;
   /** Criterion-relaxation gains over the real base cohort (softening levers). */
   bottlenecks: EstimatorBottleneck[];
+  /** Checkable-level observed patients from the full 6.68M proprietary base. */
+  proprietaryFindingTotal?: number;
+  proprietaryFindingBySite?: ProprietaryFindingSite[];
+  proprietaryFindingSource?: string;
+  proprietaryFindingAsOf?: string | null;
 }
 
 interface RawEstimate {
@@ -101,6 +113,10 @@ interface RawEstimate {
   fill_speed_by_region?: { region: string; monthly_eligible: number }[];
   datasus_source?: string;
   datasus_as_of?: string;
+  proprietary_finding_total?: number;
+  proprietary_finding_by_site?: { site: string; with_dx: number; finding_n: number }[];
+  proprietary_finding_source?: string;
+  proprietary_finding_as_of?: string;
 }
 
 async function withTimeout(url: string, init?: RequestInit): Promise<Response> {
@@ -118,12 +134,12 @@ async function withTimeout(url: string, init?: RequestInit): Promise<Response> {
  * Returns null if the estimator is unreachable, times out, or errors — callers
  * render an "estimator offline" state rather than failing the page.
  */
-export async function fetchNationalEstimate(): Promise<NationalEstimate | null> {
+export async function fetchNationalEstimate(protocol?: CompiledProtocol): Promise<NationalEstimate | null> {
   try {
     const res = await withTimeout(`${BASE_URL}/feasibility/estimate`, {
       method: "POST",
       headers: estimatorHeaders(),
-      body: "{}",
+      body: JSON.stringify(protocol ? { protocol } : {}),
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -158,6 +174,12 @@ export async function fetchNationalEstimate(): Promise<NationalEstimate | null> 
         text: b.text,
         gain: b.gain,
       })),
+      proprietaryFindingTotal: d.proprietary_finding_total ?? 0,
+      proprietaryFindingBySite: (d.proprietary_finding_by_site ?? []).map((s) => ({
+        site: s.site, withDiagnosis: s.with_dx, findingN: s.finding_n,
+      })),
+      proprietaryFindingSource: d.proprietary_finding_source ?? "full proprietary finding base",
+      proprietaryFindingAsOf: d.proprietary_finding_as_of ?? null,
     };
   } catch {
     return null;

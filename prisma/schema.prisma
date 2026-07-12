@@ -57,6 +57,13 @@ model Consultation {
   /// Intended hero bottleneck handle, for the softening UI default.
   heroBottleneckHandle String?
   createdAt            DateTime @default(now())
+  estimateStatus       String   @default("pending")
+  estimateProtocol     String?
+  estimateResult       String?
+  estimateError        String?
+  estimatedAt          DateTime?
+  /// JSON-serialized progressive report lifecycle and per-pipeline results.
+  reportRun             String?
 }
 
 // Relations to Consultation/Site are intentionally NOT enforced as FKs: the app

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import type { Criterion } from "@/lib/matcher/types";
-import { loadConsultations, writeConsultations, loadResponses, writeResponses, StoredConsultation, StoredResponse } from "@/lib/store";
+import { loadConsultations, writeConsultations, loadResponses, writeResponses, StoredConsultation, StoredResponse, newReportRun } from "@/lib/store";
 import { loadAllSites } from "@/lib/data/sites";
 import { evaluateCohort, countCohorts } from "@/lib/matcher/engine";
 import { rankBottlenecks } from "@/lib/matcher/soften";
+import { compileEstimatorProtocol } from "@/lib/estimator/protocol";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +29,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "title and non-empty criteria required" }, { status: 400 });
   }
 
+  const id=slugId(body.title);
   const consultation: StoredConsultation = {
-    id: slugId(body.title),
+    id,
     sponsorName: body.sponsorName || "Marcus / Meridian Oncology (composite persona)",
     title: body.title,
     nct: body.nct,
@@ -37,6 +39,8 @@ export async function POST(req: Request) {
     criteria,
     heroBottleneckHandle: body.heroBottleneckHandle,
     createdAt: new Date().toISOString(),
+    estimateStatus:"pending", estimateProtocol:compileEstimatorProtocol(id,criteria),
+    reportRun:newReportRun(id),
   };
   const existing = await loadConsultations();
   await writeConsultations([...existing.filter((c) => c.id !== consultation.id), consultation]);
@@ -44,7 +48,8 @@ export async function POST(req: Request) {
   // Auto-compute all responding sites so the posted consultation has a working
   // aggregate + softening view immediately (counts-not-rows).
   const newResponses: StoredResponse[] = [];
-  for (const ds of await loadAllSites()) {
+  const seedDemo=process.env.TB_SEED_DEMO_RESPONSES==="true"||process.env.NODE_ENV!=="production";
+  for (const ds of seedDemo?await loadAllSites():[]) {
     const evals = evaluateCohort(ds.patients, criteria);
     const counts = countCohorts(evals);
     const top = rankBottlenecks(ds.patients, criteria)[0];

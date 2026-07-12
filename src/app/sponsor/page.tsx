@@ -6,6 +6,8 @@ import { TopBar, PrivacyBanner, CohortBar, CriterionList } from "@/components/ui
 import { SofteningPanel } from "@/components/SofteningPanel";
 import { ModeledFunnelPanel } from "@/components/ModeledFunnelPanel";
 import { fetchNationalEstimate } from "@/lib/estimator/client";
+import { EstimateRunner } from "@/components/EstimateRunner";
+import type { CompiledProtocol } from "@/lib/estimator/protocol";
 
 // Always read the live store (a site may have just submitted).
 export const dynamic = "force-dynamic";
@@ -17,14 +19,15 @@ function fmt(n: number | "<5"): string {
 type NationalEstimateData = Awaited<ReturnType<typeof fetchNationalEstimate>>;
 
 /** National feasibility card — fed by the Python estimator (DataSUS/OMOP). */
-function NationalCard({ national }: { national: NationalEstimateData }) {
+function NationalCard({ national,status,protocol,error,consultationId }: { national: NationalEstimateData;status?:string;protocol?:CompiledProtocol;error?:string;consultationId?:string }) {
+  const coverage=protocol?.coverage;
   return (
     <div className="card">
-      <h2>National feasibility estimate — DataSUS via estimator</h2>
-      {!national ? (
+      <h2>First-party supply — observed and statistically characterized</h2>
+      {status==="pending"||status==="running" ? <p className="sub">Searching the proprietary base, qualifying depth features, and expanding through DataSUS…</p> : !national ? (
         <>
           <p className="sub">
-            The national estimator service isn't reachable right now — the standardized DataSUS estimate will appear here once it's back online.
+            {error??"The estimator service isn't reachable right now."}
           </p>
           {process.env.NODE_ENV !== "production" && (
             <p className="muted" style={{ fontSize: 12 }}>
@@ -69,7 +72,7 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
           </p>
           <div className="grid2">
             <div>
-              <div className="muted" style={{ fontSize: 13 }}>Estimated eligible (national)</div>
+              <div className="muted" style={{ fontSize: 13 }}>Statistically characterized DataSUS population</div>
               <div className="tb-stat" style={{ color: "var(--brand)" }}>
                 {Math.round(national.estimatedN).toLocaleString("en-US")}
               </div>
@@ -93,6 +96,9 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
           </div>
         </>
       )}
+      {national && <div style={{marginTop:14}}><div className="muted" style={{fontSize:13}}>Observed proprietary finding — full 6.68M base</div><div className="tb-stat tb-stat--sm" style={{color:"var(--definite)"}}>{(national.proprietaryFindingTotal??0).toLocaleString("en-US")}</div><div className="muted" style={{fontSize:12}}>{national.proprietaryFindingBySite?.length??0} hospitals with matching aggregate cells · checkable criteria only</div></div>}
+      {coverage&&<p className="muted" style={{fontSize:12}}>Coverage: {coverage.applied} of {coverage.total} criteria applied{coverage.applied<coverage.total?" · partial estimate":""}</p>}
+      {consultationId&&national&&<p className="no-print"><Link className="cl-btn cl-btn--primary" href={`/scorecard?view=engine&c=${consultationId}`}>Open feasibility report →</Link></p>}
     </div>
   );
 }
@@ -171,7 +177,9 @@ export default async function SponsorPage({
   const view = (await buildSponsorView(c || HERO_META.id)) ?? (await buildSponsorView(HERO_META.id));
   // National feasibility from the Python estimator (DataSUS/OMOP). Null when the
   // estimator service is offline — the card renders an honest offline state.
-  const national = await fetchNationalEstimate();
+  const national = view
+    ? (view.consultation.estimateResult?.protocolId===view.consultation.id?view.consultation.estimateResult:null)
+    : await fetchNationalEstimate();
   // The full search database — every posted consultation + all responses (counts only).
   const [allConsultations, allResponses] = await Promise.all([loadConsultations(), loadResponses()]);
   if (!view) {
@@ -221,7 +229,8 @@ export default async function SponsorPage({
 
         <ConsultationsCard consultations={allConsultations} responses={allResponses} activeId={consultation.id} />
 
-        <NationalCard national={national} />
+        <EstimateRunner consultationId={consultation.id} status={consultation.estimateResult?.protocolId===consultation.id?consultation.estimateStatus:"pending"}/>
+        <NationalCard national={national} status={consultation.estimateStatus} protocol={consultation.estimateProtocol} error={consultation.estimateError} consultationId={consultation.id}/>
 
         {/* Aggregated responses */}
         <div className="card">
@@ -230,6 +239,7 @@ export default async function SponsorPage({
             {responded.length} site{responded.length === 1 ? "" : "s"} responded
             {waitingOn.length > 0 && ` · waiting on ${waitingOn.join(", ")}`}
           </p>
+          {responded.some(r=>!r.live)&&<p className="muted" style={{fontSize:12}}>Rows marked demo come from the local seeded matcher and are not used for the proprietary finding or DataSUS national estimate above.</p>}
           <div className="table-scroll">
             <table className="data">
               <thead>
@@ -248,6 +258,7 @@ export default async function SponsorPage({
                     <td>
                       {r.siteName}
                       {r.live && <span className="badge-low" style={{ background: "var(--definite)", color: "#062" }}>live</span>}
+                      {!r.live && <span className="badge-low" style={{marginLeft:6}}>demo</span>}
                     </td>
                     <td style={{ width: 160 }}>
                       <CohortBar

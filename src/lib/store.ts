@@ -16,6 +16,30 @@
 
 import { prisma } from "@/lib/db";
 import type { Criterion } from "@/lib/matcher/types";
+import type { CompiledProtocol } from "@/lib/estimator/protocol";
+import type { NationalEstimate } from "@/lib/estimator/client";
+export type EstimateStatus = "pending"|"running"|"complete"|"partial"|"failed";
+export type ReportPipelineKey = "first-party-supply" | "regulatory" | "competitive-intensity" | "site-kol-discovery" | "standard-of-care" | "representativeness" | "eligibility-realism";
+export type ReportPipelineStatus = "queued" | "running" | "complete" | "partial" | "failed";
+export interface ReportPipelineProgress {
+  key: ReportPipelineKey;
+  status: ReportPipelineStatus;
+  startedAt?: string;
+  completedAt?: string;
+  summary?: string;
+  result?: unknown;
+  citations?: Array<{ url: string; title: string }>;
+  error?: string;
+}
+export interface StoredReportRun {
+  schemaVersion: "report-run.v1";
+  runId: string;
+  consultationId: string;
+  status: "queued" | "running" | "ready" | "partial" | "failed";
+  createdAt: string;
+  updatedAt: string;
+  pipelines: ReportPipelineProgress[];
+}
 
 export interface StoredConsultation {
   id: string;
@@ -28,6 +52,12 @@ export interface StoredConsultation {
   /** The intended hero bottleneck handle, for the softening UI default. */
   heroBottleneckHandle?: string;
   createdAt: string;
+  estimateStatus?: EstimateStatus;
+  estimateProtocol?: CompiledProtocol;
+  estimateResult?: NationalEstimate;
+  estimateError?: string;
+  estimatedAt?: string;
+  reportRun?: StoredReportRun;
 }
 
 export interface StoredResponse {
@@ -60,6 +90,7 @@ type ConsultationRow = {
   criteria: string;
   heroBottleneckHandle: string | null;
   createdAt: Date;
+  estimateStatus:string; estimateProtocol:string|null; estimateResult:string|null; estimateError:string|null; estimatedAt:Date|null; reportRun:string|null;
 };
 
 function toStoredConsultation(row: ConsultationRow): StoredConsultation {
@@ -73,6 +104,11 @@ function toStoredConsultation(row: ConsultationRow): StoredConsultation {
     criteria: JSON.parse(row.criteria) as Criterion[],
     heroBottleneckHandle: row.heroBottleneckHandle ?? undefined,
     createdAt: row.createdAt.toISOString(),
+    estimateStatus:row.estimateStatus as EstimateStatus,
+    estimateProtocol:row.estimateProtocol?JSON.parse(row.estimateProtocol):undefined,
+    estimateResult:row.estimateResult?JSON.parse(row.estimateResult):undefined,
+    estimateError:row.estimateError??undefined, estimatedAt:row.estimatedAt?.toISOString(),
+    reportRun:row.reportRun?JSON.parse(row.reportRun) as StoredReportRun:undefined,
   };
 }
 
@@ -134,6 +170,10 @@ export async function writeConsultations(list: StoredConsultation[]): Promise<vo
       criteria: JSON.stringify(c.criteria),
       heroBottleneckHandle: c.heroBottleneckHandle ?? null,
       createdAt: new Date(c.createdAt),
+      estimateStatus:c.estimateStatus??"pending", estimateProtocol:c.estimateProtocol?JSON.stringify(c.estimateProtocol):null,
+      estimateResult:c.estimateResult?JSON.stringify(c.estimateResult):null, estimateError:c.estimateError??null,
+      estimatedAt:c.estimatedAt?new Date(c.estimatedAt):null,
+      reportRun:c.reportRun?JSON.stringify(c.reportRun):null,
     };
     await prisma.consultation.upsert({
       where: { id: c.id },
@@ -141,6 +181,39 @@ export async function writeConsultations(list: StoredConsultation[]): Promise<vo
       update: data,
     });
   }
+}
+
+export async function updateConsultationEstimate(id:string, patch:Pick<StoredConsultation,"estimateStatus"|"estimateProtocol"|"estimateResult"|"estimateError"|"estimatedAt"> & {clearResult?:boolean}):Promise<void>{
+  await prisma.consultation.update({where:{id},data:{estimateStatus:patch.estimateStatus,estimateProtocol:patch.estimateProtocol?JSON.stringify(patch.estimateProtocol):undefined,estimateResult:patch.clearResult?null:patch.estimateResult?JSON.stringify(patch.estimateResult):undefined,estimateError:patch.estimateError??null,estimatedAt:patch.clearResult?null:patch.estimatedAt?new Date(patch.estimatedAt):undefined}});
+}
+
+export async function updateConsultationReportRun(id:string, reportRun:StoredReportRun):Promise<void>{
+  await prisma.consultation.update({where:{id},data:{reportRun:JSON.stringify(reportRun)}});
+}
+
+export async function updateReportPipeline(
+  id:string,
+  key:ReportPipelineKey,
+  patch:Partial<ReportPipelineProgress>,
+):Promise<StoredReportRun>{
+  return prisma.$transaction(async(tx)=>{
+    const row=await tx.consultation.findUnique({where:{id},select:{reportRun:true}});
+    if(!row) throw new Error(`Unknown consultation ${id}`);
+    const now=new Date().toISOString();
+    const run=(row.reportRun?JSON.parse(row.reportRun):newReportRun(id,now)) as StoredReportRun;
+    run.pipelines=run.pipelines.map((pipeline)=>pipeline.key===key?{...pipeline,...patch,key}:pipeline);
+    const terminal=run.pipelines.every((pipeline)=>["complete","partial","failed"].includes(pipeline.status));
+    const completed=run.pipelines.filter((pipeline)=>pipeline.status==="complete").length;
+    run.status=terminal?(completed===run.pipelines.length?"ready":completed>0?"partial":"failed"):"running";
+    run.updatedAt=now;
+    await tx.consultation.update({where:{id},data:{reportRun:JSON.stringify(run)}});
+    return run;
+  });
+}
+
+export function newReportRun(consultationId:string,now=new Date().toISOString()):StoredReportRun{
+  const keys:ReportPipelineKey[]=["first-party-supply","regulatory","competitive-intensity","site-kol-discovery","standard-of-care","representativeness","eligibility-realism"];
+  return {schemaVersion:"report-run.v1",runId:`report-${consultationId}`,consultationId,status:"queued",createdAt:now,updatedAt:now,pipelines:keys.map((key)=>({key,status:"queued"}))};
 }
 
 // ---- responses --------------------------------------------------------------
