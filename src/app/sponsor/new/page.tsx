@@ -25,6 +25,19 @@ interface ParseResult {
   note: string;
 }
 
+/**
+ * Read an error message off a failed response, tolerating a NON-JSON body — a
+ * 401 from the Basic-Auth gate (text/plain), or a 502/504 gateway page (HTML)
+ * on a slow upstream. Without this, `(await res.json())` on those bodies throws
+ * a second, cryptic "Unexpected token" SyntaxError that masks the real HTTP
+ * status, and the caller appears to silently do nothing. Mirrors the hardening
+ * already in IntakePanel.post.
+ */
+async function errorFrom(res: Response, fallback: string): Promise<string> {
+  const body = (await res.json().catch(() => null)) as { error?: string } | null;
+  return (body && typeof body.error === "string" && body.error) || `${fallback} (HTTP ${res.status})`;
+}
+
 interface CtGovFetchResult {
   protocol: {
     nctId: string;
@@ -106,7 +119,7 @@ export default function NewConsultationPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ nctId: nctInput }),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "ClinicalTrials.gov fetch failed");
+      if (!res.ok) throw new Error(await errorFrom(res, "ClinicalTrials.gov fetch failed"));
       const r = (await res.json()) as CtGovFetchResult;
       setCtResult(r);
       setProvenance(null); // supersede any prior universal-intake provenance badge
@@ -133,7 +146,7 @@ export default function NewConsultationPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ criteria: rows }),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "OMOP mapping failed");
+      if (!res.ok) throw new Error(await errorFrom(res, "OMOP mapping failed"));
       const { omopCriteria } = (await res.json()) as { omopCriteria: OmopCriterion[] };
       setOmopRows(omopCriteria);
     } catch (e) {
@@ -152,7 +165,7 @@ export default function NewConsultationPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ text, nctId: textMatchesNct ? nct : undefined }),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "parse failed");
+      if (!res.ok) throw new Error(await errorFrom(res, "parse failed"));
       const r = (await res.json()) as ParseResult;
       setResult(r);
       setRows(r.criteria);
@@ -185,7 +198,7 @@ export default function NewConsultationPage() {
           heroBottleneckHandle: HERO_META.heroBottleneckHandle,
         }),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "post failed");
+      if (!res.ok) throw new Error(await errorFrom(res, "post failed"));
       const { id } = (await res.json()) as { id: string };
       router.push(`/sponsor?c=${id}`);
     } catch (e) {
