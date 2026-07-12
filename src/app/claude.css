@@ -795,3 +795,61 @@
 .tb-meter { display: inline-flex; align-items: center; gap: var(--cl-space-2); }
 .tb-meter__track { width: 72px; height: 6px; background: var(--cl-surface-2); border-radius: var(--cl-radius-full); overflow: hidden; flex-shrink: 0; }
 .tb-meter__fill { height: 100%; background: var(--cl-success); border-radius: var(--cl-radius-full); }
+
+/* --------------------------------------------------------------------------
+   21. TB — Evidence provenance (MetricChip) + archetype tag
+   Ported from the TrialBridge design system (MetricChip). Every surfaced value
+   renders through a provenance seal so hard fact reads apart from estimate.
+   The new site-declared purple is the one hue added beyond the ported palette.
+   -------------------------------------------------------------------------- */
+:root {
+  --tb-prov-peer: var(--cl-success);            --tb-prov-peer-subtle: var(--cl-success-subtle);
+  --tb-prov-registry: var(--cl-info);           --tb-prov-registry-subtle: var(--cl-info-subtle);
+  --tb-prov-declared: #7C5E99;                  --tb-prov-declared-subtle: #ECE4F2;
+  --tb-prov-modeled: var(--cl-warning);         --tb-prov-modeled-subtle: var(--cl-warning-subtle);
+  --tb-prov-vendor: var(--cl-text-secondary);   --tb-prov-vendor-subtle: var(--cl-surface-2);
+}
+[data-theme="dark"] {
+  --tb-prov-declared: #A98FC4;                  --tb-prov-declared-subtle: #3A3044;
+}
+
+/* MetricChip reuses the .tb-chip pill; its provenance modifiers are disjoint from the
+   cohort ones (definite/possible/excluded), so the base pill serves both. */
+.tb-chip { position: relative; }
+.tb-chip__value { font-family: var(--cl-font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.tb-chip__seal { font-weight: 600; }
+.tb-chip__conf { font-size: 9px; opacity: 0.85; }
+.tb-chip--md { font-size: var(--cl-text-sm); padding: 5px 12px; }
+
+.tb-chip--peer     { background: var(--tb-prov-peer-subtle);     color: var(--tb-prov-peer); }
+.tb-chip--registry { background: var(--tb-prov-registry-subtle); color: var(--tb-prov-registry); }
+.tb-chip--declared { background: var(--tb-prov-declared-subtle); color: var(--tb-prov-declared); }
+.tb-chip--modeled  { background: var(--tb-prov-modeled-subtle);  color: var(--tb-prov-modeled); }
+.tb-chip--vendor   { background: var(--tb-prov-vendor-subtle);   color: var(--tb-prov-vendor); }
+[data-theme="dark"] .tb-chip--peer     { color: #A3B88F; }
+[data-theme="dark"] .tb-chip--registry { color: #8FB0CE; }
+[data-theme="dark"] .tb-chip--modeled  { color: #D9B25E; }
+
+/* provenance / source tooltip on the chip */
+.tb-chip__tip {
+  position: absolute; bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%) translateY(2px);
+  background: var(--cl-text); color: var(--cl-bg);
+  font-family: var(--cl-font-body); font-weight: 400; font-size: var(--cl-text-xs);
+  padding: 6px 10px; border-radius: var(--cl-radius-sm); white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity var(--cl-transition-fast); z-index: 50;
+}
+.tb-chip:hover .tb-chip__tip, .tb-chip:focus-visible .tb-chip__tip { opacity: 1; }
+
+/* Archetype tag — the A/B/C/D routing lane. Colour encodes deterministic (A/B/C) vs LLM (D). */
+.tb-arch {
+  font-family: var(--cl-font-mono); font-weight: 700; font-size: var(--cl-text-xs);
+  width: 22px; height: 22px; border-radius: var(--cl-radius-sm);
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.tb-arch--A, .tb-arch--B { background: var(--tb-prov-declared-subtle); color: var(--tb-prov-declared); }
+.tb-arch--C { background: var(--tb-prov-modeled-subtle); color: var(--tb-prov-modeled); }
+.tb-arch--D { background: var(--cl-accent-subtle); color: var(--cl-accent-active); }
+[data-theme="dark"] .tb-arch--D { color: #E8A488; }
+/* --cl-warning has no dark override, so lift the modeled tag to match its chip twin in dark. */
+[data-theme="dark"] .tb-arch--C { color: #D9B25E; }
