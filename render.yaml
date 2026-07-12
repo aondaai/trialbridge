@@ -1,9 +1,15 @@
 # Render Blueprint for the TrialBridge web app.
 #
-# The app serves off a committed JSON snapshot (src/lib/store.ts), so it needs no
-# external database — it runs read-only in the cloud with no DATABASE_URL. Writes
-# (posting a protocol) land on Render's ephemeral disk and reset on redeploy,
-# which is fine for a gated demo instance.
+# Persistence is a real database (Prisma over SQLite) that lives on Render's
+# EPHEMERAL disk: the start command runs `prisma db push` to (re)create the
+# schema, then `db:seed-demo` to populate the known-good demo baseline (all
+# sites + patients, the hero consultation, and pre-seeded site B/C responses).
+# Because the disk resets on every redeploy, that seed is what makes the /site
+# (Camila) and /sponsor (Marcus) flows walkable the moment the instance boots —
+# without it, a fresh deploy shows only the empty-state fallbacks. The seed is
+# idempotent and non-destructive: a warm restart that kept the disk leaves any
+# live-submitted response untouched. Live writes still land on the ephemeral
+# disk and reset on the next redeploy, which is fine for a gated demo instance.
 #
 # `next start` binds to the $PORT Render injects automatically.
 #
@@ -20,7 +26,7 @@ services:
     plan: free
     branch: main
     buildCommand: npm ci && npx prisma generate && npm run build
-    startCommand: npx prisma db push --skip-generate && npm start
+    startCommand: npx prisma db push --skip-generate && npm run db:seed-demo && npm start
     envVars:
       - key: BASIC_AUTH_USER
         value: angelo
