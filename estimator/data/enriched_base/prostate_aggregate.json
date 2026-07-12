@@ -1,0 +1,2252 @@
+[
+ {
+  "uf": "AC",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 26,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 2.8954,
+  "est_ci": [
+   2.3396,
+   3.4511
+  ]
+ },
+ {
+  "uf": "AC",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 72,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 8.8591,
+  "est_ci": [
+   7.9395,
+   9.7787
+  ]
+ },
+ {
+  "uf": "AC",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 136,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 19.5539,
+  "est_ci": [
+   18.0385,
+   21.0693
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 9,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 1.5653,
+  "est_ci": [
+   0.1062,
+   3.0243
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 18,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 2.0256,
+  "est_ci": [
+   0.6736,
+   3.3776
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 152,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 16.9269,
+  "est_ci": [
+   13.6778,
+   20.1759
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 668,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 82.1927,
+  "est_ci": [
+   73.661,
+   90.7245
+  ]
+ },
+ {
+  "uf": "AL",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1706,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 245.2861,
+  "est_ci": [
+   226.277,
+   264.2952
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 21,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 3.6523,
+  "est_ci": [
+   0.2479,
+   7.0568
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 28,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 3.151,
+  "est_ci": [
+   1.0478,
+   5.2541
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 135,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 15.0337,
+  "est_ci": [
+   12.148,
+   17.9194
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 672,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 82.6849,
+  "est_ci": [
+   74.102,
+   91.2678
+  ]
+ },
+ {
+  "uf": "AM",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1384,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 198.9895,
+  "est_ci": [
+   183.5682,
+   214.4107
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 5,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 0.8696,
+  "est_ci": [
+   0.059,
+   1.6802
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 8,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 0.9003,
+  "est_ci": [
+   0.2994,
+   1.5012
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 52,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 5.7908,
+  "est_ci": [
+   4.6792,
+   6.9023
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 176,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 21.6556,
+  "est_ci": [
+   19.4077,
+   23.9035
+  ]
+ },
+ {
+  "uf": "AP",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 352,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 50.61,
+  "est_ci": [
+   46.6879,
+   54.5322
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 109,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 18.9574,
+  "est_ci": [
+   1.2868,
+   36.6281
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 217,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 24.42,
+  "est_ci": [
+   8.1206,
+   40.7194
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 1281,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 142.6534,
+  "est_ci": [
+   115.2715,
+   170.0354
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 4650,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 572.1501,
+  "est_ci": [
+   512.7597,
+   631.5405
+  ]
+ },
+ {
+  "uf": "BA",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 9808,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 1410.1796,
+  "est_ci": [
+   1300.894,
+   1519.4653
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 25,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 2.8134,
+  "est_ci": [
+   0.9356,
+   4.6912
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 318,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 35.4128,
+  "est_ci": [
+   28.6154,
+   42.2102
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 1111,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 136.7008,
+  "est_ci": [
+   122.511,
+   150.8907
+  ]
+ },
+ {
+  "uf": "CE",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 2074,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 298.1966,
+  "est_ci": [
+   275.0871,
+   321.3062
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 10,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 1.7392,
+  "est_ci": [
+   0.1181,
+   3.3604
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 20,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 2.2507,
+  "est_ci": [
+   0.7484,
+   3.7529
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 157,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 17.4837,
+  "est_ci": [
+   14.1277,
+   20.8396
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 536,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 65.9511,
+  "est_ci": [
+   59.1052,
+   72.7969
+  ]
+ },
+ {
+  "uf": "DF",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1082,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 155.5683,
+  "est_ci": [
+   143.5122,
+   167.6245
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 7,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 1.2174,
+  "est_ci": [
+   0.0826,
+   2.3523
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 58,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 6.527,
+  "est_ci": [
+   2.1705,
+   10.8835
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 575,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 64.0326,
+  "est_ci": [
+   51.7417,
+   76.3235
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 2239,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 275.4934,
+  "est_ci": [
+   246.8965,
+   304.0902
+  ]
+ },
+ {
+  "uf": "ES",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 3726,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 535.7187,
+  "est_ci": [
+   494.2018,
+   577.2357
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 14,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 2.4349,
+  "est_ci": [
+   0.1653,
+   4.7045
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 69,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 7.7649,
+  "est_ci": [
+   2.5821,
+   12.9476
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 607,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 67.5961,
+  "est_ci": [
+   54.6212,
+   80.571
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 2235,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 275.0012,
+  "est_ci": [
+   246.4555,
+   303.5469
+  ]
+ },
+ {
+  "uf": "GO",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 4328,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 622.2734,
+  "est_ci": [
+   574.0487,
+   670.4981
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 21,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 3.6523,
+  "est_ci": [
+   0.2479,
+   7.0568
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 36,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 4.0512,
+  "est_ci": [
+   1.3472,
+   6.7553
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 286,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 31.8492,
+  "est_ci": [
+   25.7359,
+   37.9626
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 1162,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 142.976,
+  "est_ci": [
+   128.1348,
+   157.8172
+  ]
+ },
+ {
+  "uf": "MA",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 2337,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 336.0104,
+  "est_ci": [
+   309.9704,
+   362.0504
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 296,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 51.4807,
+  "est_ci": [
+   3.4944,
+   99.4671
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 577,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 64.9324,
+  "est_ci": [
+   21.5925,
+   108.2724
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 4081,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 454.4642,
+  "est_ci": [
+   367.2309,
+   541.6975
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 15569,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 1915.657,
+  "est_ci": [
+   1716.8077,
+   2114.5063
+  ]
+ },
+ {
+  "uf": "MG",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 32545,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 4679.2717,
+  "est_ci": [
+   4316.639,
+   5041.9043
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 6,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 1.0435,
+  "est_ci": [
+   0.0708,
+   2.0162
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 23,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 2.5883,
+  "est_ci": [
+   0.8607,
+   4.3159
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 249,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 27.7289,
+  "est_ci": [
+   22.4064,
+   33.0514
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 1010,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 124.2735,
+  "est_ci": [
+   111.3736,
+   137.1733
+  ]
+ },
+ {
+  "uf": "MS",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1862,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 267.7156,
+  "est_ci": [
+   246.9683,
+   288.4629
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 26,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 2.9259,
+  "est_ci": [
+   0.973,
+   4.8788
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 291,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 32.4061,
+  "est_ci": [
+   26.1858,
+   38.6263
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 1053,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 129.5643,
+  "est_ci": [
+   116.1153,
+   143.0134
+  ]
+ },
+ {
+  "uf": "MT",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 2211,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 317.8943,
+  "est_ci": [
+   293.2582,
+   342.5304
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 29,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 5.0437,
+  "est_ci": [
+   0.3424,
+   9.7451
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 45,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 5.0641,
+  "est_ci": [
+   1.684,
+   8.4441
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 277,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 30.847,
+  "est_ci": [
+   24.926,
+   36.768
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 913,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 112.3383,
+  "est_ci": [
+   100.6773,
+   123.9992
+  ]
+ },
+ {
+  "uf": "PA",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1872,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 269.1534,
+  "est_ci": [
+   248.2946,
+   290.0121
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 7,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 1.2174,
+  "est_ci": [
+   0.0826,
+   2.3523
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 33,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 3.7136,
+  "est_ci": [
+   1.2349,
+   6.1924
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 379,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 42.2058,
+  "est_ci": [
+   34.1045,
+   50.3071
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 1436,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 176.6898,
+  "est_ci": [
+   158.349,
+   195.0306
+  ]
+ },
+ {
+  "uf": "PB",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 3035,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 436.3678,
+  "est_ci": [
+   402.5503,
+   470.1853
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 37,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 6.4351,
+  "est_ci": [
+   0.4368,
+   12.4334
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 86,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 9.678,
+  "est_ci": [
+   3.2183,
+   16.1376
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 726,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 80.8481,
+  "est_ci": [
+   65.3295,
+   96.3667
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 2674,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 329.0171,
+  "est_ci": [
+   294.8644,
+   363.1698
+  ]
+ },
+ {
+  "uf": "PE",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 5412,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 778.1293,
+  "est_ci": [
+   717.8261,
+   838.4325
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 6,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 1.0435,
+  "est_ci": [
+   0.0708,
+   2.0162
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 17,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 1.9131,
+  "est_ci": [
+   0.6362,
+   3.19
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 161,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 17.9291,
+  "est_ci": [
+   14.4877,
+   21.3706
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 768,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 94.4971,
+  "est_ci": [
+   84.6881,
+   104.306
+  ]
+ },
+ {
+  "uf": "PI",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1696,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 243.8484,
+  "est_ci": [
+   224.9507,
+   262.746
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 137,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 23.8272,
+  "est_ci": [
+   1.6174,
+   46.0371
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 147,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 16.5426,
+  "est_ci": [
+   5.501,
+   27.5841
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 912,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 101.5612,
+  "est_ci": [
+   82.0668,
+   121.0557
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 3281,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 403.7042,
+  "est_ci": [
+   361.7988,
+   445.6096
+  ]
+ },
+ {
+  "uf": "PR",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 6413,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 922.0516,
+  "est_ci": [
+   850.5947,
+   993.5084
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 44,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 7.6525,
+  "est_ci": [
+   0.5194,
+   14.7856
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 113,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 12.7164,
+  "est_ci": [
+   4.2287,
+   21.2041
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 1338,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 149.001,
+  "est_ci": [
+   120.4006,
+   177.6014
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 5715,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 703.1909,
+  "est_ci": [
+   630.1982,
+   776.1837
+  ]
+ },
+ {
+  "uf": "RJ",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 11479,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 1650.4335,
+  "est_ci": [
+   1522.5288,
+   1778.3383
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 14,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 2.4349,
+  "est_ci": [
+   0.1653,
+   4.7045
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 28,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 3.151,
+  "est_ci": [
+   1.0478,
+   5.2541
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 259,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 28.8425,
+  "est_ci": [
+   23.3063,
+   34.3787
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 877,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 107.9087,
+  "est_ci": [
+   96.7076,
+   119.1099
+  ]
+ },
+ {
+  "uf": "RN",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1673,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 240.5414,
+  "est_ci": [
+   221.9,
+   259.1829
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 17,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 1.9131,
+  "est_ci": [
+   0.6362,
+   3.19
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 127,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 14.1428,
+  "est_ci": [
+   11.4282,
+   16.8575
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 548,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 67.4276,
+  "est_ci": [
+   60.4285,
+   74.4267
+  ]
+ },
+ {
+  "uf": "RO",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 1342,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 192.9508,
+  "est_ci": [
+   177.9975,
+   207.904
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 8,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 0.8909,
+  "est_ci": [
+   0.7199,
+   1.0619
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 56,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 6.8904,
+  "est_ci": [
+   6.1752,
+   7.6056
+  ]
+ },
+ {
+  "uf": "RR",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 110,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 15.8156,
+  "est_ci": [
+   14.59,
+   17.0413
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 42,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 7.3047,
+  "est_ci": [
+   0.4958,
+   14.1136
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 84,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 9.4529,
+  "est_ci": [
+   3.1435,
+   15.7624
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 735,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 81.8503,
+  "est_ci": [
+   66.1394,
+   97.5613
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 3262,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 401.3664,
+  "est_ci": [
+   359.7037,
+   443.0291
+  ]
+ },
+ {
+  "uf": "RS",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 6800,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 977.6939,
+  "est_ci": [
+   901.9249,
+   1053.4629
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 10,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 1.7392,
+  "est_ci": [
+   0.1181,
+   3.3604
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 55,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 6.1894,
+  "est_ci": [
+   2.0582,
+   10.3206
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 503,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 56.0146,
+  "est_ci": [
+   45.2627,
+   66.7664
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 2020,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 248.5469,
+  "est_ci": [
+   222.7472,
+   274.3466
+  ]
+ },
+ {
+  "uf": "SC",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 3944,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 567.0624,
+  "est_ci": [
+   523.1164,
+   611.0085
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 13,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 1.4629,
+  "est_ci": [
+   0.4865,
+   2.4394
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 134,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 14.9224,
+  "est_ci": [
+   12.0581,
+   17.7867
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 422,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 51.9242,
+  "est_ci": [
+   46.5343,
+   57.314
+  ]
+ },
+ {
+  "uf": "SE",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 887,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 127.5315,
+  "est_ci": [
+   117.6481,
+   137.4149
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "prostate_cancer",
+  "age_band": "18-39",
+  "sex": "M",
+  "base_count": 169,
+  "depth_rate": 0.173921,
+  "depth_ci": [
+   0.066993,
+   0.381699
+  ],
+  "depth_eff_n": 1,
+  "est_eligible": 29.3927,
+  "est_ci": [
+   1.9951,
+   56.7903
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "prostate_cancer",
+  "age_band": "40-49",
+  "sex": "M",
+  "base_count": 546,
+  "depth_rate": 0.112535,
+  "depth_ci": [
+   0.057296,
+   0.20921
+  ],
+  "depth_eff_n": 48,
+  "est_eligible": 61.4439,
+  "est_ci": [
+   20.4324,
+   102.4553
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 5044,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 561.7049,
+  "est_ci": [
+   453.887,
+   669.5227
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 17704,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 2178.3539,
+  "est_ci": [
+   1952.236,
+   2404.4717
+  ]
+ },
+ {
+  "uf": "SP",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 33265,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 4782.7922,
+  "est_ci": [
+   4412.1369,
+   5153.4475
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "prostate_cancer",
+  "age_band": "50-59",
+  "sex": "M",
+  "base_count": 41,
+  "depth_rate": 0.111361,
+  "depth_ci": [
+   0.091746,
+   0.134548
+  ],
+  "depth_eff_n": 812,
+  "est_eligible": 4.5658,
+  "est_ci": [
+   3.6894,
+   5.4422
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "prostate_cancer",
+  "age_band": "60-69",
+  "sex": "M",
+  "base_count": 119,
+  "depth_rate": 0.123043,
+  "depth_ci": [
+   0.110837,
+   0.136387
+  ],
+  "depth_eff_n": 2521,
+  "est_eligible": 14.6421,
+  "est_ci": [
+   13.1222,
+   16.162
+  ]
+ },
+ {
+  "uf": "TO",
+  "dx": "prostate_cancer",
+  "age_band": "70+",
+  "sex": "M",
+  "base_count": 314,
+  "depth_rate": 0.143779,
+  "depth_ci": [
+   0.132995,
+   0.15528
+  ],
+  "depth_eff_n": 3789,
+  "est_eligible": 45.1465,
+  "est_ci": [
+   41.6477,
+   48.6452
+  ]
+ }
+]

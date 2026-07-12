@@ -1,0 +1,57 @@
+{
+  "as_of": "2026-07-12",
+  "asset": "prostate_enriched_aggregate",
+  "grain": "uf x age_band x sex(M)",
+  "dx": "prostate_cancer",
+  "icd": "C61",
+  "depth_predicate": "metastatic AND Gleason>=8 (advanced/high-risk)",
+  "base": {
+    "origin": "observed",
+    "source": "DataSUS OMOP (C61)"
+  },
+  "depth": {
+    "origin": "imputed",
+    "source": "proprietary NLP->regex (PSA/Gleason/metastatic)",
+    "model_version": "enrich-816cfde7",
+    "n_complete_case": 7171,
+    "note": "NATIONAL depth rate applied per UF (direct standardization)"
+  },
+  "coverage_ufs": [
+    "AC",
+    "AL",
+    "AM",
+    "AP",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MG",
+    "MS",
+    "MT",
+    "PA",
+    "PB",
+    "PE",
+    "PI",
+    "PR",
+    "RJ",
+    "RN",
+    "RO",
+    "RR",
+    "RS",
+    "SC",
+    "SE",
+    "SP",
+    "TO"
+  ],
+  "n_cells": 125,
+  "national": {
+    "base_cohort": 234877,
+    "estimated_n": 31646.34,
+    "est_ci": [
+      30966.46,
+      32326.22
+    ]
+  }
+}

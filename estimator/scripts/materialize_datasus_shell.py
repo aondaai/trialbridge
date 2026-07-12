@@ -36,7 +36,10 @@ REFERENCE_YEAR = 2025
 MIN_CELL = 5
 
 # Conditions for which proprietary depth is already extracted (-> enriched_base asset).
-DEPTH_AVAILABLE = {"C50": "breast_cancer (HER2/ECOG/metastatic) — see data/enriched_base"}
+DEPTH_AVAILABLE = {
+    "C50": "breast_cancer (HER2/ECOG/metastatic) — see data/enriched_base/aggregate.json",
+    "C61": "prostate_cancer (PSA/Gleason/metastatic) — see data/enriched_base/prostate_aggregate.json",
+}
 
 
 def main() -> None:

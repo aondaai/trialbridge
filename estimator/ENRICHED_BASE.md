@@ -14,9 +14,11 @@ Estimated N is never confused with a real localizable count.
 
 | Layer | Grain | File / script | Status |
 |---|---|---|---|
-| **Shell** | UF × ICD-3 × age × sex, ALL conditions | `data/datasus_shell/` · `materialize_datasus_shell.py` | ✅ full national skeleton (267k cells, 1,986 conditions) |
-| **Enriched — aggregate** | UF × stratum, depth-imputed | `data/enriched_base/aggregate.json` · `materialize_enriched_base.py` | ✅ breast |
+| **Shell** | UF × ICD-3 × age × sex, ALL conditions | `data/datasus_shell/` · `materialize_datasus_shell.py` | ✅ full national skeleton (267k cells, 1,986 conditions; C50+C61 depth-available) |
+| **Enriched — aggregate (breast)** | UF × stratum, depth-imputed | `data/enriched_base/aggregate.json` · `materialize_enriched_base.py` | ✅ breast (N=4,588) |
+| **Enriched — aggregate (prostate)** | UF × stratum, depth-imputed | `data/enriched_base/prostate_aggregate.json` · `materialize_enriched_prostate.py` | ✅ prostate (N=31,646) |
 | **Enriched — person-level** | synthetic patient | `data/enriched_base/persons.parquet` · `materialize_enriched_persons.py` | ✅ breast (380,517) |
+| **Proprietary depth** | per-patient extracted depth | `data/proprietary_ha/` (breast) · `data/proprietary_prostate/depth.parquet` · `extract_prostate_depth.py` | ✅ breast + prostate |
 
 ### Shell (structural skeleton, all conditions)
 `materialize_datasus_shell.py` scans the full export (890M conditions × 63M persons, ~21s)
@@ -49,7 +51,7 @@ The ceiling is not data or method (both proven) but **how many conditions have p
 extracted**. Breast (C50) is done end-to-end. Each new condition is an extraction job over text we
 already hold, then a re-run of the same pipeline:
 1. **Breast (C50)** — ✅ done (aggregate + person-level + SUS axis).
-2. **Prostate (C61)** — ✅ **prototyped end-to-end** (`scripts/prototype_prostate.py`): PSA / Gleason / metastatic extracted from clinical text via regex NLP (validated: Gleason mode 7), fit + standardized to the real DataSUS C61 base (234,877 male; matches shell approx +0.8%) → national Estimated N ≈ **31,646** (advanced: metastatic & Gleason≥8, 13.5% fraction). Proves the method generalizes beyond breast. Next: persist a prostate depth parquet + materialize its enriched aggregate + flip C61 to depth-available in the shell.
+2. **Prostate (C61)** — ✅ **formalized** (2nd member): depth persisted (`extract_prostate_depth.py` → `data/proprietary_prostate/depth.parquet`, 16,764 pts), enriched aggregate materialized (`materialize_enriched_prostate.py` → `prostate_aggregate.json`, N≈**31,646** advanced: metastatic & Gleason≥8), and C61 flipped to depth-available in the shell. Extraction validated by clinical plausibility (Gleason mode 7); DataSUS C61 base 234,877 matches shell HLL +0.8%. (`prototype_prostate.py` kept as the readable end-to-end walkthrough.)
 3. Cervical, lung, then chronic conditions (hypertension I10 1.4M, etc.).
 The shell already lists every pending condition, so adding one is: extract depth → point the
 enriched materializers at it → the shell flips that ICD to depth-available.

@@ -9,7 +9,8 @@
   "n_icd3": 1986,
   "n_ufs": 27,
   "depth_available": {
-    "C50": "breast_cancer (HER2/ECOG/metastatic) \u2014 see data/enriched_base"
+    "C50": "breast_cancer (HER2/ECOG/metastatic) \u2014 see data/enriched_base/aggregate.json",
+    "C61": "prostate_cancer (PSA/Gleason/metastatic) \u2014 see data/enriched_base/prostate_aggregate.json"
   },
   "depth_pending_icd3": [
     "000",
