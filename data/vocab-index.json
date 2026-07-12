@@ -1,0 +1,14 @@
+{
+  "ECOG performance status score": {
+    "conceptId": 36305384,
+    "conceptName": "ECOG Performance Status score",
+    "vocabularyId": "LOINC",
+    "matchedOn": "exact"
+  },
+  "Left ventricular ejection fraction": {
+    "conceptId": 3027172,
+    "conceptName": "Left ventricular Ejection fraction",
+    "vocabularyId": "LOINC",
+    "matchedOn": "exact"
+  }
+}

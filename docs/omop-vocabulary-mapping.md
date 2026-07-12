@@ -84,13 +84,28 @@ account, not querying it live. So:
 2. Unzip it and place `CONCEPT.csv` at `trialbridge/data/vocab/CONCEPT.csv`.
    That directory is gitignored — it's large, licensed data, not something
    this repo commits.
-3. Run `npm run build-vocab-index`. This reads `CONCEPT.csv`, matches every
-   `conceptName` already in `FIELD_CONCEPT_MAP` against standard SNOMED/
-   LOINC/RxNorm/Gender concepts (exact name match first, substring fallback),
-   and writes `data/vocab-index.json` — a small, committable file (just
-   id/name/vocabulary tuples, not the bulk licensed data). It also prints
-   which fields matched and which didn't; unmatched fields simply keep
-   today's honest `needsMapping: true`.
+3. Run `npm run build-vocab-index`. This reads `CONCEPT.csv` and matches every
+   `conceptName` in `FIELD_CONCEPT_MAP` against standard concepts, writing
+   `data/vocab-index.json` — a small, committable file (just id/name/vocabulary
+   tuples, not the bulk licensed data). Two guardrails keep the committed index
+   honest rather than merely populated:
+   - **Declared-vocabulary scoping.** A field is resolved only within the
+     vocabulary it declares (LOINC/SNOMED/RxNorm/Gender), so the resolved
+     `concept_id` can never contradict the Vocabulary column the preview shows
+     (no LOINC-row → RxNorm-drug matches).
+   - **Exact-only for the committed index.** The deployed build takes only
+     verbatim (case-insensitive) name matches. Substring matching still exists
+     in `buildVocabIndex.ts` (and is unit-tested) but is opt-in
+     (`allowSubstring`) because its guesses need a human glance first — e.g.
+     "Hemoglobin" would substring-match the unrelated LOINC concept
+     "Hemoglobin casts". Everything not matched exactly keeps the honest
+     `needsMapping: true`.
+
+   Against the current Athena release this resolves **2 fields** exactly:
+   `ecog` → LOINC `36305384` (ECOG Performance Status score) and
+   `ejection_fraction` → LOINC `3027172` (Left ventricular Ejection fraction).
+   The rest stay `needsMapping` pending hand-curation (their descriptive names,
+   e.g. "HER2 status (IHC/ISH)", don't have a single verbatim standard concept).
 4. `src/lib/omop/transform.ts`'s `resolveConcept()` reads
    `data/vocab-index.json` automatically the moment it exists — no other
    code change needed. Re-run step 3 any time you get a newer bundle.
