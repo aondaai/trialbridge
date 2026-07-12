@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { parseCriteria } from "@/lib/parse";
+import { stampBaseFit } from "@/lib/basefit/registry";
 import { HERO_CRITERIA, HERO_META } from "@/data/hero-protocol";
 import { NSCLC_CRITERIA, NSCLC_META } from "@/data/nsclc-kras-protocol";
 
@@ -11,7 +12,7 @@ describe("parse service — cached fallback (no API key)", () => {
   it("falls back to the cached verified criteria when the nctId matches a known fixture", async () => {
     const result = await parseCriteria("Age >= 18 years.\nHER2-positive.", HERO_META.nct);
     expect(result.source).toBe("cached");
-    expect(result.criteria).toEqual(HERO_CRITERIA);
+    expect(result.criteria).toEqual(stampBaseFit(HERO_CRITERIA));
     expect(result.criteria.length).toBeGreaterThan(0);
     expect(result.note).toMatch(/ANTHROPIC_API_KEY not set/);
   });
@@ -19,7 +20,7 @@ describe("parse service — cached fallback (no API key)", () => {
   it("matches fixtures by nctId regardless of casing/whitespace", async () => {
     const result = await parseCriteria("anything", `  ${NSCLC_META.nct.toLowerCase()}  `);
     expect(result.source).toBe("cached");
-    expect(result.criteria).toEqual(NSCLC_CRITERIA);
+    expect(result.criteria).toEqual(stampBaseFit(NSCLC_CRITERIA));
   });
 
   it("returns criteria the deterministic matcher can consume (shape check)", async () => {
