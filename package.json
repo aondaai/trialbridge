@@ -26,7 +26,8 @@
     "build-concept-map": "./node_modules/.bin/tsx scripts/build-concept-map.ts",
     "smoke": "./node_modules/.bin/tsx scripts/smoke.ts",
     "db:push": "./node_modules/.bin/prisma db push",
-    "postinstall": "./node_modules/.bin/prisma generate"
+    "postinstall": "./node_modules/.bin/prisma generate",
+    "mca:smoke": "./node_modules/.bin/tsx scripts/mca-smoke.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
