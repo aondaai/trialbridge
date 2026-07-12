@@ -21,6 +21,9 @@ describe("reconcileBaseFit", () => {
   it("aliases legacy her2_status to the her2 depth feature", () => {
     expect(reconcileBaseFit("her2_status").baseFit).toBe("depth");
   });
+  it("aliases diagnosis to the dx checkable field", () => {
+    expect(reconcileBaseFit("diagnosis").baseFit).toBe("checkable");
+  });
   it("classifies catalog concepts as nlp_extractable with pt-BR terms", () => {
     const r = reconcileBaseFit("hiv");
     expect(r.baseFit).toBe("nlp_extractable");
