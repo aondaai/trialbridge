@@ -1,0 +1,268 @@
+{
+  "27049": {
+    "cnes": "27049",
+    "source": "parallel",
+    "caconOrUnacon": true,
+    "petCt": true,
+    "linearAccelerator": true,
+    "mri": true,
+    "icuBeds": 18,
+    "gcpPharmacy": true,
+    "confidence": "medium",
+    "citations": [
+      {
+        "label": "PET/CT",
+        "url": "https://ctmm.medicina.ufmg.br/pet-ct-2/"
+      },
+      {
+        "label": "Faculdade de Medicina inova com marcador PET CT para ...",
+        "url": "https://www.gov.br/hubrasil/pt-br/hospitais-universitarios/regiao-sudeste/hc-ufmg/comunicacao/noticias/faculdade-de-medicina-inova-com-marcador-pet-ct-para-diagnostico-do-cancer-de-mama"
+      },
+      {
+        "label": "Residência - Radiologia e Diagnóstico por Imagem – HC-UFMG",
+        "url": "https://hcradiologiadotcom.wordpress.com/residencia/"
+      },
+      {
+        "label": "Hospital Das Clínicas Inaugura Setor De Ressonância ...",
+        "url": "https://www.saude.mg.gov.br/noticias/hospital-das-clinicas-inaugura-setor-de-ressonancia-magnetica-e-nova-etapa-da-reestruturacao-do-pronto-socorro-sesmg/"
+      },
+      {
+        "label": "CENTRO DE PESQUISAS CLÍNICAS DO HOSPITAL DAS ...",
+        "url": "https://www.gov.br/anvisa/pt-br/setorregulado/regularizacao/medicamentos/equivalencia-terapeutica/bioequivalencia/bioequivalencia-e-biodisponibilidade/centros-nacionais-indeferidos/centro-de-pesquisas-clinicas-do-hospital-das-clinicas-da-universidade-federal-de-minas-gerais-2013-cpc-hc-ufmg"
+      },
+      {
+        "label": "Centro de Pesquisas Clínicas — HU Brasil",
+        "url": "https://www.gov.br/hubrasil/pt-br/hospitais-universitarios/regiao-sudeste/hc-ufmg/ensino-e-pesquisa/novo-unidade-de-gestao-da-pesquisa/centro-de-pesquisa-clinica-1"
+      },
+      {
+        "label": "História do Centro de Pesquisas Clínicas do HC-UFMG",
+        "url": "https://www.gov.br/hubrasil/pt-br/hospitais-universitarios/regiao-sudeste/hc-ufmg/ensino-e-pesquisa/novo-unidade-de-gestao-da-pesquisa/centro-de-pesquisa-clinica-1/apresentacao/apresentacao"
+      },
+      {
+        "label": "Encontre um Ensaio Clínico — HU Brasil - Portal Gov.br",
+        "url": "https://www.gov.br/hubrasil/pt-br/hospitais-universitarios/regiao-sudeste/hc-ufmg/ensino-e-pesquisa/novo-unidade-de-gestao-da-pesquisa/centro-de-pesquisa-clinica-1/area-do-participante/encontre-um-ensaio-clinico"
+      }
+    ]
+  },
+  "2077369": {
+    "cnes": "2077369",
+    "source": "parallel",
+    "caconOrUnacon": true,
+    "petCt": true,
+    "linearAccelerator": true,
+    "mri": true,
+    "icuBeds": 152,
+    "gcpPharmacy": true,
+    "confidence": "medium",
+    "citations": [
+      {
+        "label": "PET-CT - Tomografia por Emissão de Pósitrons",
+        "url": "https://legado.hospitaldebase.com.br/servicos/pet-ct-tomografia-por-emissao-de-positrons"
+      },
+      {
+        "label": "PET/CT - CNES",
+        "url": "https://cnes2.datasus.gov.br/Mod_Ind_Equipamentos_Listar.asp?VCod_Equip=18&VTipo_Equip=1&VListar=1&VEstado=00&VMun=&VComp="
+      },
+      {
+        "label": "Oncologia Clínica - São José do Rio Preto",
+        "url": "https://www.hospitaldebase.com.br/especialidade/oncologia-clinica"
+      },
+      {
+        "label": "Ressonância Magnética",
+        "url": "https://hospitaldebase.com.br/servicos/ressonancia"
+      },
+      {
+        "label": "Diagnostico por Imagem - São José do Rio Preto",
+        "url": "https://legado.hospitaldebase.com.br/servicos/diagnostico-por-imagem"
+      },
+      {
+        "label": "CIP - Centro Integrado de Pesquisa",
+        "url": "https://legado.hospitaldebase.com.br/cip"
+      },
+      {
+        "label": "Farmácia - Hospital de Base - São José do Rio Preto",
+        "url": "https://legado.hospitaldebase.com.br/servicos/farmacia"
+      },
+      {
+        "label": "Centro Integrado de Pesquisa | Funfarme-Famerp",
+        "url": "https://www.centrodepesquisacip.com.br/"
+      }
+    ]
+  },
+  "2090236": {
+    "cnes": "2090236",
+    "source": "parallel",
+    "caconOrUnacon": true,
+    "petCt": true,
+    "linearAccelerator": true,
+    "mri": true,
+    "icuBeds": 20,
+    "gcpPharmacy": true,
+    "confidence": "medium",
+    "citations": [
+      {
+        "label": "PET/CT - CNES",
+        "url": "https://cnes2.datasus.gov.br/Mod_Ind_Equipamentos_Listar.asp?VCod_Equip=18&VTipo_Equip=1&VListar=1&VEstado=00&VMun=&VComp="
+      },
+      {
+        "label": "Hospital de Câncer de Barretos - Fundação Pio XII",
+        "url": "https://breastcentresnetwork.org/doc/PdfBU/Hospital%20de%20C%C3%A2ncer%20de%20Barretos%20-%20Funda%C3%A7%C3%A3o%20Pio%20XII.pdf"
+      },
+      {
+        "label": "Fundação Pio XII - Hospital de Câncer de Barretos",
+        "url": "https://www.gbot.med.br/hospital/fundacao-pio-xii-hospital-de-cancer-de-barretos-2/"
+      },
+      {
+        "label": "FUNDACAO PIO XII BARRETOS - Agendar Consulta",
+        "url": "https://guia.agendarconsulta.com/sao-paulo/barretos/fundacao-pio-xii-barretos-2090236"
+      },
+      {
+        "label": "Estrutura - Pesquisa Clínica",
+        "url": "https://pesquisaclinica.hospitaldeamor.com.br/estrutura/"
+      },
+      {
+        "label": "Farmacêutico I - Almoxarifado de Medicamentos (Barretos",
+        "url": "https://jobs.recrutei.com.br/hospital-de-amor/vacancy/137691-farmaceutico-i-almoxarifado-de-medicamentos-barretos-sao-paulo"
+      },
+      {
+        "label": "Pesquisa Clínica - Hospital de Amor",
+        "url": "https://pesquisaclinica.hospitaldeamor.com.br/"
+      },
+      {
+        "label": "HA recebe novo aparelho que permite tratamento ...",
+        "url": "https://hospitaldeamor.com.br/ha-recebe-novo-aparelho-que-permite-tratamento-radioterapico-com-alta-tecnologia/"
+      }
+    ]
+  },
+  "2748223": {
+    "cnes": "2748223",
+    "source": "parallel",
+    "caconOrUnacon": true,
+    "petCt": true,
+    "linearAccelerator": true,
+    "mri": true,
+    "icuBeds": 30,
+    "gcpPharmacy": true,
+    "confidence": "medium",
+    "citations": [
+      {
+        "label": "PET/CT - CNES",
+        "url": "http://cnes2.datasus.gov.br/Mod_Ind_Equipamentos_Listar.asp?VCod_Equip=18&VTipo_Equip=1%20&VListar=1&VEstado=00&VMun=&VComp="
+      },
+      {
+        "label": "Em Botucatu, Hospital das Clínicas recebe novos ...",
+        "url": "https://www2.unesp.br/portal#!/noticia/5468/em-botucatu-hospital-das-clinicas-recebe-novos-aparelhos-para-medicina-nuclear/"
+      },
+      {
+        "label": "Hospital das Clínicas de Botucatu recebe novo aparelho de ...",
+        "url": "http://bibliotecajuridica.des.sp.gov.br/hospital-das-clinicas-de-botucatu-recebe-novo-aparelho-de-ressonancia-magnetica/"
+      },
+      {
+        "label": "SP",
+        "url": "https://www.saopaulo.sp.gov.br/spnoticias/hospital-das-clinicas-de-botucatu-recebe-novo-aparelho-de-ressonancia-magnetica/"
+      },
+      {
+        "label": "Equipe - Unesp - Faculdade de Medicina - Câmpus de Botucatu",
+        "url": "https://www.fmb.unesp.br/#!/pesquisa/unidade-de-pesquisa-clinica/equipe/"
+      },
+      {
+        "label": "Pesquisas Clínicas",
+        "url": "https://www.famesp.org.br/pesquisas-clinicas/"
+      },
+      {
+        "label": "Faculdade de Medicina - Botucatu - fmb.unesp.br",
+        "url": "https://www.fmb.unesp.br/#!/noticia/73/unidade-de-pesquisa-clinica-cria-programa-de-aprendizagem-e-treinamento/"
+      },
+      {
+        "label": "Faculty of Medicine of Botucatu, UNESP | UPECLIN",
+        "url": "https://ctv.veeva.com/site/faculty-of-medicine-of-botucatu-unesp-upeclin"
+      }
+    ]
+  },
+  "3006522": {
+    "cnes": "3006522",
+    "source": "parallel",
+    "caconOrUnacon": true,
+    "petCt": true,
+    "linearAccelerator": true,
+    "mri": true,
+    "icuBeds": 77,
+    "gcpPharmacy": true,
+    "confidence": "medium",
+    "citations": [
+      {
+        "label": "Medicina Nuclear",
+        "url": "https://www.hospitalmoinhos.org.br/institucional/servicos/medicina-nuclear"
+      },
+      {
+        "label": "Tecnologia permite diagnóstico apurado do câncer",
+        "url": "https://www.hospitalmoinhos.org.br/saude-e-voce/tecnologia-diagnostico-cancer-pet-ct/"
+      },
+      {
+        "label": "Hospital Moinhos de Vento ganha mais um aliado para o ...",
+        "url": "https://www.anahp.com.br/noticias/hospital-moinhos-de-vento-ganha-mais-um-aliado-para-o-diagnostico-e-avaliacao-do-tratamento-do-cancer/"
+      },
+      {
+        "label": "Exames",
+        "url": "https://www.hospitalmoinhos.org.br/institucional/exames"
+      },
+      {
+        "label": "O Hospital Moinhos de Vento carrega desde o dia de sua ...",
+        "url": "https://www.instagram.com/p/DMi3tLRSrIr/"
+      },
+      {
+        "label": "Ressonância magnética para avaliação do fígado é tema ...",
+        "url": "https://www.hospitalmoinhos.org.br/institucional/noticias/ressonancia-magnetica-para-avaliacao-figado-e-tema-de-simposio-de-radiologia-hospital-moinhos-de-vento"
+      },
+      {
+        "label": "Hospital Moinhos de Vento inaugura novo Instituto de ...",
+        "url": "https://healthcare.grupomidia.com/hospital-moinhos-de-vento-inaugura-novo-instituto-de-pesquisa-clinica/"
+      },
+      {
+        "label": "Centro de Pesquisa Clínica",
+        "url": "https://www.hospitalmoinhos.org.br/institucional/o-hospital/centro-de-pesquisa-clinica"
+      }
+    ]
+  },
+  "6963048": {
+    "cnes": "6963048",
+    "source": "parallel",
+    "caconOrUnacon": false,
+    "petCt": false,
+    "linearAccelerator": false,
+    "mri": false,
+    "icuBeds": 0,
+    "gcpPharmacy": true,
+    "confidence": "medium",
+    "citations": [
+      {
+        "label": "title: \"Infraestrutura Clínica Dedicada | Synvia\" description: A Synvia conta com +20 mil m² infraestrutura clínica dedicada, com unidades assistenciais completas, 162 leitos monitorados, equipe médica especializada e fluxos operacionais integrados que asseguram segurança, controle e qualidade clínica. published: \"Jun 3, 2026, 4:17 PM UTC\"",
+        "url": "https://synvia.com/quem-somos/infraestrutura-clinica"
+      },
+      {
+        "label": "Modulo Conjunto - Ficha Estabelecimento - CNES",
+        "url": "https://cnes2.datasus.gov.br/Mod_Conjunto.asp?VCo_Unidade=3509506963048"
+      },
+      {
+        "label": "Synvia | Pesquisa Clínica, Bioequivalência e Soluções Digitais",
+        "url": "https://synvia.com/"
+      },
+      {
+        "label": "title: \"Qualidade e Conformidade Regulatória | Synvia\" description: A Synvia opera com sistemas de qualidade auditados e certificações como CAP, Cgcre/ISO 17025 e conformidade com ANVISA, EMA e FDA, assegurando integridade de dados, rastreabilidade e aderência regulatória em todas as operações. published: \"Jun 26, 2026, 12:03 PM UTC\"",
+        "url": "https://synvia.com/quem-somos/conformidade-regulatoria"
+      },
+      {
+        "label": "Bioequivalência e Fase I (PK/PD)",
+        "url": "https://synvia.com/bioequivalencia"
+      },
+      {
+        "label": "HOSPITAIS ONCOLÓGICOS HABILITADOS NA ALTA ...",
+        "url": "https://saude.sp.gov.br/resources/ses/perfil/gestor/assistencia-farmaceutica/medicamentos-oncologicos/hospitais_oncologicos_habilitados.pdf"
+      },
+      {
+        "label": "estabelecimentos cacon e unacon - Portal Gov.br",
+        "url": "https://www.gov.br/saude/pt-br/composicao/saes/daet/arquivos/estabelecimentos-de-saude-habilitados-como-unacon-e-cacon"
+      }
+    ]
+  }
+}
