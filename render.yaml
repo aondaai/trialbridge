@@ -55,3 +55,10 @@ services:
       # value in the Render dashboard (Environment tab), not in git.
       - key: TB_ESTIMATOR_TOKEN
         sync: false
+      # Enables LIVE protocol parsing with Claude (src/lib/parse.ts, model
+      # claude-opus-4-8) and the intake eligibility-locator + feasibility-autofill
+      # Claude paths. WITHOUT it, the parse step only serves the two verified cached
+      # fixtures (NCT03529110, NCT05920356) and cleanly refuses any other trial.
+      # Secret — set the value in the Render dashboard (Environment tab), not in git.
+      - key: ANTHROPIC_API_KEY
+        sync: false
