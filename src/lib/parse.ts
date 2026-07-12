@@ -22,7 +22,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Criterion, Operator } from "@/lib/matcher/types";
 import { HERO_META, HERO_CRITERIA } from "@/data/hero-protocol";
 import { NSCLC_META, NSCLC_CRITERIA } from "@/data/nsclc-kras-protocol";
-import { reconcileBaseFit } from "@/lib/basefit/registry";
+import { reconcileBaseFit, stampBaseFit } from "@/lib/basefit/registry";
 
 interface CachedFixture {
   nct: string;
@@ -154,7 +154,7 @@ export async function parseCriteria(text: string, nctId?: string): Promise<Parse
   if (!process.env.ANTHROPIC_API_KEY) {
     if (!fixture) throw noFixtureError(nctId, "ANTHROPIC_API_KEY not set, and");
     return {
-      criteria: fixture.criteria,
+      criteria: stampBaseFit(fixture.criteria),
       source: "cached",
       note: `ANTHROPIC_API_KEY not set — showing the pre-parsed, human-verified criteria for ${fixture.nct} (ADR Decision 3B: parse offline, cache, verify). Set the key to parse pasted text live with Claude.`,
     };
@@ -184,7 +184,7 @@ export async function parseCriteria(text: string, nctId?: string): Promise<Parse
   } catch (err) {
     if (!fixture) throw noFixtureError(nctId, `Live parse failed (${(err as Error).message}); fell back would need a cached fixture, but`);
     return {
-      criteria: fixture.criteria,
+      criteria: stampBaseFit(fixture.criteria),
       source: "cached",
       note: `Live parse failed (${(err as Error).message}); fell back to the cached verified ${fixture.nct} criteria so the flow still works.`,
     };

@@ -5,7 +5,7 @@
  * lists concepts the NLP layer could pull from pt-BR clinical text but doesn't
  * yet. See docs/superpowers/specs/2026-07-12-parse-base-fit-tiers-design.md.
  */
-import type { BaseFit, Evaluability } from "@/lib/matcher/types";
+import type { BaseFit, Criterion, Evaluability } from "@/lib/matcher/types";
 
 export const CHECKABLE_FIELDS: ReadonlySet<string> = new Set(["dx", "age", "sex"]);
 
@@ -91,4 +91,16 @@ export function summarizeBaseFit(criteria: { baseFit?: BaseFit }[]): BaseFitSumm
     else s.needReview += 1;
   }
   return s;
+}
+
+/** Stamp base-fit (tier + nlpTerms + evaluability) onto pre-parsed criteria that
+ *  did not go through the live-parse normalize path (e.g. cached fixtures). */
+export function stampBaseFit(criteria: Criterion[]): Criterion[] {
+  return criteria.map((c) => {
+    const fit = reconcileBaseFit(c.field);
+    const out: Criterion = { ...c, baseFit: fit.baseFit, evaluability: fit.evaluability };
+    if (fit.nlpTerms) out.nlpTerms = fit.nlpTerms;
+    else delete out.nlpTerms;
+    return out;
+  });
 }
