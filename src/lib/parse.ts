@@ -22,6 +22,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Criterion, Operator } from "@/lib/matcher/types";
 import { HERO_META, HERO_CRITERIA } from "@/data/hero-protocol";
 import { NSCLC_META, NSCLC_CRITERIA } from "@/data/nsclc-kras-protocol";
+import { reconcileBaseFit } from "@/lib/basefit/registry";
 
 interface CachedFixture {
   nct: string;
@@ -54,12 +55,17 @@ const SYSTEM_PROMPT = `You convert free-text oncology clinical-trial eligibility
 
 - Emit one object per atomic, checkable condition. Split compound sentences.
 - "kind" is "inclusion" or "exclusion".
-- "field" is a snake_case patient attribute: age, ecog, prior_lines, sex, stage, diagnosis, her2_status, er_status, pr_status, brain_metastases, creatinine, hemoglobin, platelets, bilirubin, ejection_fraction.
+- "field" is a snake_case attribute from the base's answerable vocabulary. Prefer the most specific:
+  · checkable (DataSUS aggregates): age, sex, dx
+  · depth (proprietary NLP features): her2, ecog, metastatic, autoimmune
+  · nlp_extractable (clinical-text concepts): hiv, hepatitis_b, hepatitis_c, active_hepatitis, diabetes, solid_organ_transplant, interstitial_lung_disease, significant_cardiac_disease, ejection_fraction, stage, prior_lines
+  For a named comorbidity, use its nlp_extractable key with exists/not_exists — NEVER dump it into diagnosis eq "<prose>". If nothing fits, use a concise snake_case key for the concept; it will be treated as not-answerable.
 - "operator" is one of: eq, neq, lt, lte, gt, gte, in, not_in, exists, not_exists, between.
 - "value" matches the operator: a number for lt/lte/gt/gte, a 2-element array for between, an array of strings/numbers for in/not_in, a string/number for eq/neq, null for exists/not_exists.
 - "unit" is the lab unit (e.g. "mg/dL", "g/dL", "10^9/L", "%") or null.
 - "rawText" is the exact source sentence.
-- "confidence" 0..1: LOWER it (<0.75) for anything you cannot express cleanly — temporal logic (">=2 prior lines INCLUDING a platinum"), nested AND/OR, vague clauses ("adequate organ function" as a whole). Represent what you cannot express as your best flat approximation with low confidence rather than dropping it.
+- "confidence" 0..1, anchored to answerability: a checkable/depth feature you expressed cleanly → high (>=0.8); an nlp_extractable concept → ~0.6-0.7; not_answerable, or anything the source leaves unspecified (e.g. "adequate organ function" with no numeric cutoff) → low (<0.5). Never inflate a row the base cannot answer.
+- "baseFit" is your tier guess: "checkable" | "depth" | "nlp_extractable" | "not_answerable". The server reconciles it against its registry, so pick the field correctly and the tier follows.
 - For a composite sentence that expands to several lab thresholds (e.g. "adequate organ function"), set the SAME "groupId" and "groupLabel" on each derived row so the UI can soften them together; otherwise use null for both.
 - Never invent criteria not present in the text.`;
 
@@ -88,10 +94,11 @@ const PARSE_SCHEMA = {
           unit: { type: ["string", "null"] },
           rawText: { type: "string" },
           confidence: { type: "number" },
+          baseFit: { type: "string", enum: ["checkable", "depth", "nlp_extractable", "not_answerable"] },
           groupId: { type: ["string", "null"] },
           groupLabel: { type: ["string", "null"] },
         },
-        required: ["kind", "field", "operator", "value", "unit", "rawText", "confidence", "groupId", "groupLabel"],
+        required: ["kind", "field", "operator", "value", "unit", "rawText", "confidence", "baseFit", "groupId", "groupLabel"],
       },
     },
   },
@@ -100,9 +107,10 @@ const PARSE_SCHEMA = {
 
 type RawCriterion = Omit<Criterion, "id"> & { groupId?: string | null; groupLabel?: string | null };
 
-/** Assign stable ids, clamp confidence, and drop empty group fields. */
-function normalize(raw: RawCriterion[]): Criterion[] {
+/** Assign stable ids, clamp confidence, stamp base-fit, drop empty group fields. */
+export function normalize(raw: RawCriterion[]): Criterion[] {
   return raw.map((c, i) => {
+    const fit = reconcileBaseFit(c.field);
     const out: Criterion = {
       id: `c${i + 1}`,
       kind: c.kind,
@@ -112,7 +120,10 @@ function normalize(raw: RawCriterion[]): Criterion[] {
       unit: c.unit ?? undefined,
       rawText: c.rawText,
       confidence: Math.max(0, Math.min(1, c.confidence ?? 0.5)),
+      baseFit: fit.baseFit,
+      evaluability: fit.evaluability,
     };
+    if (fit.nlpTerms) out.nlpTerms = fit.nlpTerms;
     if (c.groupId) {
       out.groupId = c.groupId;
       out.groupLabel = c.groupLabel ?? c.groupId;
