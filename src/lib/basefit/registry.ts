@@ -9,8 +9,12 @@ import type { BaseFit, Evaluability } from "@/lib/matcher/types";
 
 export const CHECKABLE_FIELDS: ReadonlySet<string> = new Set(["dx", "age", "sex"]);
 
+// Exactly the features the REAL proprietary NLP extraction produces
+// (estimator/trialbridge/data.py RealProprietary SELECT; protocols.py
+// hero_protocol_real). stage / prior_lines are NOT extracted — they live in
+// NLP_CATALOG (extractable, not yet a feature).
 export const DEPTH_FEATURES: ReadonlySet<string> = new Set([
-  "her2", "ecog", "metastatic", "stage", "prior_lines", "autoimmune",
+  "her2", "ecog", "metastatic", "autoimmune",
 ]);
 
 /** Legacy/alternate field names → canonical registry key. */
@@ -35,6 +39,8 @@ export const NLP_CATALOG: Readonly<Record<string, NlpConcept>> = {
   interstitial_lung_disease: { label: "Interstitial lung disease", termsPtBr: ["doença pulmonar intersticial", "DPI", "pneumonite intersticial"] },
   significant_cardiac_disease: { label: "Significant cardiac disease", termsPtBr: ["doença cardíaca", "cardiopatia", "insuficiência cardíaca"] },
   ejection_fraction: { label: "LV ejection fraction", termsPtBr: ["fração de ejeção", "FEVE", "fração de ejeção do ventrículo esquerdo"] },
+  stage: { label: "Tumor stage", termsPtBr: ["estadiamento", "estádio", "estágio clínico", "EC IV", "doença avançada"] },
+  prior_lines: { label: "Prior lines of therapy", termsPtBr: ["linha de tratamento", "linhas prévias", "terapia prévia", "linhas anteriores", "tratamento sistêmico prévio"] },
 };
 
 export function evaluabilityFor(baseFit: BaseFit): Evaluability {
