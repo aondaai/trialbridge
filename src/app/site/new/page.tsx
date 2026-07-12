@@ -1,17 +1,34 @@
+"use client";
+
+import { useState } from "react";
 import { TopBar, PrivacyBanner } from "@/components/ui";
+import type { Patient } from "@/lib/matcher/types";
 import { listSite } from "./actions";
+import { EhrIntakePanel } from "./EhrIntakePanel";
 
 const REGIONS = ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"] as const;
 
+const selStyle: React.CSSProperties = {
+  background: "var(--panel-2)",
+  color: "var(--text)",
+  border: "1px solid var(--border)",
+  borderRadius: 6,
+  padding: "4px 8px",
+  fontSize: 13,
+};
+
 export default function NewSitePage() {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [intakeBusy, setIntakeBusy] = useState(false);
+
   return (
     <>
       <TopBar active="site" />
       <main className="wrap">
         <h1 style={{ marginBottom: 2 }}>List your site</h1>
         <p className="muted" style={{ marginTop: 0 }}>
-          Declare your center once — patient records stay local; sponsors only
-          ever see aggregate counts.
+          Declare your center once, upload an EHR export — we structure it.
+          Records stay local; sponsors only ever see aggregate counts.
         </p>
 
         <PrivacyBanner variant="site" />
@@ -56,34 +73,18 @@ export default function NewSitePage() {
               </label>
             </div>
 
-            <label style={{ fontSize: 13, display: "block", marginTop: 12 }}>
-              <div className="muted">Patient records (JSON)</div>
-              <textarea
-                name="patientsJson"
-                required
-                spellCheck={false}
-                style={{
-                  width: "100%",
-                  minHeight: 220,
-                  background: "var(--panel-2)",
-                  color: "var(--text)",
-                  border: "1px solid var(--border)",
-                  borderRadius: 8,
-                  padding: 12,
-                  fontFamily: "ui-monospace, monospace",
-                  fontSize: 13,
-                  marginTop: 4,
-                }}
-              />
-              <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
-                Paste a JSON array of patient records, or the contents of a
-                generated data/site-*.json file. Rows never leave this server.
+            <div style={{ marginTop: 14 }}>
+              <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>
+                EHR export
               </div>
-            </label>
+              <EhrIntakePanel onPatients={setPatients} onBusyChange={setIntakeBusy} />
+            </div>
+
+            <input type="hidden" name="patients" value={JSON.stringify(patients)} />
 
             <div style={{ marginTop: 12 }}>
-              <button className="cl-btn cl-btn--primary" type="submit">
-                List site →
+              <button className="cl-btn cl-btn--primary" type="submit" disabled={patients.length === 0 || intakeBusy}>
+                List site{patients.length > 0 ? ` (${patients.length} patients)` : ""} →
               </button>
             </div>
           </form>
@@ -92,12 +93,3 @@ export default function NewSitePage() {
     </>
   );
 }
-
-const selStyle: React.CSSProperties = {
-  background: "var(--panel-2)",
-  color: "var(--text)",
-  border: "1px solid var(--border)",
-  borderRadius: 6,
-  padding: "4px 8px",
-  fontSize: 13,
-};

@@ -52,6 +52,27 @@ describe("locateEligibilityHeuristic", () => {
     expect(r.note).toMatch(/no explicit exclusion/i);
     expect(r.text).toMatch(/Adults 18\+/);
   });
+
+  it("locates EU CTR-style 'E.3 Principal inclusion criteria' headings (polish C)", () => {
+    const euctr = `E.2 Objectives
+Primary objective is survival.
+
+E.3 Principal inclusion criteria
+- Age >= 18 years.
+- Confirmed diagnosis.
+
+E.4 Principal exclusion criteria
+- Prior systemic therapy.
+
+E.5 End points
+Primary endpoint is OS.`;
+    const r = locateEligibilityHeuristic(euctr);
+    expect(r.found).toBe(true);
+    expect(r.text).toMatch(/inclusion criteria/i);
+    expect(r.text).toMatch(/exclusion criteria/i);
+    expect(r.text).toMatch(/Prior systemic therapy/);
+    expect(r.text).not.toMatch(/Objectives/);
+  });
 });
 
 describe("locateEligibility (async wrapper)", () => {

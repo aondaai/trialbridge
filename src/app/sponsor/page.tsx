@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { buildSponsorView } from "@/lib/sponsor-view";
+import { loadConsultations, loadResponses, type StoredConsultation, type StoredResponse } from "@/lib/store";
 import { HERO_META } from "@/data/hero-protocol";
 import { TopBar, PrivacyBanner, CohortBar, CriterionList } from "@/components/ui";
 import { SofteningPanel } from "@/components/SofteningPanel";
@@ -96,6 +97,71 @@ function NationalCard({ national }: { national: NationalEstimateData }) {
   );
 }
 
+/**
+ * The search database — every consultation Marcus has posted, newest first,
+ * with how many sites have responded to each. The active one is highlighted;
+ * clicking a row re-opens that search (?c=id).
+ */
+function ConsultationsCard({
+  consultations,
+  responses,
+  activeId,
+}: {
+  consultations: StoredConsultation[];
+  responses: StoredResponse[];
+  activeId?: string;
+}) {
+  if (consultations.length === 0) return null;
+  const respondedCount = (id: string) => responses.filter((r) => r.consultationId === id).length;
+  const sorted = [...consultations].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return (
+    <div className="card">
+      <h2>Your posted protocols — search database</h2>
+      <p className="sub">
+        Every consultation you have posted, newest first. Open one to see its responses and softening.
+      </p>
+      <div className="table-scroll">
+        <table className="data">
+          <thead>
+            <tr>
+              <th>Posted</th>
+              <th>Protocol</th>
+              <th>NCT</th>
+              <th className="num">Criteria</th>
+              <th className="num">Sites responded</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((k) => {
+              const active = k.id === activeId;
+              return (
+                <tr key={k.id} style={active ? { background: "rgba(217,119,87,0.08)" } : undefined}>
+                  <td className="mono muted" style={{ whiteSpace: "nowrap" }}>{k.createdAt.slice(0, 10)}</td>
+                  <td>
+                    {k.title}
+                    {active && <span className="badge-low" style={{ marginLeft: 6 }}>viewing</span>}
+                  </td>
+                  <td className="mono muted">{k.nct || "—"}</td>
+                  <td className="num">{k.criteria.length}</td>
+                  <td className="num">{respondedCount(k.id)}</td>
+                  <td className="num">
+                    {!active && (
+                      <Link href={`/sponsor?c=${k.id}`} className="no-print">
+                        open →
+                      </Link>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export default async function SponsorPage({
   searchParams,
 }: {
@@ -106,6 +172,8 @@ export default async function SponsorPage({
   // National feasibility from the Python estimator (DataSUS/OMOP). Null when the
   // estimator service is offline — the card renders an honest offline state.
   const national = await fetchNationalEstimate();
+  // The full search database — every posted consultation + all responses (counts only).
+  const [allConsultations, allResponses] = await Promise.all([loadConsultations(), loadResponses()]);
   if (!view) {
     return (
       <>
@@ -123,6 +191,7 @@ export default async function SponsorPage({
             </Link>
           </div>
           <PrivacyBanner variant="sponsor" />
+          <ConsultationsCard consultations={allConsultations} responses={allResponses} />
           <NationalCard national={national} />
         </main>
       </>
@@ -149,6 +218,8 @@ export default async function SponsorPage({
         </div>
 
         <PrivacyBanner variant="sponsor" />
+
+        <ConsultationsCard consultations={allConsultations} responses={allResponses} activeId={consultation.id} />
 
         <NationalCard national={national} />
 
