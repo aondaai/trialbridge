@@ -2,14 +2,21 @@
 #
 # Persistence is a real database (Prisma over SQLite) that lives on Render's
 # EPHEMERAL disk: the start command runs `prisma db push` to (re)create the
-# schema, then `db:seed-demo` to populate the known-good demo baseline (all
-# sites + patients, the hero consultation, and pre-seeded site B/C responses).
-# Because the disk resets on every redeploy, that seed is what makes the /site
-# (Camila) and /sponsor (Marcus) flows walkable the moment the instance boots —
-# without it, a fresh deploy shows only the empty-state fallbacks. The seed is
-# idempotent and non-destructive: a warm restart that kept the disk leaves any
-# live-submitted response untouched. Live writes still land on the ephemeral
-# disk and reset on the next redeploy, which is fine for a gated demo instance.
+# schema, and the Next.js server-boot hook (src/instrumentation.ts) then
+# populates the known-good demo baseline (all sites + patients, the hero
+# consultation, and pre-seeded site B/C responses). Because the disk resets on
+# every redeploy, that boot-time seed is what makes the /site (Camila) and
+# /sponsor (Marcus) flows walkable the moment the instance boots — without it, a
+# fresh deploy shows only the empty-state fallbacks.
+#
+# The seed runs from application code (not this start command) ON PURPOSE: Render
+# does not apply a changed Blueprint start command to an existing service without
+# a manual dashboard "Sync", so wiring the seed into startCommand here would NOT
+# take effect on a plain `git push`. Seeding from the boot hook depends only on
+# code, which auto-deploys, and its failure is swallowed so the server always
+# boots. The seed is idempotent and non-destructive: a warm restart that kept the
+# disk leaves any live-submitted response untouched. Live writes still land on
+# the ephemeral disk and reset on the next redeploy, fine for a gated demo.
 #
 # `next start` binds to the $PORT Render injects automatically.
 #
@@ -26,7 +33,7 @@ services:
     plan: free
     branch: main
     buildCommand: npm ci && npx prisma generate && npm run build
-    startCommand: npx prisma db push --skip-generate && npm run db:seed-demo && npm start
+    startCommand: npx prisma db push --skip-generate && npm start
     envVars:
       - key: BASIC_AUTH_USER
         value: angelo
