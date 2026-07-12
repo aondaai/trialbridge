@@ -49,7 +49,7 @@ The ceiling is not data or method (both proven) but **how many conditions have p
 extracted**. Breast (C50) is done end-to-end. Each new condition is an extraction job over text we
 already hold, then a re-run of the same pipeline:
 1. **Breast (C50)** — ✅ done (aggregate + person-level + SUS axis).
-2. **Prostate (C61, 233k DataSUS cohort · 16.7k proprietary)** — next: extract PSA / Gleason / stage.
+2. **Prostate (C61)** — ✅ **prototyped end-to-end** (`scripts/prototype_prostate.py`): PSA / Gleason / metastatic extracted from clinical text via regex NLP (validated: Gleason mode 7), fit + standardized to the real DataSUS C61 base (234,877 male; matches shell approx +0.8%) → national Estimated N ≈ **31,646** (advanced: metastatic & Gleason≥8, 13.5% fraction). Proves the method generalizes beyond breast. Next: persist a prostate depth parquet + materialize its enriched aggregate + flip C61 to depth-available in the shell.
 3. Cervical, lung, then chronic conditions (hypertension I10 1.4M, etc.).
 The shell already lists every pending condition, so adding one is: extract depth → point the
 enriched materializers at it → the shell flips that ICD to depth-available.
