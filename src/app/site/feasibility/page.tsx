@@ -28,6 +28,67 @@ export const dynamic = "force-dynamic";
 const DEMO_SITE_ID = "site-ihealth-demo";
 const gap = (n: number) => ({ display: "grid", gap: `var(--cl-space-${n})` }) as const;
 
+const SECTION_LABELS: Record<string, string> = {
+  "Informações Gerais": "General Information",
+  "Informações da Instituição": "Institution Information",
+  "Responsável pela Base": "Database Owner",
+  "Descrição da Base": "Database Description",
+  "Interesse em Participar": "Interest in Participating",
+  Desafios: "Challenges",
+  "Bloco da Área Terapêutica": "Therapeutic Area",
+  "Matriz de Variáveis": "Variable Matrix",
+  "Identificação da População": "Population Identification",
+  "Contagens Preliminares": "Preliminary Counts",
+  "Equipe do Estudo": "Study Team",
+  "Compliance / Privacidade / CEP": "Compliance / Privacy / Ethics Committee",
+  "Contratação e Prazos": "Contracting and Timelines",
+  "Limitações Metodológicas": "Methodological Limitations",
+  "Materiais Complementares": "Supporting Materials",
+  "Comentários / Dúvidas": "Comments / Questions",
+};
+
+function displaySection(section: string) {
+  return SECTION_LABELS[section] ?? section;
+}
+
+const FIELD_LABELS: Record<string, string> = {
+  "Título do estudo": "Study title",
+  "ID do estudo (ex. NIS100547)": "Study ID (e.g. NIS100547)",
+  "Nome/cargo/e-mail do respondente": "Respondent name, role, and email",
+  "Nome / endereço / e-mail / site": "Name, address, email, and website",
+  "Nome, formação, cargo do responsável pela base": "Database owner name, qualifications, and role",
+  "Tipo de base (claims / EMR / farmácia / NLP de texto clínico...)": "Database type (claims / EMR / pharmacy / clinical-text NLP...)",
+  "Interesse em participar (Sim/Não) + justificativa": "Interest in participating (Yes/No) and rationale",
+  "Principais desafios (volume, elegibilidade, prazo)": "Main challenges (volume, eligibility, timeline)",
+  "Base é referência/volume relevante na área terapêutica?": "Is the database a reference or relevant-volume source in the therapeutic area?",
+  "Idade": "Age",
+  "Sexo / gênero": "Sex / gender",
+  "Etnia / raça / cor": "Ethnicity / race / color",
+  "Tipo de cobertura / pagador": "Coverage type / payer",
+  "Diagnóstico principal (ex. DII, dislipidemia)": "Primary diagnosis (e.g. IBD, dyslipidemia)",
+  "Diagnóstico ativo confirmável": "Confirmable active diagnosis",
+  "Data do diagnóstico": "Diagnosis date",
+  "Comorbidades (IAM, AVC, DAP, DM2, HAS, DRC, IC)": "Comorbidities (MI, stroke, PAD, T2D, hypertension, CKD, HF)",
+  "Resultados laboratoriais (LDL, HbA1c, PCR...)": "Laboratory results (LDL, HbA1c, CRP...)",
+  "Medicamentos (classe/molécula/dose/via)": "Medications (class/molecule/dose/route)",
+  "Padrão/sequência de tratamento (switch, persistência)": "Treatment pattern/sequence (switch, persistence)",
+  "Utilização de recursos (hospitalização, PS, óbito, custo)": "Resource use (hospitalization, emergency care, death, cost)",
+  "Texto livre / NLP (tipos de doc, conceitos extraíveis)": "Free text / NLP (document types, extractable concepts)",
+  "Idade >=18 (ou >=16) no index date": "Age ≥18 (or ≥16) on the index date",
+  "Diagnóstico no período de interesse (index 2019-2025)": "Diagnosis in the period of interest (index 2019–2025)",
+  "N por coorte/subgrupo (ex. adultos com dislipidemia)": "N by cohort/subgroup (e.g. adults with dyslipidemia)",
+  "Papéis disponíveis (PM, epi, bioest., programador, SME)": "Available roles (PM, epidemiologist, biostatistician, programmer, SME)",
+  "Base anonimizada / pseudo / identificável": "Anonymized / pseudonymized / identifiable database",
+  "Aprovações necessárias (CEP/CONEP, LGPD)": "Required approvals (CEP/CONEP, LGPD)",
+  "Prazos de negociação / assinatura digital": "Negotiation timelines / digital signature",
+  "Principais limitações metodológicas da base": "Main methodological limitations of the database",
+  "Dicionário de dados / fluxograma disponível?": "Data dictionary / flowchart available?",
+};
+
+function displayFieldLabel(label: string) {
+  return FIELD_LABELS[label] ?? label;
+}
+
 export default async function FeasibilityWorkspace({
   searchParams,
 }: {
@@ -55,11 +116,11 @@ export default async function FeasibilityWorkspace({
       <TopBar active="site" />
       <main className="wrap" style={gap(6)}>
         <header style={gap(2)}>
-          <h1 style={{ margin: 0 }}>Feasibility autofill — bancada de revisão</h1>
+          <h1 style={{ margin: 0 }}>Feasibility autofill — review workspace</h1>
           <p className="muted" style={{ margin: 0, maxWidth: 640 }}>
-            Envie um formulário do patrocinador, preencha automaticamente e revise campo a campo.
-            A, B e C são determinísticos; D é rascunho por LLM e exige aprovação humana — nunca
-            aprovado automaticamente.
+            Upload a sponsor form, autofill it, and review each field. A, B, and C are
+            deterministic; D is an LLM draft that requires human approval and is never
+            approved automatically.
           </p>
         </header>
 
@@ -68,13 +129,13 @@ export default async function FeasibilityWorkspace({
         {/* US-1 upload + inbox */}
         <section className="cl-card">
           <div className="cl-card__header">
-            <h2 className="cl-card__title" style={{ fontSize: "var(--cl-text-md)" }}>Caixa de entrada</h2>
+            <h2 className="cl-card__title" style={{ fontSize: "var(--cl-text-md)" }}>Inbox</h2>
             <IntakePanel />
           </div>
           <div className="cl-card__body">
             {requests.length === 0 ? (
               <p className="muted" style={{ margin: 0, fontSize: "var(--cl-text-sm)" }}>
-                Nenhuma solicitação ainda. Envie um formulário acima, ou rode{" "}
+                No requests yet. Upload a form above, or run{" "}
                 <span className="mono">npm run db:seed-demo-request</span>.
               </p>
             ) : (
@@ -106,11 +167,11 @@ export default async function FeasibilityWorkspace({
             <div className="cl-card__body" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--cl-space-4)", flexWrap: "wrap" }}>
               <div>
                 <p style={{ margin: 0, fontWeight: 500 }}>{selected.studyTitle}</p>
-                <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--cl-text-sm)" }}>Recebido — ainda não preenchido.</p>
+                <p className="muted" style={{ margin: "2px 0 0", fontSize: "var(--cl-text-sm)" }}>Received — not yet autofilled.</p>
               </div>
               <form action={runAutofill}>
                 <input type="hidden" name="requestId" value={selected.id} />
-                <button className="cl-btn cl-btn--primary cl-btn--sm" type="submit">Preencher automaticamente</button>
+                <button className="cl-btn cl-btn--primary cl-btn--sm" type="submit">Autofill</button>
               </form>
             </div>
           </section>
@@ -131,29 +192,29 @@ export default async function FeasibilityWorkspace({
                 <div style={{ display: "flex", gap: "var(--cl-space-2)" }}>
                   <form action={runAutofill}>
                     <input type="hidden" name="requestId" value={selected.id} />
-                    <button className="cl-btn cl-btn--ghost cl-btn--sm" type="submit">Repreencher</button>
+                    <button className="cl-btn cl-btn--ghost cl-btn--sm" type="submit">Refill</button>
                   </form>
                   <form action={approveHighConfidence}>
                     <input type="hidden" name="requestId" value={selected.id} />
-                    <button className="cl-btn cl-btn--primary cl-btn--sm" type="submit">Aprovar alta confiança</button>
+                    <button className="cl-btn cl-btn--primary cl-btn--sm" type="submit">Approve high-confidence fields</button>
                   </form>
                 </div>
               </div>
               <div className="cl-card__body" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--cl-space-5)", alignItems: "end" }}>
                 <div>
-                  <div className="tb-stat__label">Pacientes candidatos</div>
+                  <div className="tb-stat__label">Candidate patients</div>
                   <div className="tb-stat">{cohort?.value ?? "—"}</div>
                   {cohort && <div style={{ marginTop: 6 }}><MetricChip metric={cohort} showValue={false} /></div>}
                 </div>
                 <div>
-                  <div className="tb-stat__label">Revisão — {approved}/{total} aprovados</div>
+                  <div className="tb-stat__label">Review — {approved}/{total} approved</div>
                   <div className="cl-progress" style={{ marginTop: 8 }}>
                     <div className="cl-progress__bar" style={{ width: `${pct}%` }} />
                   </div>
                   <form action={`/site/feasibility/export`} method="get" style={{ marginTop: "var(--cl-space-3)" }}>
                     <input type="hidden" name="req" value={selected.id} />
                     <button className="cl-btn cl-btn--secondary cl-btn--sm" type="submit" formTarget="_blank">
-                      Exportar .docx (aprovados)
+                      Export .docx (approved fields)
                     </button>
                   </form>
                 </div>
@@ -163,7 +224,7 @@ export default async function FeasibilityWorkspace({
             {orderedSections.map((section) => (
               <section key={section} className="cl-card">
                 <div className="cl-card__header">
-                  <h2 className="cl-card__title" style={{ fontSize: "var(--cl-text-md)" }}>{section}</h2>
+                  <h2 className="cl-card__title" style={{ fontSize: "var(--cl-text-md)" }}>{displaySection(section)}</h2>
                 </div>
                 <div style={gap(0)}>
                   {bySection.get(section)!.map((a) => (
@@ -185,7 +246,7 @@ function FieldRow({ a }: { a: RenderAnswer }) {
     <div style={{ padding: "var(--cl-space-4) var(--cl-space-5)", borderTop: "1px solid var(--cl-border)", display: "grid", gap: "var(--cl-space-3)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--cl-space-3)", flexWrap: "wrap" }}>
         <ArchetypeTag archetype={a.archetype} />
-        <span style={{ flex: 1, minWidth: 180, fontSize: "var(--cl-text-sm)", fontWeight: 500 }}>{a.label}</span>
+        <span style={{ flex: 1, minWidth: 180, fontSize: "var(--cl-text-sm)", fontWeight: 500 }}>{displayFieldLabel(a.label)}</span>
         <MetricChip metric={a.metric} />
         <DQBadge worst={a.dqWorst} title={`conformance ${a.dq.conformance} · completeness ${a.dq.completeness} · plausibility ${a.dq.plausibility}`} />
         <StatusBadge status={a.status} />
@@ -199,7 +260,7 @@ function FieldRow({ a }: { a: RenderAnswer }) {
               <span className="cl-alert__icon">{a.critique.grounded ? "✓" : "⚠"}</span>
               <div>
                 <p className="cl-alert__title" style={{ fontSize: "var(--cl-text-xs)" }}>
-                  Crítica de fundamentação: {a.critique.grounded ? "fundamentado" : "revisar"}
+                  Grounding review: {a.critique.grounded ? "grounded" : "needs review"}
                 </p>
                 {a.critique.issues.length > 0 && (
                   <ul style={{ margin: "4px 0 0", paddingLeft: 16 }}>
@@ -218,20 +279,20 @@ function FieldRow({ a }: { a: RenderAnswer }) {
         <div style={{ display: "flex", gap: "var(--cl-space-2)", flexWrap: "wrap", alignItems: "center" }}>
           <form action={approveField}>
             <input type="hidden" name="fieldId" value={a.fieldId} />
-            <button className="cl-btn cl-btn--secondary cl-btn--sm" type="submit">Aprovar</button>
+            <button className="cl-btn cl-btn--secondary cl-btn--sm" type="submit">Approve</button>
           </form>
           <form action={rejectField}>
             <input type="hidden" name="fieldId" value={a.fieldId} />
-            <button className="cl-btn cl-btn--ghost cl-btn--sm" type="submit">Rejeitar</button>
+            <button className="cl-btn cl-btn--ghost cl-btn--sm" type="submit">Reject</button>
           </form>
           {a.archetype === "D" && (
             <details style={{ marginLeft: "auto" }}>
-              <summary className="cl-btn cl-btn--ghost cl-btn--sm" style={{ listStyle: "none" }}>Editar</summary>
+              <summary className="cl-btn cl-btn--ghost cl-btn--sm" style={{ listStyle: "none" }}>Edit</summary>
               <form action={editField} style={{ marginTop: "var(--cl-space-2)", display: "grid", gap: "var(--cl-space-2)" }}>
                 <input type="hidden" name="fieldId" value={a.fieldId} />
                 <textarea className="cl-textarea" name="value" defaultValue={a.narrativeDraft ?? ""} rows={3} />
                 <button className="cl-btn cl-btn--secondary cl-btn--sm" type="submit" style={{ justifySelf: "start" }}>
-                  Salvar edição
+                  Save edit
                 </button>
               </form>
             </details>

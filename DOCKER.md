@@ -32,14 +32,19 @@ Then open:
 - `web` reaches the estimator at `http://estimator:8421` over the compose network. If
   the estimator is down, the sponsor's national card degrades gracefully.
 
-## Optional: live Claude parsing
-Protocol parsing falls back to a cached, verified fixture without a key. To enable live
-parsing, export a **rotated** Anthropic key before `up`:
+## Configure Claude parsing and Managed Agents
+Copy both environment templates. Keep web-only secrets in `.env.local`; put the rotated
+Anthropic key and four Managed Agents IDs only in `estimator/.env.local`:
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+cp .env.example .env.local
+cp estimator/.env.example estimator/.env.local
+# estimator/.env.local: ANTHROPIC_API_KEY + TB_PIPELINE_ENV_ID + 3 TB_*_AGENT_ID values.
+# If TB_ESTIMATOR_TOKEN is enabled, use the same value in both files.
 docker compose up --build
 ```
-(The key is passed through as an env var; it is never baked into the image.)
+The key and IDs are passed to the containers at runtime and are never baked into an image.
+Protocol parsing has a limited verified-fixture fallback without a key; CMA feasibility does not.
+The `tb-cma-jobs` volume preserves queued and completed CMA jobs across container restarts.
 
 ## Data note (honest)
 The estimator runs on `omop_sample` (a small, real subset), so the national estimate can

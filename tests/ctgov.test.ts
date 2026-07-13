@@ -2,6 +2,10 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { fetchProtocol } from "@/lib/ctgov";
 import { normalizeStudy } from "@/lib/ctgov/normalize";
 import { HERO_META, HERO_PROTOCOL_TEXT } from "@/data/hero-protocol";
+import {
+  RELAY_REDEFINE_META,
+  RELAY_REDEFINE_PROTOCOL_TEXT,
+} from "@/data/relay-redefine-protocol";
 import type { RawCtGovStudy } from "@/lib/ctgov/types";
 
 const REALISTIC_PAYLOAD: RawCtGovStudy = {
@@ -65,6 +69,15 @@ describe("fetchProtocol", () => {
     expect(result.protocol.nctId).toBe(HERO_META.nct);
     expect(result.protocol.eligibilityCriteria).toBe(HERO_PROTOCOL_TEXT);
     expect(result.note).toMatch(/network down/);
+  });
+
+  it("keeps the NCT06982521 intake usable when ClinicalTrials.gov is offline", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+
+    const result = await fetchProtocol(RELAY_REDEFINE_META.nct);
+    expect(result.source).toBe("cached");
+    expect(result.protocol.nctId).toBe(RELAY_REDEFINE_META.nct);
+    expect(result.protocol.eligibilityCriteria).toBe(RELAY_REDEFINE_PROTOCOL_TEXT);
   });
 
   it("throws a clear error when an unknown NCT id fails to fetch (no fabricated cache)", async () => {

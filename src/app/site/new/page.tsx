@@ -7,6 +7,13 @@ import { listSite } from "./actions";
 import { EhrIntakePanel } from "./EhrIntakePanel";
 
 const REGIONS = ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"] as const;
+const REGION_LABELS: Record<(typeof REGIONS)[number], string> = {
+  Norte: "North",
+  Nordeste: "Northeast",
+  "Centro-Oeste": "Central-West",
+  Sudeste: "Southeast",
+  Sul: "South",
+};
 
 const selStyle: React.CSSProperties = {
   background: "var(--panel-2)",
@@ -55,7 +62,7 @@ export default function NewSitePage() {
                   </option>
                   {REGIONS.map((r) => (
                     <option key={r} value={r}>
-                      {r}
+                      {REGION_LABELS[r]}
                     </option>
                   ))}
                 </select>

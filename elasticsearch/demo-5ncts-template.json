@@ -1,0 +1,48 @@
+{
+  "index_patterns": ["clinical-demo-5ncts-*"],
+  "priority": 200,
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "dynamic": false,
+      "properties": {
+        "candidate_ncts": { "type": "keyword" },
+        "candidate_basis": { "type": "keyword" },
+        "source": { "type": "keyword" },
+        "hospital": { "type": "keyword" },
+        "dump_timestamp": { "type": "date", "format": "basic_date_time_no_millis" },
+        "document_id": { "type": "keyword" },
+        "patient_id": { "type": "keyword" },
+        "case_id": { "type": "keyword" },
+        "gender": { "type": "keyword" },
+        "birthdate": { "type": "date", "format": "strict_date" },
+        "birthdate_precision": { "type": "keyword" },
+        "death": { "type": "keyword" },
+        "provider": { "type": "keyword" },
+        "origin": { "type": "keyword" },
+        "encounter_type": { "type": "keyword" },
+        "payer": { "type": "keyword" },
+        "primary_icd": { "type": "keyword" },
+        "created_at": { "type": "date" },
+        "ingested_at": { "type": "date" },
+        "nlp_counts": {
+          "properties": {
+            "entities": { "type": "integer" },
+            "lab_tests": { "type": "integer" },
+            "vital_signs": { "type": "integer" },
+            "biomarkers": { "type": "integer" },
+            "relations": { "type": "integer" }
+          }
+        },
+        "preds": {
+          "properties": {
+            "text": { "type": "text" }
+          }
+        }
+      }
+    }
+  }
+}

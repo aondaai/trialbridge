@@ -7,6 +7,7 @@
 data/omop_full
 data/spike_visit_sample
 data/spike_care_site
+data/demo_cases/private
 
 __pycache__
 *.pyc

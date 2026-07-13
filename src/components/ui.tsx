@@ -7,12 +7,11 @@ import Link from "next/link";
 import type { Criterion, CriterionResult, Cohort } from "@/lib/matcher/types";
 import { Provenance, Confidence, type Metric } from "@/lib/metric";
 
-export function TopBar({ active }: { active?: "home" | "sponsor" | "reports" | "site" | "map" }) {
+export function TopBar({ active }: { active?: "home" | "sponsor" | "reports" | "investigators" | "site" | "map" }) {
   return (
     <div className="topbar no-print">
       <Link href="/" className="brand">
         <span className="tb-mark">TB</span> Trial<span className="brand-accent">Bridge</span>{" "}
-        <small>· Elegível</small>
       </Link>
       <nav className="navlinks">
         <Link href="/sponsor" className={active === "sponsor" ? "active" : ""}>
@@ -21,11 +20,14 @@ export function TopBar({ active }: { active?: "home" | "sponsor" | "reports" | "
         <Link href="/reports" className={active === "reports" ? "active" : ""}>
           Reports
         </Link>
+        <Link href="/investigators" className={active === "investigators" ? "active" : ""}>
+          KOLs / PIs
+        </Link>
         <Link href="/site" className={active === "site" ? "active" : ""}>
           Site (Camila)
         </Link>
         <Link href="/map" className={active === "map" ? "active" : ""}>
-          LatAm Map
+          Brazil Map
         </Link>
       </nav>
     </div>
@@ -212,7 +214,7 @@ export function MetricChip({
 /** ArchetypeTag — the A/B/C/D routing lane. Colour encodes deterministic (A/B/C) vs LLM (D). */
 export function ArchetypeTag({ archetype }: { archetype: "A" | "B" | "C" | "D" }) {
   return (
-    <span className={`tb-arch tb-arch--${archetype}`} title={`Arquétipo ${archetype}`}>
+    <span className={`tb-arch tb-arch--${archetype}`} title={`Archetype ${archetype}`}>
       {archetype}
     </span>
   );
@@ -221,8 +223,8 @@ export function ArchetypeTag({ archetype }: { archetype: "A" | "B" | "C" | "D" }
 /** DQBadge — the worst-of-three Kahn flag (conformance/completeness/plausibility). */
 const DQ_UI: Record<"pass" | "warn" | "fail", { cls: string; label: string }> = {
   pass: { cls: "success", label: "DQ ok" },
-  warn: { cls: "warning", label: "DQ atenção" },
-  fail: { cls: "danger", label: "DQ falha" },
+  warn: { cls: "warning", label: "DQ warning" },
+  fail: { cls: "danger", label: "DQ failure" },
 };
 export function DQBadge({ worst, title }: { worst: "pass" | "warn" | "fail"; title?: string }) {
   const ui = DQ_UI[worst];
@@ -236,10 +238,10 @@ export function DQBadge({ worst, title }: { worst: "pass" | "warn" | "fail"; tit
 
 /** StatusBadge — HITL state of an answer. */
 const STATUS_UI: Record<string, { cls: string; label: string }> = {
-  proposed: { cls: "neutral", label: "Proposto" },
-  approved: { cls: "success", label: "Aprovado" },
-  edited: { cls: "warning", label: "Editado" },
-  rejected: { cls: "danger", label: "Rejeitado" },
+  proposed: { cls: "neutral", label: "Proposed" },
+  approved: { cls: "success", label: "Approved" },
+  edited: { cls: "warning", label: "Edited" },
+  rejected: { cls: "danger", label: "Rejected" },
 };
 export function StatusBadge({ status }: { status: string }) {
   const ui = STATUS_UI[status] ?? STATUS_UI.proposed;

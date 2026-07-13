@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import type { Criterion } from "@/lib/matcher/types";
-import { loadConsultations, writeConsultations, loadResponses, writeResponses, StoredConsultation, StoredResponse, newReportRun } from "@/lib/store";
+import { writeConsultations, upsertResponse, StoredConsultation, StoredResponse, newReportRun } from "@/lib/store";
 import { loadAllSites } from "@/lib/data/sites";
 import { evaluateCohort, countCohorts } from "@/lib/matcher/engine";
 import { rankBottlenecks } from "@/lib/matcher/soften";
 import { compileEstimatorProtocol } from "@/lib/estimator/protocol";
+import type { ElasticsearchQueryPlan } from "@/lib/elasticsearch/types";
+import { validateElasticsearchPlan } from "@/lib/elasticsearch/validate";
+import { syncCmaEstimate } from "@/lib/estimator/cma-run";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +17,7 @@ interface PostBody {
   nct?: string;
   protocolText?: string;
   criteria?: Criterion[];
+  elasticsearchPlan?: ElasticsearchQueryPlan;
   heroBottleneckHandle?: string;
 }
 
@@ -28,6 +32,27 @@ export async function POST(req: Request) {
   if (!body.title || criteria.length === 0) {
     return NextResponse.json({ error: "title and non-empty criteria required" }, { status: 400 });
   }
+  if (!body.elasticsearchPlan) {
+    return NextResponse.json({ error: "reviewed Elasticsearch plan required" }, { status: 400 });
+  }
+  if (body.elasticsearchPlan) {
+    try {
+      validateElasticsearchPlan(body.elasticsearchPlan);
+      if (!body.elasticsearchPlan.reviewedAt) throw new Error("Elasticsearch plan must be explicitly reviewed before posting");
+      const criteriaIds = new Set(criteria.map((criterion) => criterion.id));
+      const stageIds = new Set(body.elasticsearchPlan.stages.map((stage) => stage.criterionId));
+      if (body.elasticsearchPlan.stages.length !== criteria.length || criteriaIds.size !== stageIds.size || [...criteriaIds].some((id) => !stageIds.has(id))) {
+        throw new Error("Elasticsearch plan must contain exactly one stage per reviewed criterion");
+      }
+      const kindById = new Map(criteria.map((criterion) => [criterion.id, criterion.kind]));
+      for (const stage of body.elasticsearchPlan.stages) {
+        const expected = kindById.get(stage.criterionId) === "exclusion" ? "EXCLUSION" : "INCLUSION";
+        if (stage.stageType !== expected) throw new Error(`Stage type does not match criterion ${stage.criterionId}`);
+      }
+    } catch (error) {
+      return NextResponse.json({ error: `invalid Elasticsearch plan: ${(error as Error).message}` }, { status: 400 });
+    }
+  }
 
   const id=slugId(body.title);
   const consultation: StoredConsultation = {
@@ -37,13 +62,31 @@ export async function POST(req: Request) {
     nct: body.nct,
     protocolText: body.protocolText ?? "",
     criteria,
+    elasticsearchPlan: body.elasticsearchPlan,
     heroBottleneckHandle: body.heroBottleneckHandle,
     createdAt: new Date().toISOString(),
     estimateStatus:"pending", estimateProtocol:compileEstimatorProtocol(id,criteria),
     reportRun:newReportRun(id),
   };
-  const existing = await loadConsultations();
-  await writeConsultations([...existing.filter((c) => c.id !== consultation.id), consultation]);
+  // This id is new. Persist only this consultation so a concurrent estimator or
+  // report update on an existing consultation can never be overwritten by a
+  // stale load-all/write-all snapshot.
+  await writeConsultations([consultation]);
+
+  // Start the durable MCA/CMA job as part of the post transaction. Previously
+  // the job was only started by ReportGenerator after the browser had
+  // navigated and hydrated, so closing the tab (or a client-side error) left a
+  // freshly posted consultation queued forever.
+  let cma: Awaited<ReturnType<typeof syncCmaEstimate>>;
+  try {
+    cma = await syncCmaEstimate(consultation);
+  } catch (error) {
+    cma = {
+      status: "failed",
+      stage: "failed",
+      error: error instanceof Error ? error.message : "MCA job could not be started",
+    };
+  }
 
   // Auto-compute all responding sites so the posted consultation has a working
   // aggregate + softening view immediately (counts-not-rows).
@@ -69,9 +112,9 @@ export async function POST(req: Request) {
       submittedAt: new Date().toISOString(),
     });
   }
-  const allResponses = await loadResponses();
-  const others = allResponses.filter((r) => r.consultationId !== consultation.id);
-  await writeResponses([...others, ...newResponses]);
+  // The consultation id is new, so only insert its own rows. Never rewrite the
+  // shared response table: sites may be submitting responses concurrently.
+  for (const response of newResponses) await upsertResponse(response);
 
-  return NextResponse.json({ id: consultation.id });
+  return NextResponse.json({ id: consultation.id, cma }, { status: 201 });
 }

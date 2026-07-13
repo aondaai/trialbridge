@@ -8,9 +8,19 @@ import { NextResponse } from "next/server";
 import { createFeasibilityRequest, extractFormText } from "@/lib/feasibility-autofill/intakeRequest";
 
 const DEMO_SITE_ID = "site-ihealth-demo";
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+class PayloadTooLarge extends Error {}
+
+function assertWithinLimit(req: Request): void {
+  const length = Number(req.headers.get("content-length") ?? "0");
+  if (Number.isFinite(length) && length > MAX_UPLOAD_BYTES) {
+    throw new PayloadTooLarge("payload exceeds 25MB limit");
+  }
+}
 
 export async function POST(req: Request): Promise<Response> {
   try {
+    assertWithinLimit(req);
     const ctype = req.headers.get("content-type") ?? "";
     let text = "";
     let filename: string | undefined;
@@ -23,6 +33,7 @@ export async function POST(req: Request): Promise<Response> {
       siteId = String(form.get("siteId") || DEMO_SITE_ID);
       sponsorId = form.get("sponsorId") ? String(form.get("sponsorId")) : undefined;
       if (file && typeof file !== "string") {
+        if (file.size > MAX_UPLOAD_BYTES) throw new PayloadTooLarge("file exceeds 25MB limit");
         filename = file.name;
         text = extractFormText(file.name, new Uint8Array(await file.arrayBuffer()));
       } else {
@@ -36,6 +47,9 @@ export async function POST(req: Request): Promise<Response> {
         return NextResponse.json({ error: "invalid JSON body" }, { status: 400 });
       }
       text = body.text ?? "";
+      if (new TextEncoder().encode(text).byteLength > MAX_UPLOAD_BYTES) {
+        throw new PayloadTooLarge("text exceeds 25MB limit");
+      }
       filename = body.filename;
       siteId = body.siteId ?? DEMO_SITE_ID;
       sponsorId = body.sponsorId;
@@ -46,6 +60,9 @@ export async function POST(req: Request): Promise<Response> {
     const { requestId, fieldCount } = await createFeasibilityRequest({ text, filename, siteId, sponsorId });
     return NextResponse.json({ requestId, fieldCount });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    return NextResponse.json(
+      { error: (err as Error).message },
+      { status: err instanceof PayloadTooLarge ? 413 : 500 },
+    );
   }
 }

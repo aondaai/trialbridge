@@ -25,23 +25,34 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
+function continueRequest(req: NextRequest) {
+  if (req.nextUrl.pathname === "/") {
+    return NextResponse.rewrite(new URL("/landing.html", req.url));
+  }
+  return NextResponse.next();
+}
+
 export function middleware(req: NextRequest) {
   const expectedUser = process.env.BASIC_AUTH_USER ?? "";
   const expectedPass = process.env.BASIC_AUTH_PASSWORD ?? "";
 
   // Gate disabled unless a password is configured on the host.
-  if (!expectedPass) return NextResponse.next();
+  if (!expectedPass) return continueRequest(req);
 
   const header = req.headers.get("authorization");
   if (header?.startsWith("Basic ")) {
-    const decoded = atob(header.slice(6));
-    const sep = decoded.indexOf(":");
-    if (sep !== -1) {
-      const user = decoded.slice(0, sep);
-      const pass = decoded.slice(sep + 1);
-      if (safeEqual(user, expectedUser) && safeEqual(pass, expectedPass)) {
-        return NextResponse.next();
+    try {
+      const decoded = atob(header.slice(6));
+      const sep = decoded.indexOf(":");
+      if (sep !== -1) {
+        const user = decoded.slice(0, sep);
+        const pass = decoded.slice(sep + 1);
+        if (safeEqual(user, expectedUser) && safeEqual(pass, expectedPass)) {
+          return continueRequest(req);
+        }
       }
+    } catch {
+      // Invalid base64 is simply invalid authentication, not a server error.
     }
   }
 

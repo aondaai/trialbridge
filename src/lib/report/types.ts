@@ -11,6 +11,7 @@
 
 import type { Metric, ProvenanceIndex, SourceRef } from "@/lib/metric";
 import type { CountryScorecard, SiteScore, HardFlag } from "@/lib/scoring/types";
+import type { SitePrequalificationShortlist, SiteRegistryLandscape } from "@/lib/site-feasibility/types";
 
 export interface ReportContext {
   runId: string;
@@ -131,6 +132,9 @@ export interface Report {
   softening: SofteningSummary; // §2
   country: CountryScorecard; // §3
   supplyDemand?: SupplyDemandSummary; // §4 (optional)
+  /** Registry-to-facility evidence longlist. This is not the final operational score. */
+  siteRegistryLandscape?: SiteRegistryLandscape;
+  sitePrequalification?: SitePrequalificationShortlist;
   siteRankings: SiteScore[]; // §5
   siteDeepDives: SiteScore[]; // §6 (top-N subset)
   kolMap?: KolMapSummary; // §7 (optional)

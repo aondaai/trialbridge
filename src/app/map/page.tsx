@@ -12,12 +12,12 @@ export default function MapPage() {
     <>
       <TopBar active="map" />
       <main className="wrap">
-        <h1>LatAm Site Map</h1>
+        <span className="eyebrow">Brazil · site intelligence</span>
+        <h1>Clinical research site map</h1>
         <p className="sub">
-          Physical clinical-trial sites across Brazil, Mexico, Chile, and
-          Argentina, from ClinicalTrials.gov registry data. Shows sites with
-          active trials by default — use the filters to include dormant
-          (historical) sites. Locations are city-level approximations.
+          Explore registry presence, recent activity, and operational maturity signals.
+          We are starting with Brazil; declared capabilities and official evidence are
+          displayed separately to preserve provenance.
         </p>
         <LatamSiteMap />
       </main>

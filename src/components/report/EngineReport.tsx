@@ -14,6 +14,7 @@ import type { Metric } from "@/lib/metric";
 import { SealPill, ProvenanceLegend } from "@/components/MetricChip";
 import { Provenance, SEAL_UI } from "@/lib/metric";
 import { BrazilTileMap, TileDatum } from "@/components/report/BrazilTileMap";
+import type { SitePrequalificationShortlist, SiteRegistryLandscape } from "@/lib/site-feasibility/types";
 
 // ── shared style atoms (mirror the design templates) ─────────────────────────────
 const card: React.CSSProperties = {
@@ -198,6 +199,11 @@ export function EngineReport({ report }: { report: Report }) {
       {/* ── §4 Supply vs demand ───────────────────────────────── */}
       {report.supplyDemand && report.supplyDemand.regions.length > 0 && <SupplySection report={report} />}
 
+      {/* ── §5a Registry evidence longlist ───────────────────── */}
+      {report.siteRegistryLandscape && <RegistryLonglistSection landscape={report.siteRegistryLandscape} />}
+
+      {report.sitePrequalification && <PrequalificationSection shortlist={report.sitePrequalification} />}
+
       {/* ── §5 Site rankings ──────────────────────────────────── */}
       <RankingsSection sites={siteRankings} />
 
@@ -210,6 +216,118 @@ export function EngineReport({ report }: { report: Report }) {
       {/* ── §8 Risk register ──────────────────────────────────── */}
       <RiskSection report={report} />
     </div>
+  );
+}
+
+function RegistryLonglistSection({ landscape }: { landscape: SiteRegistryLandscape }) {
+  const visible = landscape.sites.slice(0, 15);
+  return (
+    <section style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <SectionHead
+        no="05a"
+        kicker="Registry evidence"
+        title="Protocol-specific site longlist"
+        sub="Facilities linked to indication-relevant Brazilian registry studies. This is an evidence-screening longlist, not the final operational feasibility ranking."
+        right={<div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          <SealPill metric={landscape.candidateTrialCountMetric} />
+          <SealPill metric={landscape.linkedFacilityCountMetric} />
+        </div>}
+      />
+      <div style={card}>
+        {landscape.source !== "live" ? (
+          <p style={{ margin: 0, color: "var(--cl-text-secondary)", fontSize: 13.5 }}>
+            Registry longlist unavailable: {landscape.note ?? "source unavailable"}. Missing evidence was not converted to zero.
+          </p>
+        ) : visible.length === 0 ? (
+          <p style={{ margin: 0, color: "var(--cl-text-secondary)", fontSize: 13.5 }}>
+            No protocol-relevant studies linked to facilities in the current facility-master snapshot.
+          </p>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ fontSize: 10.5, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--cl-text-muted)" }}>
+                  {["#", "Facility", "UF", "Relevant trials", "Biomarker", "Active candidates", "All trials", "Evidence gaps"].map((heading, index) => (
+                    <th key={heading} style={{ textAlign: index >= 3 && index <= 6 ? "right" : "left", padding: "8px 10px", borderBottom: "1px solid var(--cl-border)", fontWeight: 600 }}>{heading}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((site, index) => (
+                  <tr key={site.facilityId} style={{ borderBottom: "1px dashed var(--cl-border)" }}>
+                    <td style={{ ...mono, color: "var(--cl-text-muted)", padding: "9px 10px" }}>{index + 1}</td>
+                    <td style={{ padding: "9px 10px" }}>
+                      <div style={{ fontWeight: 600 }}>{site.name}</div>
+                      <div style={{ fontSize: 11, color: "var(--cl-text-muted)" }}>
+                        {[site.city, site.cnes ? `CNES ${site.cnes}` : null].filter(Boolean).join(" · ") || "Identity incomplete"}
+                      </div>
+                      {site.officialName !== site.name && <div style={{ fontSize: 10.5, color: "var(--cl-text-muted)" }}>Master: {site.officialName}</div>}
+                    </td>
+                    <td style={{ padding: "9px 10px" }}>{site.uf ?? "—"}</td>
+                    {[site.relevantTrialCountMetric, site.sameBiomarkerTrialCountMetric, site.activeCandidateCompetitorCountMetric, site.totalTrialCountMetric].map((metric) => (
+                      <td key={metric.key} title={`${metric.provenance} · ${metric.confidence}`} style={{ ...mono, padding: "9px 10px", textAlign: "right" }}>{bigValue(metric)}</td>
+                    ))}
+                    <td style={{ padding: "9px 10px", color: "var(--cl-text-secondary)", fontSize: 11.5 }}>
+                      {site.evidenceGaps.slice(0, 2).join(" · ")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {landscape.note && <p style={{ margin: "10px 0 0", color: "var(--cl-text-muted)", fontSize: 11.5 }}>{landscape.note}</p>}
+        <p style={{ margin: "10px 0 0", color: "var(--cl-text-muted)", fontSize: 11.5 }}>
+          Showing {visible.length} of {landscape.sites.length} linked facilities. Active candidates require human adjudication before being called direct competitors.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function PrequalificationSection({ shortlist }: { shortlist: SitePrequalificationShortlist }) {
+  const visible = shortlist.entries.slice(0, 10);
+  return (
+    <section style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <SectionHead
+        no="05b"
+        kicker="Prequalification"
+        title="Priority shortlist for site outreach"
+        sub="Registry experience, regional DataSUS opportunity and identity readiness. Scores prioritize validation work; they do not predict enrollment."
+      />
+      <div style={card}>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ fontSize: 10.5, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--cl-text-muted)" }}>
+                {["#", "Facility", "UF", "Priority", "Experience", "UF pool", "Competition", "Identity", "Next gate"].map((heading, index) => (
+                  <th key={heading} style={{ textAlign: index >= 3 && index <= 7 ? "right" : "left", padding: "8px 10px", borderBottom: "1px solid var(--cl-border)", fontWeight: 600 }}>{heading}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((site, index) => (
+                <tr key={site.facilityId} style={{ borderBottom: "1px dashed var(--cl-border)" }}>
+                  <td style={{ ...mono, color: "var(--cl-text-muted)", padding: "9px 10px" }}>{index + 1}</td>
+                  <td style={{ padding: "9px 10px", fontWeight: 600 }}>{site.name}</td>
+                  <td style={{ padding: "9px 10px" }}>{site.uf ?? "—"}</td>
+                  {[site.priorityScoreMetric, site.experienceScoreMetric, site.regionalEligiblePoolMetric, site.regionalCompetitionMetric, site.identityScoreMetric].map((metric) => (
+                    <td key={metric.key} title={`${metric.provenance} · ${metric.confidence}${metric.note ? ` · ${metric.note}` : ""}`} style={{ ...mono, padding: "9px 10px", textAlign: "right", fontWeight: metric === site.priorityScoreMetric ? 700 : 400, color: metric === site.priorityScoreMetric ? "var(--cl-accent-active)" : "inherit" }}>{bigValue(metric)}</td>
+                  ))}
+                  <td style={{ padding: "9px 10px", color: "var(--cl-text-secondary)", fontSize: 11.5 }}>{site.evidenceGaps.at(-1) ?? "Review"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
+          {visible[0] && <><SealPill metric={visible[0].priorityScoreMetric} showValue={false} /><SealPill metric={visible[0].regionalEligiblePoolMetric} showValue={false} /></>}
+        </div>
+        <p style={{ margin: "10px 0 0", color: "var(--cl-text-muted)", fontSize: 11.5 }}>
+          Top {visible.length} shown. Infrastructure, historical enrollment, staffing, startup and current PI availability remain mandatory validation gates.
+        </p>
+      </div>
+    </section>
   );
 }
 

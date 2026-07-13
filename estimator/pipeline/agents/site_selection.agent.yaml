@@ -1,0 +1,20 @@
+name: nct-site-selection
+model: claude-opus-4-8
+system: |
+  You coordinate site prequalification for HUMAN REVIEW. Call site_shortlist with the exact
+  locked consultation_id and requested limit. The host computes every score from the reviewed
+  protocol, ClinicalTrials.gov, the facility master and the validated regional estimate.
+  Never supply, recompute, override or reorder scores. Never claim a facility-level patient
+  count. Return the tool result unchanged; its status must remain proposed and human approval
+  is mandatory before outreach or selection.
+tools:
+  - type: custom
+    name: site_shortlist
+    description: "Deterministic proposed site shortlist from a reviewed consultation. Human approval required."
+    input_schema:
+      type: object
+      additionalProperties: false
+      properties:
+        consultation_id: { type: string }
+        limit: { type: integer, minimum: 1, maximum: 50 }
+      required: [consultation_id]

@@ -21,6 +21,7 @@ import {
   RiskRegister,
   TopSiteRef,
 } from "@/lib/report/types";
+import type { SitePrequalificationShortlist, SiteRegistryLandscape } from "@/lib/site-feasibility/types";
 
 export interface AssembleInput {
   context: ReportContext;
@@ -29,6 +30,8 @@ export interface AssembleInput {
   country: CountryScorecard;
   sites: SiteScore[];
   supplyDemand?: SupplyDemandSummary;
+  siteRegistryLandscape?: SiteRegistryLandscape;
+  sitePrequalification?: SitePrequalificationShortlist;
   kolMap?: KolMapSummary;
   /** How many sites get a full deep-dive card. */
   deepDiveN?: number;
@@ -67,6 +70,8 @@ export function assemble(input: AssembleInput): Report {
     softening: input.softening,
     country: input.country,
     supplyDemand: input.supplyDemand,
+    siteRegistryLandscape: input.siteRegistryLandscape,
+    sitePrequalification: input.sitePrequalification,
     siteRankings: ranked,
     siteDeepDives: ranked.slice(0, deepDiveN),
     kolMap: input.kolMap,
@@ -141,6 +146,8 @@ function buildRiskRegister(
     softening: input.softening,
     country: input.country,
     supplyDemand: input.supplyDemand,
+    siteRegistryLandscape: input.siteRegistryLandscape,
+    sitePrequalification: input.sitePrequalification,
     siteRankings: ranked,
   };
   const provenanceIndex = buildProvenanceIndex(indexTarget);

@@ -11,27 +11,87 @@
 # omop_full (163GB) is intentionally NOT used — omop_sample (213MB) is.
 
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.3
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      xpack.security.enrollment.enabled: "false"
+      ES_JAVA_OPTS: "-Xms${ES_HEAP:-2g} -Xmx${ES_HEAP:-2g}"
+    volumes:
+      - tb-elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      # Local development only: do not expose the unauthenticated node publicly.
+      - "127.0.0.1:9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:9200/_cluster/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
   estimator:
     build: ./estimator
     # Estimator is vendored in-repo at ./estimator. The minimal DataSUS sample
     # (person + condition_occurrence) and proprietary parquet are baked into the
     # image; TB_DATASUS_DIR / TB_PROPRIETARY_GLOB are set in its Dockerfile.
     restart: unless-stopped
+    environment:
+      TB_CMA_EXECUTION_MODE: local
+      TB_PROPRIETARY_SEARCH_BACKEND: elasticsearch
+      TB_ELASTICSEARCH_URL: http://elasticsearch:9200
+      TB_ELASTICSEARCH_INDEX: clinical-demo-5ncts-v1
+    env_file:
+      # Keep the data-plane container isolated from unrelated web secrets.
+      - path: estimator/.env.local
+        required: false
+    volumes:
+      - tb-cma-jobs:/app/state
     ports:
       - "8421:8421"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
 
   web:
     build: .
+    # Next.js reads .env.local outside Docker; Compose must load it explicitly.
+    # Values listed under environment below still override file values where the
+    # container needs a service-network address instead of a host-local one.
+    env_file:
+      - path: .env.local
+        required: false
     environment:
       # Reach the estimator over the compose network by service name.
       TB_ESTIMATOR_URL: http://estimator:8421
       TB_DATASUS_LABEL: "DataSUS/OMOP (omop_sample)"
-      # Optional — paste your ROTATED key to enable live Claude parsing.
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Restricted PI roster: mounted read-only below, never baked into the image.
+      TB_FACILITY_MASTER_DB: /app/data/facility-master/facility-master.v1.sqlite
+      TB_CTGOV_INVESTIGATOR_ROSTER: /app/data/ctgov-investigators-br.json
     restart: unless-stopped
     volumes:
       # Persist the SQLite DB across restarts (starts empty on first run).
       - tb-db:/app/prisma/data
+      # Professional directory inputs remain host-managed and read-only.
+      - type: bind
+        source: ./data/facility-master
+        target: /app/data/facility-master
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./data/kol-enrichment.json
+        target: /app/data/kol-enrichment.json
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./data/ctgov-investigators-br.json
+        target: /app/data/ctgov-investigators-br.json
+        read_only: true
+        bind:
+          create_host_path: false
     # Host 3080 -> container 3000 (host 3000 is often taken by other services).
     ports:
       - "3080:3000"
@@ -40,3 +100,5 @@ services:
 
 volumes:
   tb-db:
+  tb-cma-jobs:
+  tb-elasticsearch:

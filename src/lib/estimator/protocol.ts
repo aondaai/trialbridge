@@ -9,7 +9,12 @@ function one(c:Criterion):EstimatorCriterion|string{
   if(c.baseFit==="nlp_extractable") return "requires an NLP extraction pass";
   if(c.baseFit==="not_answerable") return "not answerable from connected data";
   if(c.field==="diagnosis"||c.field==="dx"){
-    const v=String(Array.isArray(c.value)?c.value[0]:c.value).toLowerCase(); const dx=v.includes("breast")?"breast_cancer":v.includes("lung")||v.includes("nsclc")?"lung_cancer":null;
+    const v=String(Array.isArray(c.value)?c.value[0]:c.value).toLowerCase();
+    const dx=v.includes("idiopathic pulmonary fibrosis")||v==="ipf"
+      ?"idiopathic_pulmonary_fibrosis"
+      :v.includes("mature b-cell")||v.includes("mature b cell")
+        ?"mature_b_cell_malignancy"
+      :v.includes("breast")?"breast_cancer":v.includes("lung")||v.includes("nsclc")?"lung_cancer":null;
     return dx?{id:c.id,text:c.rawText,type:c.kind,kind:"checkable",field:"dx",op:"in",value:[dx]}:"diagnosis is not mapped to the proprietary/DataSUS vocabulary";
   }
   if(c.field==="age") return c.operator==="gte"&&c.value===18?{id:c.id,text:c.rawText,type:c.kind,kind:"checkable",field:"age_band",op:"in",value:["18-39","40-49","50-59","60-69","70+"]}:"exact age boundary is not representable in aggregate age bands";

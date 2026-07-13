@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { buildSponsorView } from "@/lib/sponsor-view";
 import { loadConsultations, loadResponses, type StoredConsultation, type StoredResponse } from "@/lib/store";
 import { HERO_META } from "@/data/hero-protocol";
@@ -14,6 +15,10 @@ export const dynamic = "force-dynamic";
 
 function fmt(n: number | "<5"): string {
   return n === "<5" ? "<5" : String(n);
+}
+
+function englishRegion(region: string): string {
+  return ({ Norte: "North", Nordeste: "Northeast", "Centro-Oeste": "Central-West", Sudeste: "Southeast", Sul: "South" } as Record<string, string>)[region] ?? region;
 }
 
 type NationalEstimateData = Awaited<ReturnType<typeof fetchNationalEstimate>>;
@@ -174,6 +179,7 @@ export default async function SponsorPage({
   searchParams: Promise<{ c?: string }>;
 }) {
   const { c } = await searchParams;
+  if (!c) redirect("/sponsor/new");
   const view = (await buildSponsorView(c || HERO_META.id)) ?? (await buildSponsorView(HERO_META.id));
   // National feasibility from the Python estimator (DataSUS/OMOP). Null when the
   // estimator service is offline — the card renders an honest offline state.
@@ -354,7 +360,7 @@ export default async function SponsorPage({
               <tbody>
                 {regions.map((r) => (
                   <tr key={r.region}>
-                    <td>{r.region}</td>
+                    <td>{englishRegion(r.region)}</td>
                     <td className="num">{r.siteCount}</td>
                     <td className="num">{fmt(r.definite)}</td>
                     <td className="num">{fmt(r.possible)}</td>

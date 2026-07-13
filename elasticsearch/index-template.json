@@ -1,0 +1,25 @@
+{
+  "index_patterns": ["clinical-*"],
+  "priority": 100,
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "dynamic": true,
+      "properties": {
+        "preds": {
+          "properties": {
+            "clinical_entities": { "type": "nested", "dynamic": true },
+            "lab_tests": { "type": "nested", "dynamic": true },
+            "biomarkers": { "type": "nested", "dynamic": true },
+            "vital_signs": { "type": "nested", "dynamic": true },
+            "entities_relations": { "type": "nested", "dynamic": true },
+            "text": { "type": "text" }
+          }
+        }
+      }
+    }
+  }
+}

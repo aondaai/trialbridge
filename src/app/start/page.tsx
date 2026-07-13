@@ -24,7 +24,7 @@ export default function StartPage() {
             marginBottom: 8,
           }}
         >
-          TrialBridge · Elegível
+          TrialBridge
         </p>
         <h1 className="cl-h1" style={{ margin: "0 0 12px", lineHeight: 1.1 }}>
           How do you want to start?
@@ -57,9 +57,50 @@ export default function StartPage() {
                 boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
               }}
             >
-              <h2 className="cl-h2" style={{ margin: 0 }}>
-                {r.title}
-              </h2>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 16,
+                }}
+              >
+                <h2 className="cl-h2" style={{ margin: 0 }}>
+                  {r.title}
+                </h2>
+                {r.key === "site" && (
+                  <span
+                    aria-label="pretty soon"
+                    style={{
+                      position: "relative",
+                      flexShrink: 0,
+                      padding: "7px 11px",
+                      borderRadius: 999,
+                      background: "var(--cl-accent)",
+                      color: "white",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      letterSpacing: "0.02em",
+                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.12)",
+                    }}
+                  >
+                    pretty soon
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        position: "absolute",
+                        left: 12,
+                        bottom: -4,
+                        width: 9,
+                        height: 9,
+                        background: "var(--cl-accent)",
+                        transform: "rotate(45deg)",
+                      }}
+                    />
+                  </span>
+                )}
+              </div>
               <p className="cl-text-secondary" style={{ margin: 0, flexGrow: 1 }}>
                 {r.blurb}
               </p>

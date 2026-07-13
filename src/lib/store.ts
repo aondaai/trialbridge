@@ -18,6 +18,7 @@ import { prisma } from "@/lib/db";
 import type { Criterion } from "@/lib/matcher/types";
 import type { CompiledProtocol } from "@/lib/estimator/protocol";
 import type { NationalEstimate } from "@/lib/estimator/client";
+import type { ElasticsearchQueryPlan } from "@/lib/elasticsearch/types";
 export type EstimateStatus = "pending"|"running"|"complete"|"partial"|"failed";
 export type ReportPipelineKey = "first-party-supply" | "regulatory" | "competitive-intensity" | "site-kol-discovery" | "standard-of-care" | "representativeness" | "eligibility-realism";
 export type ReportPipelineStatus = "queued" | "running" | "complete" | "partial" | "failed";
@@ -49,10 +50,14 @@ export interface StoredConsultation {
   sourceNote?: string;
   protocolText: string;
   criteria: Criterion[];
+  /** Validated, database-ready Elasticsearch funnel generated from reviewed criteria. */
+  elasticsearchPlan?: ElasticsearchQueryPlan;
   /** The intended hero bottleneck handle, for the softening UI default. */
   heroBottleneckHandle?: string;
   createdAt: string;
   estimateStatus?: EstimateStatus;
+  estimateRunId?: string;
+  estimateCriteriaHash?: string;
   estimateProtocol?: CompiledProtocol;
   estimateResult?: NationalEstimate;
   estimateError?: string;
@@ -88,9 +93,10 @@ type ConsultationRow = {
   sourceNote: string | null;
   protocolText: string;
   criteria: string;
+  elasticsearchPlan: string | null;
   heroBottleneckHandle: string | null;
   createdAt: Date;
-  estimateStatus:string; estimateProtocol:string|null; estimateResult:string|null; estimateError:string|null; estimatedAt:Date|null; reportRun:string|null;
+  estimateStatus:string; estimateRunId:string|null; estimateCriteriaHash:string|null; estimateProtocol:string|null; estimateResult:string|null; estimateError:string|null; estimatedAt:Date|null; reportRun:string|null;
 };
 
 function toStoredConsultation(row: ConsultationRow): StoredConsultation {
@@ -102,9 +108,12 @@ function toStoredConsultation(row: ConsultationRow): StoredConsultation {
     sourceNote: row.sourceNote ?? undefined,
     protocolText: row.protocolText,
     criteria: JSON.parse(row.criteria) as Criterion[],
+    elasticsearchPlan: row.elasticsearchPlan ? JSON.parse(row.elasticsearchPlan) as ElasticsearchQueryPlan : undefined,
     heroBottleneckHandle: row.heroBottleneckHandle ?? undefined,
     createdAt: row.createdAt.toISOString(),
     estimateStatus:row.estimateStatus as EstimateStatus,
+    estimateRunId:row.estimateRunId??undefined,
+    estimateCriteriaHash:row.estimateCriteriaHash??undefined,
     estimateProtocol:row.estimateProtocol?JSON.parse(row.estimateProtocol):undefined,
     estimateResult:row.estimateResult?JSON.parse(row.estimateResult):undefined,
     estimateError:row.estimateError??undefined, estimatedAt:row.estimatedAt?.toISOString(),
@@ -168,9 +177,10 @@ export async function writeConsultations(list: StoredConsultation[]): Promise<vo
       sourceNote: c.sourceNote ?? null,
       protocolText: c.protocolText,
       criteria: JSON.stringify(c.criteria),
+      elasticsearchPlan: c.elasticsearchPlan ? JSON.stringify(c.elasticsearchPlan) : null,
       heroBottleneckHandle: c.heroBottleneckHandle ?? null,
       createdAt: new Date(c.createdAt),
-      estimateStatus:c.estimateStatus??"pending", estimateProtocol:c.estimateProtocol?JSON.stringify(c.estimateProtocol):null,
+      estimateStatus:c.estimateStatus??"pending", estimateRunId:c.estimateRunId??null, estimateCriteriaHash:c.estimateCriteriaHash??null, estimateProtocol:c.estimateProtocol?JSON.stringify(c.estimateProtocol):null,
       estimateResult:c.estimateResult?JSON.stringify(c.estimateResult):null, estimateError:c.estimateError??null,
       estimatedAt:c.estimatedAt?new Date(c.estimatedAt):null,
       reportRun:c.reportRun?JSON.stringify(c.reportRun):null,
@@ -183,8 +193,8 @@ export async function writeConsultations(list: StoredConsultation[]): Promise<vo
   }
 }
 
-export async function updateConsultationEstimate(id:string, patch:Pick<StoredConsultation,"estimateStatus"|"estimateProtocol"|"estimateResult"|"estimateError"|"estimatedAt"> & {clearResult?:boolean}):Promise<void>{
-  await prisma.consultation.update({where:{id},data:{estimateStatus:patch.estimateStatus,estimateProtocol:patch.estimateProtocol?JSON.stringify(patch.estimateProtocol):undefined,estimateResult:patch.clearResult?null:patch.estimateResult?JSON.stringify(patch.estimateResult):undefined,estimateError:patch.estimateError??null,estimatedAt:patch.clearResult?null:patch.estimatedAt?new Date(patch.estimatedAt):undefined}});
+export async function updateConsultationEstimate(id:string, patch:Pick<StoredConsultation,"estimateStatus"|"estimateRunId"|"estimateCriteriaHash"|"estimateProtocol"|"estimateResult"|"estimateError"|"estimatedAt"> & {clearResult?:boolean}):Promise<void>{
+  await prisma.consultation.update({where:{id},data:{estimateStatus:patch.estimateStatus,estimateRunId:patch.estimateRunId,estimateCriteriaHash:patch.estimateCriteriaHash,estimateProtocol:patch.estimateProtocol?JSON.stringify(patch.estimateProtocol):undefined,estimateResult:patch.clearResult?null:patch.estimateResult?JSON.stringify(patch.estimateResult):undefined,estimateError:patch.estimateError??null,estimatedAt:patch.clearResult?null:patch.estimatedAt?new Date(patch.estimatedAt):undefined}});
 }
 
 export async function updateConsultationReportRun(id:string, reportRun:StoredReportRun):Promise<void>{
@@ -196,8 +206,11 @@ export async function updateReportPipeline(
   key:ReportPipelineKey,
   patch:Partial<ReportPipelineProgress>,
 ):Promise<StoredReportRun>{
-  return prisma.$transaction(async(tx)=>{
-    const row=await tx.consultation.findUnique({where:{id},select:{reportRun:true}});
+  // All seven report pipelines update the same JSON column. Use optimistic
+  // compare-and-swap so concurrent completions are merged instead of allowing
+  // the last writer to silently erase another pipeline's result.
+  for(let attempt=0;attempt<12;attempt++){
+    const row=await prisma.consultation.findUnique({where:{id},select:{reportRun:true}});
     if(!row) throw new Error(`Unknown consultation ${id}`);
     const now=new Date().toISOString();
     const run=(row.reportRun?JSON.parse(row.reportRun):newReportRun(id,now)) as StoredReportRun;
@@ -206,9 +219,14 @@ export async function updateReportPipeline(
     const completed=run.pipelines.filter((pipeline)=>pipeline.status==="complete").length;
     run.status=terminal?(completed===run.pipelines.length?"ready":completed>0?"partial":"failed"):"running";
     run.updatedAt=now;
-    await tx.consultation.update({where:{id},data:{reportRun:JSON.stringify(run)}});
-    return run;
-  });
+    const next=JSON.stringify(run);
+    const updated=await prisma.consultation.updateMany({
+      where:{id,reportRun:row.reportRun},
+      data:{reportRun:next},
+    });
+    if(updated.count===1)return run;
+  }
+  throw new Error(`Concurrent report updates did not settle for consultation ${id}`);
 }
 
 export function newReportRun(consultationId:string,now=new Date().toISOString()):StoredReportRun{
@@ -225,30 +243,9 @@ export async function loadResponses(consultationId?: string): Promise<StoredResp
   return rows.map(toStoredResponse);
 }
 
-/** Replace the whole responses set with `list` (used by bulk rewrites). */
-export async function writeResponses(list: StoredResponse[]): Promise<void> {
-  await prisma.$transaction([
-    prisma.response.deleteMany({}),
-    ...list.map((r) =>
-      prisma.response.create({
-        data: {
-          id: r.id,
-          consultationId: r.consultationId,
-          siteId: r.siteId,
-          siteName: r.siteName,
-          definite: r.definite,
-          possible: r.possible,
-          excluded: r.excluded,
-          total: r.total,
-          bottleneckHandle: r.bottleneckHandle,
-          bottleneckLabel: r.bottleneckLabel,
-          monthlyIncidence: r.monthlyIncidence,
-          live: r.live,
-          submittedAt: new Date(r.submittedAt),
-        },
-      }),
-    ),
-  ]);
+/** Delete exactly one site's response without rewriting unrelated rows. */
+export async function deleteResponse(consultationId: string, siteId: string): Promise<void> {
+  await prisma.response.deleteMany({ where: { consultationId, siteId } });
 }
 
 export async function hasResponded(consultationId: string, siteId: string): Promise<boolean> {

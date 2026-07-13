@@ -28,6 +28,7 @@ export interface McaAgentDefinition {
 }
 
 export const COHORT_MCP_SERVER = "trialbridge-cohort";
+export const SITE_SELECTION_MCP_SERVER = "trialbridge-site-selection";
 
 export const FEASIBILITY_AGENT: McaAgentDefinition = {
   model: "claude-opus-4-8",
@@ -52,5 +53,22 @@ export const FEASIBILITY_AGENT: McaAgentDefinition = {
     adr: "ADR-002",
     phase: "M1",
     residency: "C runs site-side over MCP; A/B/D orchestrated cloud-side; no patient data in cloud",
+  },
+};
+
+export const SITE_SELECTION_AGENT: McaAgentDefinition = {
+  model: "claude-opus-4-8",
+  systemPrompt: [
+    "You coordinate clinical-trial site prequalification for HUMAN REVIEW.",
+    "Call site.shortlist with the sponsor-reviewed consultationId and requested limit.",
+    "The tool computes all scores deterministically. Never recompute, override, reorder, or invent a score.",
+    "Return the tool result with status proposed. Human approval is mandatory before outreach or selection.",
+    "Treat missing evidence as unavailable, never as zero. Never claim a facility-level patient count.",
+  ].join("\n"),
+  tools: [{ type: "mcp", server: SITE_SELECTION_MCP_SERVER, name: "site.shortlist" }],
+  metadata: {
+    module: "site-selection",
+    phase: "prequalification",
+    decisionBoundary: "deterministic tool output; human approval required",
   },
 };

@@ -28,7 +28,7 @@ const monoFont = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TrialBridge — Elegível",
+  title: "TrialBridge",
   description:
     "Two-sided clinical-trial site-feasibility: deterministic matching, protocol softening, counts-not-rows aggregation.",
 };
