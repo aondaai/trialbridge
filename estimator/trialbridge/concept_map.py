@@ -25,12 +25,14 @@ _CID10_CODE = re.compile(r"^[A-Za-z][0-9A-Za-z.]{1,6}$")
 
 
 def concept_map_path() -> Path:
-    """Repo root is three parents up from this file
-    (trialbridge/ -> trialbridge_estimator/ -> outputs/ -> repo root)."""
+    """Resolve the artifact packaged with the estimator before a workspace copy."""
     override = os.environ.get("TB_CONCEPT_MAP")
     if override:
         return Path(override)
-    return Path(__file__).resolve().parents[3] / "concept-map.json"
+    source = Path(__file__).resolve()
+    candidates = [source.parents[1] / "concept-map.json",
+                  source.parents[3] / "concept-map.json"]
+    return next((candidate for candidate in candidates if candidate.exists()), candidates[0])
 
 
 def load_concept_map(path: Optional[Path] = None) -> dict:

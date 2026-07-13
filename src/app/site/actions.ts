@@ -10,7 +10,7 @@
 
 import { revalidatePath } from "next/cache";
 import { loadSite } from "@/lib/data/sites";
-import { getConsultation, upsertResponse, StoredResponse } from "@/lib/store";
+import { deleteResponse, getConsultation, upsertResponse, StoredResponse } from "@/lib/store";
 import { evaluateCohort, countCohorts } from "@/lib/matcher/engine";
 import { rankBottlenecks } from "@/lib/matcher/soften";
 
@@ -53,9 +53,7 @@ export async function withdrawCapacity(formData: FormData) {
   // Reset to the seeded state so the demo can be re-run cleanly.
   const consultationId = String(formData.get("consultationId"));
   const siteId = String(formData.get("siteId"));
-  const { loadResponses, writeResponses } = await import("@/lib/store");
-  const all = await loadResponses();
-  await writeResponses(all.filter((r) => !(r.consultationId === consultationId && r.siteId === siteId)));
+  await deleteResponse(consultationId, siteId);
   revalidatePath("/site");
   revalidatePath("/site/respond");
   revalidatePath("/sponsor");

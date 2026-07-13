@@ -42,6 +42,8 @@ import { rankSites } from "@/lib/scoring/site";
 import type { CompetitionData } from "@/lib/ctgov/competition";
 import type { DirectorySite } from "@/lib/sites/directory";
 import { directorySiteToSiteInput, kolScoreByCnes } from "@/lib/sites/toSiteInput";
+import type { SiteRegistryLandscape } from "@/lib/site-feasibility/types";
+import { buildSitePrequalificationShortlist } from "@/lib/site-feasibility/shortlist";
 
 export interface BuildReportOptions {
   runId?: string;
@@ -70,6 +72,9 @@ export interface BuildReportOptions {
    *  base). When present it replaces the synthetic-cohort pools everywhere: funnel,
    *  country supply, §4 regional pools, softening levers, and per-site allocations. */
   nationalEstimate?: NationalEstimate | null;
+  /** Protocol-specific CT.gov → facility-master longlist. Kept separate from the
+   * operational score until patient and capacity evidence are available. */
+  siteRegistryLandscape?: SiteRegistryLandscape;
 }
 
 /** Map CT.gov investigators → trial-experience-only KOL inputs (pre-enrichment). */
@@ -215,6 +220,20 @@ export function buildReport(
     );
   }
 
+  const sitePrequalification = opts.siteRegistryLandscape
+    ? buildSitePrequalificationShortlist(
+        opts.siteRegistryLandscape,
+        (est?.byRegion ?? []).map((region) => ({
+          uf: region.region,
+          eligible: region.estimatedN,
+          asOf: est?.asOf ?? asOf,
+          sourceLabel: est ? `${est.dataSource} — TrialBridge estimator (${est.protocolId})` : "Regional estimator",
+          sourceVersion: est?.asOf ?? null,
+        })),
+        { limit: opts.maxRankedSites ?? 20, asOf: est?.asOf ?? asOf },
+      )
+    : undefined;
+
   return assemble({
     context: {
       runId: opts.runId ?? "run_preview",
@@ -230,6 +249,8 @@ export function buildReport(
     country,
     sites: siteScores,
     supplyDemand,
+    siteRegistryLandscape: opts.siteRegistryLandscape,
+    sitePrequalification,
     kolMap,
     assumptions: [
       est

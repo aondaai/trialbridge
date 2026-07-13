@@ -17,8 +17,10 @@ COPY . .
 # api.py serves from the MATERIALIZED base (data/datasus_base, tiny/committed) via
 # MaterializedDataSUS, and proprietary depth from data/proprietary_ha — no 163GB scan.
 ENV TB_DATASUS_BASE_DIR=/app/data/datasus_base \
+    TB_DATASUS_DIR=/app/data/omop_sample \
     TB_PROPRIETARY_GLOB=/app/data/proprietary_ha/*.parquet \
-    TB_CONCEPT_MAP=/app/concept-map.json
+    TB_CONCEPT_MAP=/app/concept-map.json \
+    TB_CMA_JOBS_DB=/app/state/cma-jobs.sqlite3
 
 EXPOSE 8421
 

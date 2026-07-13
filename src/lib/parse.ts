@@ -6,32 +6,41 @@
  * matching"), so it is isolated here and its output is shown back for human
  * verification before it ever reaches the deterministic matcher.
  *
- * ADR Decision 3B — parse offline, cache, verify: the demo-critical path replays
- * the cached, verified hero criteria. When ANTHROPIC_API_KEY is set, this calls
- * Claude live (shown once, live-but-safe); when it is absent OR the call fails,
- * it falls back to a cached verified artifact — but ONLY for the NCT id that
- * artifact was actually verified against (`nctId` param). The caller (the
- * "0 · Fetch from ClinicalTrials.gov" step) supplies the id it just fetched;
- * a manual edit to the pasted text un-trusts it client-side (see sponsor/new).
- * Without a key AND without a matching cached fixture, this throws rather than
- * silently attaching the wrong trial's criteria to the wrong protocol text —
- * same "nothing honest to fall back to" discipline as ctgov/index.ts.
+ * Verified fixtures remain the highest-trust offline path. For every other NCT,
+ * a conservative deterministic parser preserves each registry criterion and
+ * maps only a small set of unambiguous fields. Everything unfamiliar is marked
+ * not-answerable/manual-review instead of blocking intake or inventing logic.
  */
 
 import Anthropic from "@anthropic-ai/sdk";
 import type { Criterion, Operator } from "@/lib/matcher/types";
 import { HERO_META, HERO_CRITERIA } from "@/data/hero-protocol";
 import { NSCLC_META, NSCLC_CRITERIA } from "@/data/nsclc-kras-protocol";
+import { IAM1363_META, IAM1363_CRITERIA } from "@/data/iambic-iam1363-protocol";
+import { RELAY_REDEFINE_META, RELAY_REDEFINE_CRITERIA } from "@/data/relay-redefine-protocol";
+import { RENTOSERTIB_IPF_META, RENTOSERTIB_IPF_CRITERIA } from "@/data/rentosertib-ipf-protocol";
 import { reconcileBaseFit, stampBaseFit } from "@/lib/basefit/registry";
 
 interface CachedFixture {
   nct: string;
   criteria: Criterion[];
+  note?: string;
 }
 
 const CACHED_FIXTURES: CachedFixture[] = [
   { nct: HERO_META.nct, criteria: HERO_CRITERIA },
   { nct: NSCLC_META.nct, criteria: NSCLC_CRITERIA },
+  { nct: IAM1363_META.nct, criteria: IAM1363_CRITERIA },
+  {
+    nct: RELAY_REDEFINE_META.nct,
+    criteria: RELAY_REDEFINE_CRITERIA,
+    note: `Loaded the registry-derived offline criteria for ${RELAY_REDEFINE_META.nct}. Review every stage against the current sponsor protocol before building the cohort plan.`,
+  },
+  {
+    nct: RENTOSERTIB_IPF_META.nct,
+    criteria: RENTOSERTIB_IPF_CRITERIA,
+    note: `Loaded the registry-derived offline criteria for ${RENTOSERTIB_IPF_META.nct}. Review lung-function thresholds, treatment windows, and investigator-judgment rules before building the cohort plan.`,
+  },
 ];
 
 function findCachedFixture(nctId?: string): CachedFixture | undefined {
@@ -42,7 +51,7 @@ function findCachedFixture(nctId?: string): CachedFixture | undefined {
 
 export interface ParseResult {
   criteria: Criterion[];
-  source: "claude" | "cached";
+  source: "claude" | "cached" | "deterministic";
   model?: string;
   note: string;
 }
@@ -107,6 +116,83 @@ const PARSE_SCHEMA = {
 
 type RawCriterion = Omit<Criterion, "id"> & { groupId?: string | null; groupLabel?: string | null };
 
+interface SourceCriterion { kind: Criterion["kind"]; rawText: string }
+
+function sourceCriteria(text: string): SourceCriterion[] {
+  const rows: SourceCriterion[] = [];
+  let kind: Criterion["kind"] | null = null;
+  let current: SourceCriterion | null = null;
+  let paragraphBreak = true;
+  const flush = () => {
+    if (current?.rawText) rows.push(current);
+    current = null;
+  };
+  for (const sourceLine of text.replace(/\r/g, "").split("\n")) {
+    const line = sourceLine.trim();
+    if (!line) { paragraphBreak = true; continue; }
+    if (/^(?:key\s+)?inclusion\s+criteria\s*:?$/i.test(line)) {
+      flush(); kind = "inclusion"; paragraphBreak = true; continue;
+    }
+    if (/^(?:key\s+)?exclusion\s+criteria\s*:?$/i.test(line)) {
+      flush(); kind = "exclusion"; paragraphBreak = true; continue;
+    }
+    if (!kind) continue;
+    const bullet = line.match(/^(?:[-*•]|\d+(?:\.\d+)*[.)])\s*(.+)$/);
+    if (bullet || paragraphBreak || !current) {
+      flush();
+      current = { kind, rawText: (bullet?.[1] ?? line).trim() };
+    } else {
+      current.rawText += ` ${line}`;
+    }
+    paragraphBreak = false;
+  }
+  flush();
+  return rows.slice(0, 500);
+}
+
+function deterministicRaw(source: SourceCriterion): RawCriterion {
+  const rawText = source.rawText.replace(/\\([<>])/g, "$1");
+  const lower = rawText.toLowerCase();
+  const base = { kind: source.kind, rawText, confidence: 0.35 } as const;
+
+  const ageBetween = rawText.match(/(?:age|aged)[^\d]{0,12}(\d{1,3})\s*(?:-|to|and)\s*(\d{1,3})/i);
+  if (ageBetween) return { ...base, field: "age", operator: "between", value: [Number(ageBetween[1]), Number(ageBetween[2])], unit: "years", confidence: 0.92 };
+  const ageMinimum = rawText.match(/(?:age|aged|minimum age)[^\d≥>]{0,16}(?:≥|>=|at least|older than or equal to)?\s*(\d{1,3})\s*(?:years?|yo)?/i);
+  if (ageMinimum) return { ...base, field: "age", operator: "gte", value: Number(ageMinimum[1]), unit: "years", confidence: 0.9 };
+
+  if (/\becog\b|eastern cooperative oncology group/i.test(rawText)) {
+    const values = [...rawText.matchAll(/\b[0-5]\b/g)].map((match) => Number(match[0]));
+    return { ...base, field: "ecog", operator: values.length > 1 ? "in" : "lte", value: values.length > 1 ? [...new Set(values)] : values[0] ?? 1, confidence: 0.9 };
+  }
+
+  if (/histolog(?:y|ically)|cytolog(?:y|ically)|\bdiagnosis of\b/i.test(rawText)) {
+    const match = rawText.match(/(?:confirmed\s+(?:diagnosis\s+of\s+)?|diagnosis of\s+)(.+?)(?:[.;]|$)/i);
+    if (match) return { ...base, field: "diagnosis", operator: "eq", value: match[1].trim().toLowerCase(), confidence: 0.82 };
+  }
+  if (/\bher2\b/i.test(rawText)) return { ...base, field: "her2_status", operator: "exists", value: null, confidence: 0.72 };
+  if (/\bmetastatic\b/i.test(rawText)) return { ...base, field: "metastatic", operator: "exists", value: null, confidence: 0.68 };
+  if (/\bautoimmune\b/i.test(rawText)) return { ...base, field: "autoimmune", operator: "exists", value: null, confidence: 0.68 };
+  if (/\binterstitial lung disease\b|\bild\b/i.test(rawText)) return { ...base, field: "interstitial_lung_disease", operator: "exists", value: null, confidence: 0.64 };
+  if (/\bhiv\b|human immunodeficiency virus/i.test(rawText)) return { ...base, field: "hiv", operator: "exists", value: null, confidence: 0.64 };
+  if (/\bhepatitis\b/i.test(rawText)) return { ...base, field: "active_hepatitis", operator: "exists", value: null, confidence: 0.62 };
+  if (/\bdiabetes\b/i.test(rawText)) return { ...base, field: "diabetes", operator: "exists", value: null, confidence: 0.62 };
+  if (/solid organ transplant|lung transplant/i.test(rawText)) return { ...base, field: "solid_organ_transplant", operator: "exists", value: null, confidence: 0.62 };
+  if (/cardiac|cardiovascular/i.test(rawText)) return { ...base, field: "significant_cardiac_disease", operator: "exists", value: null, confidence: 0.6 };
+  if (/ejection fraction|\blvef\b/i.test(rawText)) return { ...base, field: "ejection_fraction", operator: "exists", value: null, confidence: 0.6 };
+  if (/prior lines?|lines? of (?:systemic )?therapy/i.test(rawText)) return { ...base, field: "prior_lines", operator: "exists", value: null, confidence: 0.58 };
+  if (/\bstage\s+[ivx0-9]/i.test(rawText)) return { ...base, field: "stage", operator: "exists", value: null, confidence: 0.58 };
+
+  const label = lower.replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 48) || "criterion";
+  return { ...base, field: `manual_review_${label}`, operator: "exists", value: null };
+}
+
+/** NCT-agnostic, fail-open-to-review parser used when live model parsing is unavailable. */
+export function parseCriteriaDeterministically(text: string): Criterion[] {
+  const extracted = sourceCriteria(text);
+  if (!extracted.length) throw new Error("Eligibility text has no recognizable inclusion/exclusion sections.");
+  return normalize(extracted.map(deterministicRaw));
+}
+
 /** Assign stable ids, clamp confidence, stamp base-fit, drop empty group fields. */
 export function normalize(raw: RawCriterion[]): Criterion[] {
   return raw.map((c, i) => {
@@ -132,31 +218,26 @@ export function normalize(raw: RawCriterion[]): Criterion[] {
   });
 }
 
-const KNOWN_NCTS = CACHED_FIXTURES.map((f) => f.nct).join(", ");
-
-function noFixtureError(nctId: string | undefined, reason: string): Error {
-  const which = nctId ? `"${nctId}"` : "this text";
-  return new Error(
-    `${reason} ${which} isn't one of the verified cached fixtures (${KNOWN_NCTS}), so there is nothing honest to fall back to. Set ANTHROPIC_API_KEY to parse arbitrary protocol text live with Claude, or fetch/paste one of the known trials.`,
-  );
-}
-
 /**
  * Parse pasted protocol text into Criterion[]. `nctId` should be the NCT id the
  * text actually came from (the ctgov fetch step passes it; a manual edit to the
  * textarea un-trusts it — see sponsor/new/page.tsx). Falls back to the matching
- * cached fixture on no-key/error; throws if no fixture matches rather than
- * attaching an unrelated trial's criteria to this text.
+ * cached fixture on no-key/error; otherwise returns a conservative
+ * deterministic draft derived only from the supplied text.
  */
 export async function parseCriteria(text: string, nctId?: string): Promise<ParseResult> {
   const fixture = findCachedFixture(nctId);
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    if (!fixture) throw noFixtureError(nctId, "ANTHROPIC_API_KEY not set, and");
-    return {
+    if (fixture) return {
       criteria: stampBaseFit(fixture.criteria),
       source: "cached",
-      note: `ANTHROPIC_API_KEY not set — showing the pre-parsed, human-verified criteria for ${fixture.nct} (ADR Decision 3B: parse offline, cache, verify). Set the key to parse pasted text live with Claude.`,
+      note: fixture.note ?? `Loaded the previously validated eligibility criteria for ${fixture.nct}. Review them before building the cohort plan.`,
+    };
+    return {
+      criteria: parseCriteriaDeterministically(text),
+      source: "deterministic",
+      note: `Created a conservative review draft${nctId ? ` for ${nctId.trim().toUpperCase()}` : ""} from the supplied eligibility text. Unfamiliar criteria remain manual-review gates; verify every row before posting.`,
     };
   }
   try {
@@ -179,14 +260,18 @@ export async function parseCriteria(text: string, nctId?: string): Promise<Parse
       criteria,
       source: "claude",
       model: resp.model,
-      note: `Parsed live by ${resp.model}. Verify low-confidence rows (flagged) before posting — corrections here are the trust step.`,
+      note: "Eligibility criteria were extracted from the protocol text. Review flagged items before continuing.",
     };
   } catch (err) {
-    if (!fixture) throw noFixtureError(nctId, `Live parse failed (${(err as Error).message}); fell back would need a cached fixture, but`);
-    return {
+    if (fixture) return {
       criteria: stampBaseFit(fixture.criteria),
       source: "cached",
-      note: `Live parse failed (${(err as Error).message}); fell back to the cached verified ${fixture.nct} criteria so the flow still works.`,
+      note: fixture.note ?? `Loaded the previously validated eligibility criteria for ${fixture.nct}. Review them before building the cohort plan.`,
+    };
+    return {
+      criteria: parseCriteriaDeterministically(text),
+      source: "deterministic",
+      note: `Live model parsing was unavailable, so TrialBridge created a conservative review draft${nctId ? ` for ${nctId.trim().toUpperCase()}` : ""}. Unfamiliar criteria remain manual-review gates; verify every row before posting.`,
     };
   }
 }

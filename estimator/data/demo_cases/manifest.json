@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "slug": "relay-rediscover-2",
+      "ncts": ["NCT06982521"],
+      "proprietary": {"type": "capture", "path": "private/relay-rediscover-2/proprietary.json"},
+      "datasus_capture": "private/relay-rediscover-2/datasus.json"
+    },
+    {
+      "slug": "iambic-iam1363",
+      "ncts": ["NCT06253871"],
+      "proprietary": {"type": "capture", "path": "private/iambic-iam1363/proprietary.json"},
+      "datasus_capture": "private/iambic-iam1363/datasus.json"
+    },
+    {
+      "slug": "insilico-rentosertib",
+      "ncts": ["NCT07687459"],
+      "proprietary": {"type": "inventory_csv", "path": "private/proprietary_inventory.csv"}
+    },
+    {
+      "slug": "generate-gb-0895",
+      "ncts": ["NCT07276724", "NCT07359846"],
+      "proprietary": {"type": "capture", "path": "private/generate-gb-0895/proprietary.json"},
+      "datasus_capture": "private/generate-gb-0895/datasus.json"
+    },
+    {
+      "slug": "schrodinger-sgr-1505",
+      "ncts": ["NCT05544019"],
+      "proprietary": {"type": "inventory_csv", "path": "private/proprietary_inventory.csv"}
+    },
+    {
+      "slug": "nimbus-ndi-219216",
+      "ncts": ["NCT06898450"],
+      "proprietary": {"type": "inventory_csv", "path": "private/proprietary_inventory.csv"}
+    }
+  ]
+}

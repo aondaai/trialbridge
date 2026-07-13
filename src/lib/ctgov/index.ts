@@ -12,6 +12,10 @@ import { fetchStudy } from "./client";
 import { normalizeStudy } from "./normalize";
 import { HERO_META, HERO_PROTOCOL_TEXT } from "@/data/hero-protocol";
 import { NSCLC_META, NSCLC_PROTOCOL_TEXT } from "@/data/nsclc-kras-protocol";
+import {
+  RELAY_REDEFINE_META,
+  RELAY_REDEFINE_PROTOCOL_TEXT,
+} from "@/data/relay-redefine-protocol";
 import type { NormalizedProtocol, FetchProtocolResult } from "./types";
 
 export type { NormalizedProtocol, FetchProtocolResult, RawCtGovStudy } from "./types";
@@ -26,6 +30,12 @@ interface HeroFixture {
 const HERO_FIXTURES: HeroFixture[] = [
   { nct: HERO_META.nct, title: HERO_META.title, sponsorName: HERO_META.sponsorName, text: HERO_PROTOCOL_TEXT },
   { nct: NSCLC_META.nct, title: NSCLC_META.title, sponsorName: NSCLC_META.sponsorName, text: NSCLC_PROTOCOL_TEXT },
+  {
+    nct: RELAY_REDEFINE_META.nct,
+    title: RELAY_REDEFINE_META.title,
+    sponsorName: RELAY_REDEFINE_META.sponsorName,
+    text: RELAY_REDEFINE_PROTOCOL_TEXT,
+  },
 ];
 
 function cachedFallback(nctId: string): NormalizedProtocol | null {

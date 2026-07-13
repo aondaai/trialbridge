@@ -1,0 +1,11 @@
+{
+  "ncts": ["NCT00000000"],
+  "shallow_n": 100,
+  "full_n": 25,
+  "by_payer": {"sus": 10, "private": 10, "unknown": 5},
+  "by_site": [{"hospital": "example-site", "n": 25}],
+  "by_provider": [{"provider": "example-provider", "hospital": "example-site", "n": 25}],
+  "source": "NCT-specific preselected proprietary cohort",
+  "as_of": "2026-07-12",
+  "notes": ["Replace all example values before the demo."]
+}

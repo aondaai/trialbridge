@@ -54,10 +54,16 @@ model Consultation {
   sourceNote           String?
   protocolText         String
   criteria             String // JSON-serialized Criterion[]
+  /// JSON-serialized ElasticsearchQueryPlan (one INCLUSION/EXCLUSION stage per criterion).
+  elasticsearchPlan    String?
   /// Intended hero bottleneck handle, for the softening UI default.
   heroBottleneckHandle String?
   createdAt            DateTime @default(now())
   estimateStatus       String   @default("pending")
+  /// Durable Python/CMA job identifier for asynchronous status recovery.
+  estimateRunId        String?
+  /// Hash of the exact NCT, protocol text and reviewed criteria used by estimateResult.
+  estimateCriteriaHash String?
   estimateProtocol     String?
   estimateResult       String?
   estimateError        String?

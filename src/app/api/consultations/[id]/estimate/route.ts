@@ -1,7 +1,28 @@
-import { NextResponse } from "next/server";
-import { getConsultation,updateConsultationEstimate } from "@/lib/store";
-import { compileEstimatorProtocol } from "@/lib/estimator/protocol";
-import { fetchNationalEstimate } from "@/lib/estimator/client";
+import {NextResponse} from "next/server";
+import {getConsultation} from "@/lib/store";
+import {syncCmaEstimate} from "@/lib/estimator/cma-run";
+
 export const dynamic="force-dynamic";
-export async function GET(_:Request,{params}:{params:Promise<{id:string}>}){const{id}=await params;const c=await getConsultation(id);if(!c)return NextResponse.json({error:"not found"},{status:404});return NextResponse.json({status:c.estimateStatus,protocol:c.estimateProtocol,estimate:c.estimateResult,error:c.estimateError,estimatedAt:c.estimatedAt});}
-export async function POST(_:Request,{params}:{params:Promise<{id:string}>}){const{id}=await params;const c=await getConsultation(id);if(!c)return NextResponse.json({error:"not found"},{status:404});const resultIsCurrent=c.estimateResult?.protocolId===id;if(["complete","partial"].includes(c.estimateStatus??"")&&resultIsCurrent)return GET(_,{params:Promise.resolve({id})});const protocol=compileEstimatorProtocol(id,c.criteria);if(!protocol.criteria.some(x=>x.kind==="checkable"&&x.field==="dx")){const error="A validated diagnosis/CID cohort is required before proprietary finding and DataSUS expansion can run.";await updateConsultationEstimate(id,{estimateStatus:"failed",estimateProtocol:protocol,estimateError:error,clearResult:true});return NextResponse.json({status:"failed",protocol,error},{status:422});}await updateConsultationEstimate(id,{estimateStatus:"running",estimateProtocol:protocol,clearResult:!resultIsCurrent});const estimate=await fetchNationalEstimate(protocol);if(!estimate||estimate.protocolId!==id){const error="Estimator did not return a result for this consultation protocol.";await updateConsultationEstimate(id,{estimateStatus:"failed",estimateProtocol:protocol,estimateError:error,clearResult:true});return NextResponse.json({status:"failed",protocol,error},{status:503});}const status=protocol.coverage.applied===protocol.coverage.total?"complete":"partial";const estimatedAt=new Date().toISOString();await updateConsultationEstimate(id,{estimateStatus:status,estimateProtocol:protocol,estimateResult:estimate,estimatedAt});return NextResponse.json({status,protocol,estimate,estimatedAt});}
+
+async function synchronize(id:string,retryFailed=false){
+  const consultation=await getConsultation(id);
+  if(!consultation)return NextResponse.json({error:"not found"},{status:404});
+  try{
+    const sync=await syncCmaEstimate(consultation,{retryFailed});
+    const refreshed=await getConsultation(id);
+    return NextResponse.json({status:sync.status,stage:sync.stage,protocol:refreshed?.estimateProtocol,estimate:refreshed?.estimateResult,error:sync.error??refreshed?.estimateError,estimatedAt:refreshed?.estimatedAt},{status:sync.status==="running"||sync.status==="queued"?202:200});
+  }catch(error){
+    const message=error instanceof Error?error.message:"CMA synchronization failed";
+    return NextResponse.json({status:"failed",stage:"failed",error:message},{status:503});
+  }
+}
+
+export async function GET(_:Request,{params}:{params:Promise<{id:string}>}){
+  const {id}=await params;
+  return synchronize(id,false);
+}
+
+export async function POST(_:Request,{params}:{params:Promise<{id:string}>}){
+  const {id}=await params;
+  return synchronize(id,true);
+}

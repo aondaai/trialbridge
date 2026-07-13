@@ -4,6 +4,10 @@ import {
   stateToRegion,
   parseCompetition,
   unavailableCompetition,
+  buildCompetitionQueries,
+  competitionLandscapeSummary,
+  competitionCondition,
+  competitionQueryUrl,
   RawStudyLite,
 } from "@/lib/ctgov/competition";
 
@@ -93,5 +97,47 @@ describe("graceful degradation", () => {
     expect(u.total).toBe(0);
     expect(u.note).toBe("timeout");
     expect(u.investigators).toHaveLength(0);
+  });
+});
+
+describe("report-grade competition landscape", () => {
+  it("uses the reviewed diagnosis instead of sending a long protocol title", () => {
+    const title = "A Prospective Phase 3, Randomized, Double-blind Study Evaluating Rentosertib Over 52 Weeks in Patients With Idiopathic Pulmonary Fibrosis (IPF)";
+    expect(competitionCondition(title, [
+      { field: "diagnosis", value: "idiopathic pulmonary fibrosis" },
+    ])).toBe("idiopathic pulmonary fibrosis");
+    expect(competitionCondition(title)).toBe("idiopathic pulmonary fibrosis");
+  });
+
+  it("builds broad, indication-adjacent and intervention cuts for the T-DXd hero protocol", () => {
+    const queries = buildCompetitionQueries(
+      "breast cancer",
+      "Phase III — T-DXd in HER2+ metastatic breast cancer (2nd line)",
+    );
+    expect(queries.map((query) => query.key)).toEqual(["broad", "indication", "intervention"]);
+    expect(queries[1].condition).toBe("HER2-positive metastatic breast cancer");
+    expect(queries[2].term).toBe('"trastuzumab deruxtecan"');
+    expect(decodeURIComponent(competitionQueryUrl(queries[2]))).toContain("query.term=\"trastuzumab+deruxtecan\"");
+  });
+
+  it("states that narrower registry counts are not validated direct competitors", () => {
+    const summary = competitionLandscapeSummary({
+      schemaVersion: "competition-landscape.v1",
+      source: "live",
+      assessment: "pending_adjudication",
+      directCompetitors: null,
+      broad: parseCompetition([], 57),
+      cuts: [
+        { key: "broad", label: "Broad", total: 57, url: "https://example.test/broad" },
+        { key: "indication", label: "Indication", total: 13, url: "https://example.test/indication" },
+        { key: "intervention", label: "Intervention", total: 3, url: "https://example.test/intervention" },
+      ],
+      limitations: [],
+    });
+    expect(summary).toContain("Assessment pending adjudication");
+    expect(summary).toContain("57 recruiting studies");
+    expect(summary).toContain("13 indication-adjacent");
+    expect(summary).toContain("3 mentioning T-DXd");
+    expect(summary).toContain("direct competitors remain unvalidated");
   });
 });

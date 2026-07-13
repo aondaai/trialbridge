@@ -25,7 +25,7 @@ from typing import Any, List, Literal, Optional
 
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -42,6 +42,8 @@ from trialbridge.coverage import CalibratedCoverage, CALIBRATED_UFS_14
 from trialbridge.registry import make_version
 from trialbridge.finding import finding_n_by_site
 from trialbridge.schema import Criterion, Protocol
+from pipeline.cma_service import CmaRunService
+from pipeline.jobs import CmaJobStore, CmaRunRequest, CmaRunView
 
 FILL_SPEED_TARGET_N = 50  # a typical single-region Phase II cohort size — illustrative default
 
@@ -64,6 +66,14 @@ app = FastAPI(title="TrialBridge Feasibility API", version="0.2.0",
 # (src/lib/estimator/client.ts) sends the same token from its own TB_ESTIMATOR_TOKEN,
 # so enabling it is a zero-downtime two-step (ship code, then set the env var on both).
 _gated = [Depends(require_token)]
+
+_cma_store = CmaJobStore(os.environ.get("TB_CMA_JOBS_DB", "/tmp/trialbridge-cma-jobs.sqlite3"))
+_cma_service = CmaRunService(_cma_store, max_workers=int(os.environ.get("TB_CMA_WORKERS", "1")))
+
+
+@app.on_event("startup")
+def recover_cma_jobs() -> None:
+    _cma_service.recover()
 
 # Loaded once at import time. DataSUS side = Asset 3 (materialized aggregate);
 # proprietary side = Asset 2 (row-level depth, backs Observed N).
@@ -324,6 +334,21 @@ def ui():
 @app.get("/health")
 def health():
     return {"status": "ok", "protocol_id": _protocol.protocol_id}
+
+
+@app.post("/cma/runs", response_model=CmaRunView, status_code=status.HTTP_202_ACCEPTED,
+          dependencies=_gated)
+def create_cma_run(payload: CmaRunRequest, retry_failed: bool = False):
+    record, _ = _cma_service.start(payload, retry_failed=retry_failed)
+    return record
+
+
+@app.get("/cma/runs/{run_id}", response_model=CmaRunView, dependencies=_gated)
+def get_cma_run(run_id: str):
+    record = _cma_store.get(run_id)
+    if record is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="CMA run not found")
+    return record
 
 
 @app.get("/protocol", dependencies=_gated)

@@ -1,0 +1,9 @@
+{
+  "ncts": ["NCT00000000"],
+  "by_uf": [
+    {"uf": "SP", "base_cohort": 1000},
+    {"uf": "RJ", "base_cohort": 500}
+  ],
+  "source": "NCT-specific materialized DataSUS cohort",
+  "as_of": "2026-07-12"
+}

@@ -29,6 +29,13 @@ from trialbridge.data import DuckDBDataSUS
 DX_CID_PREFIXES = {
     "breast_cancer": ["C50"],
     "lung_cancer": ["C33", "C34"],
+    # J84.1 is the specific fibrosing-ILD/IPF cohort. The source export stores
+    # condition_source_value without dots, so the executable prefix is J841.
+    "idiopathic_pulmonary_fibrosis": ["J841"],
+    # Trial NCT05544019's mature B-cell scope: follicular/non-follicular and
+    # other B-cell NHL, immunoproliferative disease, plus B-cell CLL. C84 is
+    # intentionally excluded because it is the T/NK-cell lymphoma category.
+    "mature_b_cell_malignancy": ["C82", "C83", "C85", "C88", "C911"],
 }
 
 MIN_CELL = 5  # small-cell suppression carried through to the derived asset

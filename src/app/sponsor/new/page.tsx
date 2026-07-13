@@ -13,16 +13,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Criterion } from "@/lib/matcher/types";
 import type { BaseFit } from "@/lib/matcher/types";
-import { summarizeBaseFit } from "@/lib/basefit/registry";
+import { stampBaseFit, summarizeBaseFit } from "@/lib/basefit/registry";
 import { compileEstimatorProtocol } from "@/lib/estimator/protocol";
 import { HERO_PROTOCOL_TEXT, HERO_META } from "@/data/hero-protocol";
 import { TopBar } from "@/components/ui";
 import { IntakePanel, TrustChip, type IntakeResultClient } from "./IntakePanel";
 import type { Provenance } from "@/lib/intake";
+import type { ElasticsearchQueryPlan } from "@/lib/elasticsearch/types";
 
 interface ParseResult {
   criteria: Criterion[];
-  source: "claude" | "cached" | "structured";
+  source: "claude" | "cached" | "deterministic" | "structured";
   model?: string;
   note: string;
 }
@@ -72,7 +73,9 @@ export default function NewConsultationPage() {
   const [fetchingCt, setFetchingCt] = useState(false);
   const [ctResult, setCtResult] = useState<CtGovFetchResult | null>(null);
 
-  const [showQueryPlan, setShowQueryPlan] = useState(false);
+  const [generatingElastic, setGeneratingElastic] = useState(false);
+  const [elasticsearchPlan, setElasticsearchPlan] = useState<ElasticsearchQueryPlan | null>(null);
+  const [elasticsearchReviewed, setElasticsearchReviewed] = useState(false);
 
   // Provenance of the last universal-intake ingest (which format, how, trust tier).
   const [provenance, setProvenance] = useState<Provenance | null>(null);
@@ -85,7 +88,8 @@ export default function NewConsultationPage() {
   function handleIntake(r: IntakeResultClient) {
     setError(null);
     setProvenance(r.provenance);
-    setShowQueryPlan(false);
+    setElasticsearchPlan(null);
+    setElasticsearchReviewed(false);
     setCtResult(null); // supersede any prior classic CT.gov fetch banner
     if (r.metadata.title) setTitle(r.metadata.title);
 
@@ -94,12 +98,13 @@ export default function NewConsultationPage() {
 
     if (r.preParsedCriteria && r.preParsedCriteria.length > 0) {
       // Structured lane — no LLM parse; the verify table is the trust moment.
+      const criteria = stampBaseFit(r.preParsedCriteria);
       setText(r.eligibilityText ?? "");
-      setRows(r.preParsedCriteria);
+      setRows(criteria);
       setResult({
-        criteria: r.preParsedCriteria,
+        criteria,
         source: "structured",
-        note: `Structured import via ${r.provenance.adapter} — skipped the LLM parse. ${r.provenance.note ?? ""}`,
+        note: "Criteria imported from a structured source and ready for review.",
       });
       setTextMatchesNct(false);
     } else {
@@ -130,7 +135,8 @@ export default function NewConsultationPage() {
       setTextMatchesNct(true);
       setResult(null);
       setRows([]);
-      setShowQueryPlan(false);
+      setElasticsearchPlan(null);
+      setElasticsearchReviewed(false);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -151,6 +157,8 @@ export default function NewConsultationPage() {
       const r = (await res.json()) as ParseResult;
       setResult(r);
       setRows(r.criteria);
+      setElasticsearchPlan(null);
+      setElasticsearchReviewed(false);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -160,9 +168,32 @@ export default function NewConsultationPage() {
 
   function updateRow(i: number, patch: Partial<Criterion>) {
     setRows((rs) => rs.map((r, j) => (j === i ? { ...r, ...patch } : r)));
+    setElasticsearchPlan(null);
+    setElasticsearchReviewed(false);
   }
   function removeRow(i: number) {
     setRows((rs) => rs.filter((_, j) => j !== i));
+    setElasticsearchPlan(null);
+    setElasticsearchReviewed(false);
+  }
+
+  async function generateElasticsearchPlan() {
+    setGeneratingElastic(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/elasticsearch-plan", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ criteria: rows }),
+      });
+      if (!res.ok) throw new Error(await errorFrom(res, "Elasticsearch query generation failed"));
+      setElasticsearchPlan(await res.json() as ElasticsearchQueryPlan);
+      setElasticsearchReviewed(false);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setGeneratingElastic(false);
+    }
   }
 
   async function post() {
@@ -177,6 +208,9 @@ export default function NewConsultationPage() {
           nct,
           protocolText: text,
           criteria: rows,
+          elasticsearchPlan: elasticsearchPlan && elasticsearchReviewed
+            ? { ...elasticsearchPlan, reviewedAt: new Date().toISOString() }
+            : undefined,
           heroBottleneckHandle: HERO_META.heroBottleneckHandle,
         }),
       });
@@ -255,13 +289,13 @@ export default function NewConsultationPage() {
           />
           <div style={{ marginTop: 10 }}>
             <button className="cl-btn cl-btn--primary" onClick={parse} disabled={parsing || !text.trim()}>
-              {parsing ? "Parsing…" : "Parse with Claude →"}
+              {parsing ? "Extracting…" : "Extract eligibility criteria →"}
             </button>
           </div>
           {!textMatchesNct && (
             <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
-              Text edited since the last fetch — without <code>ANTHROPIC_API_KEY</code> this
-              can only be parsed live; it won&apos;t silently fall back to another trial&apos;s cached criteria.
+              This text has changed since the last registry fetch. Parse it again before continuing;
+              a previously validated version is only used while the source remains unchanged.
             </p>
           )}
         </div>
@@ -275,19 +309,18 @@ export default function NewConsultationPage() {
         {result && (
           <>
             <div className="card">
-              <h2>Step 3 · Verify {result.source === "structured" ? "imported" : "parsed"} criteria</h2>
+              <h2>Step 3 · Review eligibility criteria</h2>
               <div className="privacy" style={{ marginBottom: 10 }}>
                 <span className="lock">{result.source === "claude" ? "🤖" : result.source === "structured" ? "🧬" : "📦"}</span>
                 <div>
                   <strong>
                     {result.source === "claude"
-                      ? `Parsed by ${result.model}`
+                      ? "Extracted from protocol text"
                       : result.source === "structured"
-                        ? "Structured import — no LLM parse"
-                        : "Cached parse"}
+                        ? "Imported from structured eligibility"
+                        : "Loaded from a previously validated protocol"}
                     .
-                  </strong>{" "}
-                  {result.note}
+                  </strong>{" "}Review the clinical meaning before building the cohort search plan.
                 </div>
               </div>
               {/* Trust-driven flagging: how much of THIS import needs a human. */}
@@ -315,76 +348,88 @@ export default function NewConsultationPage() {
                         <>All {rows.length} rows above the confidence threshold — spot-check and post.</>
                       )}
                     </span>
-                    {(() => {
-                      const bf = summarizeBaseFit(rows);
-                      return (
-                        <span style={{ fontSize: 12.5, opacity: 0.85, width: "100%" }}>
-                          <strong>{bf.answerableToday + bf.viaNlp} of {bf.total}</strong> answerable against your base
-                          ({bf.answerableToday} today, {bf.viaNlp} via NLP extraction); {bf.needReview} need review.
-                        </span>
-                      );
-                    })()}
                   </div>
                 );
               })()}
-              <div className="table-scroll">
-                <table className="data">
-                  <thead>
-                    <tr>
-                      <th>Kind</th><th>Field</th><th>Op</th><th>Value</th><th>Unit</th><th>Base fit</th><th>Conf.</th><th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((r, i) => {
-                      const low = r.confidence < 0.75;
-                      return (
-                        <tr key={r.id} style={low ? { background: "rgba(251,191,36,0.08)" } : undefined}>
-                          <td>
+              <div style={{ display: "grid", gap: 10 }}>
+                {rows.map((criterion, index) => {
+                  const low = criterion.confidence < 0.75;
+                  return (
+                    <article
+                      key={criterion.id}
+                      style={{
+                        border: `1px solid ${low ? "rgba(180,83,9,0.35)" : "var(--border)"}`,
+                        borderRadius: 10,
+                        padding: 12,
+                        background: low ? "rgba(251,191,36,0.06)" : "var(--panel-2)",
+                      }}
+                    >
+                      <div style={{ display: "flex", gap: 8, alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap" }}>
+                        <div style={{ flex: 1, minWidth: 220 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5, flexWrap: "wrap" }}>
                             <select
-                              value={r.kind}
-                              onChange={(e) => updateRow(i, { kind: e.target.value as Criterion["kind"] })}
+                              aria-label={`Criterion ${index + 1} type`}
+                              value={criterion.kind}
+                              onChange={(event) => updateRow(index, { kind: event.target.value as Criterion["kind"] })}
                               style={selStyle}
                             >
-                              <option value="inclusion">inclusion</option>
-                              <option value="exclusion">exclusion</option>
+                              <option value="inclusion">Inclusion</option>
+                              <option value="exclusion">Exclusion</option>
                             </select>
-                          </td>
-                          <td className="mono">{r.field}</td>
-                          <td className="mono">{r.operator}</td>
-                          <td>
+                            {low && <span className="badge-low">Review needed</span>}
+                          </div>
+                          <div style={{ fontSize: 14, fontWeight: 650, lineHeight: 1.45 }}>{criterion.rawText}</div>
+                          <div className="muted" style={{ fontSize: 12.5, marginTop: 5 }}>
+                            Interpreted as: <strong>{criterionInterpretation(criterion)}</strong>
+                          </div>
+                        </div>
+                        <button className="btn soft" aria-label={`Remove criterion ${index + 1}`} onClick={() => removeRow(index)} style={{ padding: "3px 9px" }}>
+                          Remove
+                        </button>
+                      </div>
+                      <details style={{ marginTop: 9 }}>
+                        <summary style={{ cursor: "pointer", fontSize: 12.5, color: "var(--muted)" }}>Advanced details</summary>
+                        <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap", marginTop: 9 }}>
+                          <label style={{ fontSize: 12 }}>
+                            <span className="muted">Value</span>
                             <input
-                              value={JSON.stringify(r.value)}
-                              onChange={(e) => {
-                                let v: Criterion["value"];
-                                try { v = JSON.parse(e.target.value); } catch { v = e.target.value; }
-                                updateRow(i, { value: v });
+                              aria-label={`Criterion ${index + 1} value`}
+                              value={JSON.stringify(criterion.value)}
+                              onChange={(event) => {
+                                let value: Criterion["value"];
+                                try { value = JSON.parse(event.target.value); } catch { value = event.target.value; }
+                                updateRow(index, { value });
                               }}
-                              style={{ ...selStyle, width: 120 }}
+                              style={{ ...selStyle, display: "block", width: 150, marginTop: 3 }}
                             />
-                          </td>
-                          <td className="mono muted">{r.unit ?? "—"}</td>
-                          <td><BaseFitBadge fit={r.baseFit} terms={r.nlpTerms} /></td>
-                          <td className="num">
-                            {low ? <span className="badge-low">{r.confidence.toFixed(2)} · verify</span> : r.confidence.toFixed(2)}
-                          </td>
-                          <td>
-                            <button className="btn soft" onClick={() => removeRow(i)} style={{ padding: "2px 8px" }}>✕</button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          </label>
+                          <span className="mono" style={{ fontSize: 12 }}>{criterion.field} {criterion.operator}</span>
+                          <span className="mono muted" style={{ fontSize: 12 }}>{criterion.unit ?? "no unit"}</span>
+                          <BaseFitBadge fit={criterion.baseFit} terms={criterion.nlpTerms} />
+                          <span className="muted" style={{ fontSize: 12 }}>confidence {criterion.confidence.toFixed(2)}</span>
+                        </div>
+                      </details>
+                    </article>
+                  );
+                })}
               </div>
               <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
-                Highlighted rows are low-confidence — the parser flagged them for a human. Fix a value and it flows straight into the deterministic matcher.
+                Removing or editing a criterion invalidates any previously generated cohort plan.
               </p>
             </div>
 
-            <QueryPlanCard rows={rows} open={showQueryPlan} onToggle={() => setShowQueryPlan((v) => !v)} />
+            <ElasticsearchPlanCard
+              rows={rows}
+              plan={elasticsearchPlan}
+              busy={generatingElastic}
+              disabled={rows.length === 0}
+              onGenerate={generateElasticsearchPlan}
+              reviewed={elasticsearchReviewed}
+              onReviewedChange={setElasticsearchReviewed}
+            />
 
             <div className="card">
-              <h2>Step 4 · Post</h2>
+              <h2>Step 5 · Post</h2>
               <div className="grid2">
                 <label style={{ fontSize: 13 }}>
                   <div className="muted">Title</div>
@@ -396,10 +441,12 @@ export default function NewConsultationPage() {
                 </label>
               </div>
               <div style={{ marginTop: 12 }}>
-                <button className="cl-btn cl-btn--primary" onClick={post} disabled={posting || rows.length === 0}>
+                <button className="cl-btn cl-btn--primary" onClick={post} disabled={posting || rows.length === 0 || !elasticsearchPlan || !elasticsearchReviewed}>
                   {posting ? "Posting…" : `Post consultation (${rows.length} criteria) →`}
                 </button>
               </div>
+              {!elasticsearchPlan && <p className="muted" style={{ fontSize: 12.5 }}>Generate and review the Elasticsearch funnel before posting.</p>}
+              {elasticsearchPlan && !elasticsearchReviewed && <p className="muted" style={{ fontSize: 12.5 }}>Confirm the automatic, assisted and manual-review stages in Step 4 before posting.</p>}
             </div>
           </>
         )}
@@ -408,77 +455,121 @@ export default function NewConsultationPage() {
   );
 }
 
-function queryPlanMeta(c: Criterion): { source: string; method: string; status: string } {
-  switch (c.baseFit) {
-    case "checkable":
-      return {
-        source: "Proprietary + DataSUS",
-        method: c.field === "diagnosis" || c.field === "dx" ? "CID-10 cohort" : "structured demographic",
-        status: "included",
-      };
-    case "depth":
-      return { source: "Proprietary", method: "validated depth feature", status: "included" };
-    case "nlp_extractable":
-      return { source: "Proprietary DuckDB", method: "clinical-text proxy", status: "NLP proxy pending" };
-    default:
-      return { source: "Site", method: "site confirmation", status: "not in initial estimate" };
-  }
-}
-
-function QueryPlanCard({ rows, open, onToggle }: { rows: Criterion[]; open: boolean; onToggle: () => void }) {
+function ElasticsearchPlanCard({
+  rows, plan, busy, disabled, onGenerate, reviewed, onReviewedChange,
+}: {
+  rows: Criterion[];
+  plan: ElasticsearchQueryPlan | null;
+  busy: boolean;
+  disabled: boolean;
+  onGenerate: () => void;
+  reviewed: boolean;
+  onReviewedChange: (reviewed: boolean) => void;
+}) {
   const compiled = compileEstimatorProtocol("preview", rows);
-  const applied = new Map(compiled.criteria.map((c) => [c.id, c]));
-  const omitted = new Map(compiled.coverage.omitted.map((c) => [c.id, c.reason]));
-  const bf = summarizeBaseFit(rows);
+  const baseFit = summarizeBaseFit(rows);
+  const counts = plan?.stages.reduce((acc, stage) => {
+    acc[stage.automation] += 1;
+    return acc;
+  }, { AUTOMATED: 0, ASSISTED: 0, MANUAL_REVIEW: 0 } as Record<"AUTOMATED" | "ASSISTED" | "MANUAL_REVIEW", number>);
   return (
     <div className="card">
-      <h2>Step 3b · Data coverage &amp; query plan</h2>
+      <h2>Step 4 · Review cohort search plan</h2>
       <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
-        Preview which source and method will answer each verified criterion after posting.
-        DataSUS/OMOP translation is automatic inside its compiler; proprietary finding runs over DuckDB.
+        See which criteria can be applied automatically and which still need clinical confirmation.
       </p>
       <div className="privacy" style={{ marginBottom: 10, alignItems: "flex-start" }}>
         <span className="lock">🧭</span>
         <div style={{ fontSize: 12.5 }}>
-          <strong>{compiled.coverage.applied} of {compiled.coverage.total}</strong> criteria enter the initial estimate ·{" "}
-          {bf.viaNlp} searchable by DuckDB text proxy · {bf.needReview} require site confirmation or review.
+          <strong>{compiled.coverage.applied} of {compiled.coverage.total}</strong> criteria can enter the initial estimate ·{" "}
+          {baseFit.viaNlp} need text-assisted evidence · {baseFit.needReview} need manual confirmation.
           {compiled.coverage.applied < compiled.coverage.total && (
-            <div className="muted" style={{ marginTop: 2 }}>The national result will be labeled partial until omitted criteria are resolved.</div>
+            <div className="muted" style={{ marginTop: 2 }}>Results remain explicitly partial until the remaining criteria are confirmed.</div>
           )}
         </div>
       </div>
-      <button className="btn soft" onClick={onToggle} disabled={rows.length === 0}>
-        {open ? "Hide query plan ↑" : "Review query plan →"}
+      <button className="cl-btn cl-btn--primary" onClick={onGenerate} disabled={busy || disabled}>
+        {busy ? "Building and validating…" : plan ? "Rebuild cohort search plan ↻" : "Build cohort search plan →"}
       </button>
-      {open && (
-        <div className="table-scroll" style={{ marginTop: 10 }}>
-          <table className="data">
-            <thead><tr><th>Criterion</th><th>Source</th><th>Method</th><th>Query detail</th><th>Initial calculation</th></tr></thead>
-            <tbody>
-              {rows.map((c) => {
-                const meta = queryPlanMeta(c);
-                const compiledCriterion = applied.get(c.id);
-                const detail = compiledCriterion?.field === "dx"
-                  ? `CID-10 concept: ${JSON.stringify(compiledCriterion.value)}`
-                  : c.baseFit === "nlp_extractable" && c.nlpTerms?.length
-                    ? c.nlpTerms.join(", ")
-                    : `${c.field} ${c.operator} ${JSON.stringify(c.value)}`;
-                return (
-                  <tr key={c.id}>
-                    <td>{c.rawText}</td><td>{meta.source}</td><td>{meta.method}</td>
-                    <td className="mono" style={{ fontSize: 11.5 }}>{detail}</td>
-                    <td>{compiledCriterion ? <span>✅ included</span> : <span className="badge-low">{omitted.get(c.id) ?? meta.status}</span>}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      {plan && (
+        <>
+          <div className="privacy" style={{ marginTop: 12, marginBottom: 10 }}>
+            <span className="lock">{plan.source === "claude" ? "🤖" : "🛡️"}</span>
+            <div>
+              <strong>{plan.stages.length} validated stages.</strong>{" "}
+              {plan.source === "claude"
+                ? "The plan was generated from the reviewed criteria and passed structural validation."
+                : "A validated local plan was built from the reviewed criteria."}
+              <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
+                {counts?.AUTOMATED ?? 0} automatic · {counts?.ASSISTED ?? 0} assisted · {counts?.MANUAL_REVIEW ?? 0} manual review
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {plan.stages.map((stage, index) => (
+              <details key={stage.criterionId} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "9px 11px", background: "var(--panel-2)" }}>
+                <summary style={{ cursor: "pointer", fontSize: 13 }}>
+                  <strong>{index + 1}. {stage.stageType}</strong> · {stage.criterionText}{" "}
+                  <AutomationBadge automation={stage.automation} />
+                </summary>
+                <p className="muted" style={{ fontSize: 12.5 }}>{stage.rationale}</p>
+                {stage.limitations.length > 0 && (
+                  <ul style={{ margin: "0 0 8px", paddingLeft: 20, color: "var(--muted)", fontSize: 12.5 }}>
+                    {stage.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
+                  </ul>
+                )}
+                <details>
+                  <summary style={{ cursor: "pointer", fontSize: 12, color: "var(--muted)" }}>Advanced query details</summary>
+                  <pre style={{ overflowX: "auto", whiteSpace: "pre-wrap", fontSize: 11.5, marginBottom: 0 }}>
+                    {JSON.stringify(stage.query, null, 2)}
+                  </pre>
+                </details>
+              </details>
+            ))}
+          </div>
+          <label style={{ display: "flex", gap: 9, alignItems: "flex-start", marginTop: 12, fontSize: 13, cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={reviewed}
+              onChange={(event) => onReviewedChange(event.target.checked)}
+              style={{ marginTop: 2 }}
+            />
+            <span>
+              I reviewed every stage and understand that assisted and manual-review matches are candidate evidence, not automatic eligibility decisions.
+            </span>
+          </label>
+        </>
       )}
-      <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
-        Posting saves this verified plan, then starts proprietary finding, depth qualification and DataSUS expansion.
-      </p>
     </div>
+  );
+}
+
+function criterionInterpretation(criterion: Criterion): string {
+  const operator: Record<Criterion["operator"], string> = {
+    eq: "=", neq: "≠", lt: "<", lte: "≤", gt: ">", gte: "≥",
+    in: "is one of", not_in: "is not one of", exists: "is present",
+    not_exists: "is absent", between: "is between",
+  };
+  const value = criterion.value === null ? "" : Array.isArray(criterion.value)
+    ? criterion.value.join(" – ")
+    : String(criterion.value);
+  return [humanizeField(criterion.field), operator[criterion.operator], value, criterion.unit].filter(Boolean).join(" ");
+}
+
+function humanizeField(field: string): string {
+  return field.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function AutomationBadge({ automation }: { automation: "AUTOMATED" | "ASSISTED" | "MANUAL_REVIEW" }) {
+  const style = automation === "AUTOMATED"
+    ? { label: "automatic", bg: "rgba(22,163,74,0.12)", color: "#15803d" }
+    : automation === "ASSISTED"
+      ? { label: "assisted", bg: "rgba(217,138,43,0.14)", color: "#b45309" }
+      : { label: "manual review", bg: "rgba(185,28,28,0.10)", color: "#b91c1c" };
+  return (
+    <span style={{ background: style.bg, color: style.color, borderRadius: 999, padding: "2px 7px", fontSize: 10.5, fontWeight: 700, whiteSpace: "nowrap" }}>
+      {style.label}
+    </span>
   );
 }
 

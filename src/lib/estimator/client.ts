@@ -83,6 +83,11 @@ export interface NationalEstimate {
   dataSource: string;
   /** Dataset date of the DataSUS base, when the estimator reports it. */
   asOf: string | null;
+  /** False means estimatedN mirrors the diagnosis base and is not an eligible count. */
+  eligibilityFractionApplied?: boolean;
+  estimateKind?: "eligible_estimate" | "base_cohort_only";
+  eligibilityFraction?: number | null;
+  coverageCaveat?: string;
   /** Criterion-relaxation gains over the real base cohort (softening levers). */
   bottlenecks: EstimatorBottleneck[];
   /** Checkable-level observed patients from the full 6.68M proprietary base. */
@@ -92,7 +97,7 @@ export interface NationalEstimate {
   proprietaryFindingAsOf?: string | null;
 }
 
-interface RawEstimate {
+export interface RawEstimate {
   protocol_id: string;
   national_estimated_n: number;
   national_ci_lo: number;
@@ -117,6 +122,10 @@ interface RawEstimate {
   proprietary_finding_by_site?: { site: string; with_dx: number; finding_n: number }[];
   proprietary_finding_source?: string;
   proprietary_finding_as_of?: string;
+  estimate_kind?: "eligible_estimate" | "base_cohort_only";
+  eligibility_fraction_applied?: boolean;
+  eligibility_fraction?: number | null;
+  coverage_caveat?: string;
 }
 
 async function withTimeout(url: string, init?: RequestInit): Promise<Response> {
@@ -134,6 +143,44 @@ async function withTimeout(url: string, init?: RequestInit): Promise<Response> {
  * Returns null if the estimator is unreachable, times out, or errors — callers
  * render an "estimator offline" state rather than failing the page.
  */
+export function nationalEstimateFromRaw(d: RawEstimate): NationalEstimate {
+  const observed = d.observed_by_site ?? [];
+  const monthlyByUf = new Map(
+    (d.fill_speed_by_region ?? []).map((r) => [r.region, r.monthly_eligible]),
+  );
+  return {
+    protocolId: d.protocol_id,
+    estimatedN: d.national_estimated_n,
+    ciLo: d.national_ci_lo,
+    ciHi: d.national_ci_hi,
+    baseCohort: d.national_base_cohort,
+    byRegion: (d.by_region ?? []).map((r) => ({
+      region: r.region,
+      estimatedN: r.est_eligible ?? r.estimated_n ?? 0,
+      ciLo: r.ci_lo,
+      ciHi: r.ci_hi,
+      baseCohort: r.base_cohort,
+      monthlyEligible: monthlyByUf.get(r.region) ?? null,
+    })),
+    monthsToFill: d.national_months_to_fill ?? null,
+    observedTotal: observed.reduce((s, o) => s + o.observed_n, 0),
+    sitesWithData: observed.length,
+    dataSource: d.datasus_source ?? process.env.TB_DATASUS_LABEL ?? "DataSUS/OMOP",
+    asOf: d.datasus_as_of ?? null,
+    eligibilityFractionApplied: d.eligibility_fraction_applied ?? true,
+    estimateKind: d.estimate_kind ?? "eligible_estimate",
+    eligibilityFraction: d.eligibility_fraction ?? null,
+    coverageCaveat: d.coverage_caveat,
+    bottlenecks: (d.bottlenecks ?? []).map((b) => ({ criterionId: b.criterion_id, text: b.text, gain: b.gain })),
+    proprietaryFindingTotal: d.proprietary_finding_total ?? 0,
+    proprietaryFindingBySite: (d.proprietary_finding_by_site ?? []).map((s) => ({
+      site: s.site, withDiagnosis: s.with_dx, findingN: s.finding_n,
+    })),
+    proprietaryFindingSource: d.proprietary_finding_source ?? "full proprietary finding base",
+    proprietaryFindingAsOf: d.proprietary_finding_as_of ?? null,
+  };
+}
+
 export async function fetchNationalEstimate(protocol?: CompiledProtocol): Promise<NationalEstimate | null> {
   try {
     const res = await withTimeout(`${BASE_URL}/feasibility/estimate`, {
@@ -144,43 +191,7 @@ export async function fetchNationalEstimate(protocol?: CompiledProtocol): Promis
     });
     if (!res.ok) return null;
     const d = (await res.json()) as RawEstimate;
-    const observed = d.observed_by_site ?? [];
-    const monthlyByUf = new Map(
-      (d.fill_speed_by_region ?? []).map((r) => [r.region, r.monthly_eligible]),
-    );
-    return {
-      protocolId: d.protocol_id,
-      estimatedN: d.national_estimated_n,
-      ciLo: d.national_ci_lo,
-      ciHi: d.national_ci_hi,
-      baseCohort: d.national_base_cohort,
-      byRegion: (d.by_region ?? []).map((r) => ({
-        region: r.region,
-        estimatedN: r.est_eligible ?? r.estimated_n ?? 0,
-        ciLo: r.ci_lo,
-        ciHi: r.ci_hi,
-        baseCohort: r.base_cohort,
-        monthlyEligible: monthlyByUf.get(r.region) ?? null,
-      })),
-      monthsToFill: d.national_months_to_fill ?? null,
-      observedTotal: observed.reduce((s, o) => s + o.observed_n, 0),
-      sitesWithData: observed.length,
-      // Prefer the service's own label (the materialized bases report which base
-      // actually answered) over the deploy-time env hint.
-      dataSource: d.datasus_source ?? process.env.TB_DATASUS_LABEL ?? "DataSUS/OMOP (omop_sample)",
-      asOf: d.datasus_as_of ?? null,
-      bottlenecks: (d.bottlenecks ?? []).map((b) => ({
-        criterionId: b.criterion_id,
-        text: b.text,
-        gain: b.gain,
-      })),
-      proprietaryFindingTotal: d.proprietary_finding_total ?? 0,
-      proprietaryFindingBySite: (d.proprietary_finding_by_site ?? []).map((s) => ({
-        site: s.site, withDiagnosis: s.with_dx, findingN: s.finding_n,
-      })),
-      proprietaryFindingSource: d.proprietary_finding_source ?? "full proprietary finding base",
-      proprietaryFindingAsOf: d.proprietary_finding_as_of ?? null,
-    };
+    return nationalEstimateFromRaw(d);
   } catch {
     return null;
   }

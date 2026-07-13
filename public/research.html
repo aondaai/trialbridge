@@ -1,0 +1,426 @@
+<!-- @template name="Research page" description="TrialBridge research — the survey behind the thesis: verdict strip, before/after natural experiment, barriers, enablers, decision mechanics, sample & method." -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TrialBridge — The research: what 125 decision-makers told us about Brazil</title>
+<link rel="icon" href="assets/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --cl-accent:#D97757; --cl-accent-hover:#C15F3C; --cl-accent-active:#A84E2F; --cl-accent-subtle:#F5E5DE;
+  --cl-bg:#FAF9F5; --cl-surface:#FFFFFF; --cl-surface-2:#F0EEE6; --cl-border:#E8E6DC; --cl-border-strong:#DAD9D2;
+  --cl-text:#141413; --cl-text-secondary:#6E6D66; --cl-text-muted:#91918D;
+  --cl-success:#5E7350; --cl-success-subtle:#E8EDDF; --cl-warning:#B58019; --cl-warning-subtle:#F6ECD4;
+  --cl-danger:#BF4D43; --cl-danger-subtle:#F6E0DD; --cl-info:#4C6E91; --cl-info-subtle:#E1E9F0;
+  --tb-definite:#1F9D6B; --tb-possible:#D98A2B; --tb-excluded:#B8B7B0;
+  --cl-font-display:'Tiempos Headline','Newsreader','Iowan Old Style',Georgia,'Times New Roman',serif;
+  --cl-font-body:'Styrene B','Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --cl-font-mono:'Berkeley Mono','JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --cl-text-xs:12px; --cl-text-sm:14px; --cl-text-md:16px; --cl-text-lg:18px; --cl-text-xl:22px; --cl-text-2xl:28px; --cl-text-3xl:36px; --cl-text-4xl:48px;
+  --cl-weight-regular:400; --cl-weight-medium:500; --cl-weight-semibold:600; --cl-leading-tight:1.2; --cl-leading-normal:1.5;
+  --cl-space-1:4px; --cl-space-2:8px; --cl-space-3:12px; --cl-space-4:16px; --cl-space-5:24px; --cl-space-6:32px; --cl-space-7:48px; --cl-space-8:64px;
+  --cl-radius-sm:6px; --cl-radius-md:10px; --cl-radius-lg:14px; --cl-radius-xl:20px; --cl-radius-full:999px; --cl-container:1180px; --cl-container-app:1040px;
+  --cl-shadow-sm:0 1px 2px rgba(20,20,19,0.06); --cl-shadow-md:0 2px 8px rgba(20,20,19,0.08); --cl-shadow-lg:0 8px 24px rgba(20,20,19,0.12);
+  --cl-transition-fast:120ms ease; --cl-transition:200ms ease; --cl-focus-ring:0 0 0 3px rgba(217,119,87,0.35);
+}
+[data-theme="dark"]{
+  --cl-bg:#262624; --cl-surface:#30302E; --cl-surface-2:#3A3A37; --cl-border:#3F3F3C; --cl-border-strong:#52524E;
+  --cl-text:#F0EEE6; --cl-text-secondary:#B8B7B0; --cl-text-muted:#8A897F;
+  --cl-accent-subtle:#4A3328; --cl-success-subtle:#333B2C; --cl-warning-subtle:#3F361F; --cl-danger-subtle:#442B28; --cl-info-subtle:#2B3846;
+  --cl-shadow-sm:0 1px 2px rgba(0,0,0,0.3); --cl-shadow-md:0 2px 8px rgba(0,0,0,0.35); --cl-shadow-lg:0 8px 24px rgba(0,0,0,0.45);
+}
+.cl-root, .cl-root * { box-sizing: border-box; }
+.cl-root { background: var(--cl-bg); color: var(--cl-text); font-family: var(--cl-font-body); font-size: var(--cl-text-md); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.cl-h1, .cl-h2, .cl-h3 { font-family: var(--cl-font-display); font-weight: 500; line-height: 1.2; margin: 0 0 var(--cl-space-4); letter-spacing: -0.01em; }
+.cl-h1 { font-size: var(--cl-text-4xl); }
+.cl-h2 { font-size: var(--cl-text-2xl); }
+.cl-h3 { font-size: var(--cl-text-xl); }
+.cl-text-secondary { color: var(--cl-text-secondary); }
+.cl-text-muted { color: var(--cl-text-muted); }
+.cl-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--cl-space-2); font-family: var(--cl-font-body); font-size: var(--cl-text-sm); font-weight: 500; line-height: 1; padding: 10px 16px; border-radius: var(--cl-radius-md); border: 1px solid transparent; cursor: pointer; transition: background var(--cl-transition-fast), border-color var(--cl-transition-fast), box-shadow var(--cl-transition-fast); text-decoration: none; white-space: nowrap; }
+.cl-btn:focus-visible { outline: none; box-shadow: var(--cl-focus-ring); }
+.cl-btn--primary { background: var(--cl-accent); color: #FFFFFF; }
+.cl-btn--primary:hover { background: var(--cl-accent-hover); }
+.cl-btn--primary:active { background: var(--cl-accent-active); }
+.cl-btn--secondary { background: var(--cl-surface); color: var(--cl-text); border-color: var(--cl-border-strong); }
+.cl-btn--secondary:hover { background: var(--cl-surface-2); }
+.cl-btn--sm { padding: 6px 12px; font-size: var(--cl-text-xs); border-radius: var(--cl-radius-sm); }
+.cl-btn--lg { padding: 14px 22px; font-size: var(--cl-text-md); border-radius: var(--cl-radius-lg); }
+.cl-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border-radius: var(--cl-radius-md); border: 1px solid var(--cl-border-strong); background: var(--cl-surface); color: var(--cl-text-secondary); cursor: pointer; transition: background var(--cl-transition-fast), color var(--cl-transition-fast); }
+.cl-icon-btn:hover { background: var(--cl-surface-2); color: var(--cl-text); }
+.cl-card { background: var(--cl-surface); border: 1px solid var(--cl-border); border-radius: var(--cl-radius-lg); box-shadow: var(--cl-shadow-sm); overflow: hidden; }
+.cl-card--raised { box-shadow: var(--cl-shadow-md); border-color: transparent; }
+.cl-card__header { padding: var(--cl-space-4) var(--cl-space-5); border-bottom: 1px solid var(--cl-border); display: flex; align-items: center; justify-content: space-between; gap: var(--cl-space-3); }
+.cl-card__title { font-family: var(--cl-font-display); font-size: var(--cl-text-lg); font-weight: 500; margin: 0; }
+.cl-badge { display: inline-flex; align-items: center; gap: 6px; font-size: var(--cl-text-xs); font-weight: 500; line-height: 1; padding: 5px 10px; border-radius: var(--cl-radius-full); white-space: nowrap; }
+.cl-badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.cl-badge--neutral { background: var(--cl-surface-2); color: var(--cl-text-secondary); }
+.cl-badge--accent  { background: var(--cl-accent-subtle); color: var(--cl-accent-active); }
+.cl-badge--success { background: var(--cl-success-subtle); color: var(--cl-success); }
+.cl-badge--warning { background: var(--cl-warning-subtle); color: var(--cl-warning); }
+.cl-badge--danger  { background: var(--cl-danger-subtle); color: var(--cl-danger); }
+.cl-badge--info    { background: var(--cl-info-subtle); color: var(--cl-info); }
+[data-theme="dark"] .cl-badge--accent  { color: #E8A488; }
+[data-theme="dark"] .cl-badge--success { color: #A3B88F; }
+[data-theme="dark"] .cl-badge--warning { color: #D9B25E; }
+[data-theme="dark"] .cl-badge--info    { color: #8FB0CE; }
+.cl-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--cl-space-4); padding: var(--cl-space-3) var(--cl-space-5); background: var(--cl-surface); border: 1px solid var(--cl-border); border-radius: var(--cl-radius-lg); }
+.cl-nav__brand { font-family: var(--cl-font-display); font-size: var(--cl-text-lg); font-weight: 500; color: var(--cl-text); text-decoration: none; display: inline-flex; align-items: center; gap: var(--cl-space-2); }
+.cl-nav__links { display: flex; align-items: center; gap: var(--cl-space-1); }
+.cl-nav__link { font-size: var(--cl-text-sm); font-weight: 500; color: var(--cl-text-secondary); text-decoration: none; padding: 8px 12px; border-radius: var(--cl-radius-sm); transition: background var(--cl-transition-fast), color var(--cl-transition-fast); }
+.cl-nav__link:hover { background: var(--cl-surface-2); color: var(--cl-text); }
+.cl-nav__link--active { color: var(--cl-accent-active); background: var(--cl-accent-subtle); }
+.cl-table-wrap { border: 1px solid var(--cl-border); border-radius: var(--cl-radius-lg); overflow: hidden; background: var(--cl-surface); }
+.cl-table { width: 100%; border-collapse: collapse; font-size: var(--cl-text-sm); }
+.cl-table th { text-align: left; font-weight: 600; font-size: var(--cl-text-xs); text-transform: uppercase; letter-spacing: 0.04em; color: var(--cl-text-secondary); background: var(--cl-surface-2); padding: 12px 16px; border-bottom: 1px solid var(--cl-border); }
+.cl-table td { padding: 12px 16px; border-bottom: 1px solid var(--cl-border); color: var(--cl-text); }
+.cl-table tr:last-child td { border-bottom: none; }
+.cl-progress { width: 100%; height: 8px; background: var(--cl-surface-2); border-radius: var(--cl-radius-full); overflow: hidden; }
+.cl-progress__bar { height: 100%; background: var(--cl-accent); border-radius: var(--cl-radius-full); transition: width 300ms ease; }
+</style>
+<style>
+  body { margin: 0; }
+  .cl-root { min-height: 100vh; }
+  .tb-container { width: 100%; max-width: var(--cl-container); margin: 0 auto; padding: 0 var(--cl-space-5); }
+  a { color: var(--cl-accent-active); }
+  .tb-header { position: sticky; top: 0; z-index: 80; padding: var(--cl-space-4) 0 0; background: linear-gradient(var(--cl-bg) 72%, transparent); }
+  .tb-header .cl-nav { max-width: var(--cl-container); margin: 0 auto; }
+  .tb-brand-mark { width: 28px; height: 28px; border-radius: var(--cl-radius-sm); background: var(--cl-accent-subtle); color: var(--cl-accent-active); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .tb-section { padding: var(--cl-space-8) 0; }
+  .tb-section--tight { padding: var(--cl-space-7) 0; }
+  .tb-section--muted { background: var(--cl-surface-2); }
+  .tb-eyebrow { display: inline-block; font-size: var(--cl-text-xs); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cl-accent-active); margin-bottom: var(--cl-space-3); }
+  .tb-head { max-width: 660px; margin: 0 0 var(--cl-space-6); }
+  .tb-head--center { margin-left: auto; margin-right: auto; text-align: center; }
+  .tb-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--cl-space-5); }
+  .tb-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--cl-space-5); }
+  .tb-pad { padding: var(--cl-space-5); height: 100%; }
+  .tb-tag { font-size: 10.5px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+  .tb-tag--built { background: var(--cl-accent-subtle); color: var(--cl-accent-active); }
+  .tb-tag--reform { background: var(--cl-success-subtle); color: var(--cl-success); }
+  .tb-tag--partner { background: var(--cl-info-subtle); color: var(--cl-info); }
+  .tb-cta { text-align: center; padding: var(--cl-space-7) var(--cl-space-6); }
+  .tb-hero__ctas { display: flex; flex-wrap: wrap; gap: var(--cl-space-3); }
+  .tb-footer { padding: var(--cl-space-7) 0 var(--cl-space-6); border-top: 1px solid var(--cl-border); }
+  .tb-footer__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--cl-space-6); flex-wrap: wrap; margin-bottom: var(--cl-space-6); }
+  .tb-footer__brand { display: flex; align-items: center; gap: var(--cl-space-3); }
+  .tb-footer__cap { image-rendering: pixelated; width: 44px; }
+  .tb-footer__links { display: flex; gap: var(--cl-space-7); flex-wrap: wrap; }
+  .tb-footer__col { display: flex; flex-direction: column; gap: var(--cl-space-2); }
+  .tb-footer__col h4 { font-size: var(--cl-text-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--cl-text-muted); margin: 0 0 var(--cl-space-2); }
+  .tb-footer__col a { color: var(--cl-text-secondary); text-decoration: none; font-size: var(--cl-text-sm); }
+  .tb-footer__col a:hover { color: var(--cl-accent-active); }
+  .tb-footer__bottom { padding-top: var(--cl-space-5); border-top: 1px solid var(--cl-border); display: flex; align-items: center; justify-content: space-between; gap: var(--cl-space-3); flex-wrap: wrap; font-size: var(--cl-text-xs); color: var(--cl-text-muted); }
+
+  /* ---- research page ---- */
+  .tb-rhero { padding: var(--cl-space-8) 0 var(--cl-space-7); }
+  .tb-rhero h1 { max-width: 20ch; margin-bottom: var(--cl-space-4); }
+  .tb-rhero h1 em { font-style: normal; color: var(--cl-accent-active); }
+  .tb-rhero__subhead { font-size: var(--cl-text-lg); color: var(--cl-text-secondary); max-width: 62ch; margin: 0 0 var(--cl-space-5); }
+  .tb-rhero__meta { display: flex; flex-wrap: wrap; gap: var(--cl-space-2); }
+  .tb-mono { font-family: var(--cl-font-mono); font-variant-numeric: tabular-nums; }
+  .tb-verdict { padding: var(--cl-space-5); display: flex; flex-direction: column; gap: var(--cl-space-3); height: 100%; }
+  .tb-verdict__claim { font-size: var(--cl-text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cl-text-muted); }
+  .tb-verdict__num { font-family: var(--cl-font-display); font-size: var(--cl-text-3xl); line-height: 1; color: var(--cl-accent-active); font-variant-numeric: tabular-nums; }
+  .tb-verdict__label { font-weight: 600; }
+  .tb-verdict p { margin: 0; font-size: var(--cl-text-sm); color: var(--cl-text-secondary); flex: 1; }
+  .tb-verdict__foot { padding-top: var(--cl-space-3); border-top: 1px solid var(--cl-border); display: flex; align-items: center; justify-content: space-between; gap: var(--cl-space-2); }
+  .tb-verdict__basis { font-size: var(--cl-text-xs); color: var(--cl-text-muted); font-family: var(--cl-font-mono); }
+  /* distribution shift */
+  .tb-shift { display: flex; flex-direction: column; gap: var(--cl-space-4); }
+  .tb-shift__row { display: grid; grid-template-columns: 150px 1fr 84px; align-items: center; gap: var(--cl-space-4); }
+  .tb-shift__label { font-size: var(--cl-text-sm); font-weight: 500; }
+  .tb-shift__label small { display: block; font-weight: 400; color: var(--cl-text-muted); font-size: var(--cl-text-xs); }
+  .tb-shift__bar { display: flex; height: 26px; border-radius: var(--cl-radius-sm); overflow: hidden; background: var(--cl-surface-2); }
+  .tb-shift__seg { display: flex; align-items: center; justify-content: center; font-size: var(--cl-text-xs); font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; min-width: 0; }
+  .tb-shift__seg--low { background: var(--tb-excluded); color: #3d3d3a; }
+  .tb-shift__seg--mid { background: var(--tb-possible); }
+  .tb-shift__seg--high { background: var(--tb-definite); }
+  .tb-shift__mean { font-family: var(--cl-font-mono); font-size: var(--cl-text-sm); text-align: right; font-variant-numeric: tabular-nums; }
+  .tb-legend { display: flex; flex-wrap: wrap; gap: var(--cl-space-4); font-size: var(--cl-text-xs); color: var(--cl-text-secondary); }
+  .tb-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .tb-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  /* ranked bars */
+  .tb-rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .tb-rank li { display: grid; grid-template-columns: minmax(190px, 240px) 1fr auto; align-items: center; gap: var(--cl-space-4); padding: var(--cl-space-3) var(--cl-space-5); border-top: 1px dashed var(--cl-border); }
+  .tb-rank li:first-child { border-top: none; }
+  .tb-rank__name { font-size: var(--cl-text-sm); display: flex; align-items: center; gap: var(--cl-space-2); flex-wrap: wrap; }
+  .tb-rank__val { font-family: var(--cl-font-mono); font-size: var(--cl-text-sm); font-variant-numeric: tabular-nums; color: var(--cl-text-secondary); white-space: nowrap; }
+  .tb-rank .cl-progress { height: 10px; }
+  .tb-rank__icp { font-size: var(--cl-text-xs); color: var(--cl-text-muted); }
+  /* split stat */
+  .tb-split { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--cl-border); }
+  .tb-split > div { padding: var(--cl-space-4) var(--cl-space-5); border-right: 1px solid var(--cl-border); }
+  .tb-split > div:last-child { border-right: none; }
+  .tb-split b { font-family: var(--cl-font-display); font-size: var(--cl-text-xl); display: block; font-variant-numeric: tabular-nums; }
+  .tb-split small { color: var(--cl-text-muted); font-size: var(--cl-text-xs); }
+  .tb-note { font-size: var(--cl-text-xs); color: var(--cl-text-muted); margin-top: var(--cl-space-3); }
+  .tb-caveats li { margin-bottom: var(--cl-space-2); }
+  @media (max-width: 960px) { .tb-grid-2 { grid-template-columns: 1fr; } .tb-shift__row { grid-template-columns: 110px 1fr 64px; } }
+  @media (max-width: 720px) { .tb-grid-3, .tb-split { grid-template-columns: 1fr; } .cl-nav__links { display: none; } .tb-rank li { grid-template-columns: 1fr; gap: var(--cl-space-2); } .tb-split > div { border-right: none; border-bottom: 1px solid var(--cl-border); } }
+</style>
+</head>
+<body>
+<div class="cl-root">
+  <header class="tb-header"><div class="tb-container">
+    <nav class="cl-nav" aria-label="Primary">
+      <a class="cl-nav__brand" href="index.html"><span class="tb-brand-mark">TB</span> TrialBridge</a>
+      <div class="cl-nav__links">
+        <a class="cl-nav__link" href="index.html#pains">What we solve</a>
+        <a class="cl-nav__link" href="index.html#how">How it works</a>
+        <a class="cl-nav__link cl-nav__link--active" href="research.html">Research</a>
+        <a class="cl-nav__link" href="index.html#faq">FAQ</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--cl-space-3)">
+        <button class="cl-icon-btn" aria-label="Toggle theme" onclick="var r=document.querySelector('.cl-root');r.setAttribute('data-theme', r.getAttribute('data-theme')==='dark'?'':'dark')">🌙</button>
+        <a class="cl-btn cl-btn--primary" href="/start">Open the app</a>
+      </div>
+    </nav>
+  </div></header>
+
+  <main>
+    <!-- HERO -->
+    <section class="tb-rhero"><div class="tb-container">
+      <span class="tb-eyebrow">The research</span>
+      <h1 class="cl-h1">We tested the thesis. <em>The market runs on outdated information.</em></h1>
+      <p class="tb-rhero__subhead">Before building TrialBridge around Brazil's 2024 reform, we asked the people who actually pick trial countries whether the perception gap is real — and whether closing it changes their decision. It is, and it does.</p>
+      <div class="tb-rhero__meta">
+        <span class="cl-badge cl-badge--neutral">Prolific + Tally · two waves</span>
+        <span class="cl-badge cl-badge--neutral">N=125 unique complete</span>
+        <span class="cl-badge cl-badge--neutral">71 industry-qualified</span>
+        <span class="cl-badge cl-badge--neutral">Fieldwork July 10–11, 2026</span>
+        <span class="cl-badge cl-badge--warning">Directional, not powered</span>
+      </div>
+    </div></section>
+
+    <!-- VERDICT STRIP -->
+    <section class="tb-section tb-section--muted"><div class="tb-container">
+      <div class="tb-head tb-head--center">
+        <span class="tb-eyebrow">Three claims, three verdicts</span>
+        <h2 class="cl-h2">The thesis, tested claim by claim</h2>
+        <p class="cl-text-secondary">Each claim behind TrialBridge was written down before fieldwork. Here is how each one fared against the data.</p>
+      </div>
+      <div class="tb-grid-3">
+        <div class="cl-card tb-verdict">
+          <span class="tb-verdict__claim">Claim 1 — nobody knows the law changed</span>
+          <div class="tb-verdict__num">74%</div>
+          <div class="tb-verdict__label">had never heard of Lei 14.874/2024</div>
+          <p>The reform replaced the double ethics review with a single ~30-business-day review and capped ANVISA at 90 business days. Only 6% knew the details.</p>
+          <div class="tb-verdict__foot"><span class="cl-badge cl-badge--success"><span class="cl-badge__dot"></span> Supported</span><span class="tb-verdict__basis">Q9 · n=125</span></div>
+        </div>
+        <div class="cl-card tb-verdict">
+          <span class="tb-verdict__claim">Claim 2 — information alone moves intent</span>
+          <div class="tb-verdict__num">+0.95</div>
+          <div class="tb-verdict__label">intent shift after one paragraph about the reform</div>
+          <p>Likelihood to include Brazil in the next 12 months rose from 3.18 to 4.13 (0–10 scale). Among industry-qualified respondents: +1.11, with high intent going 23% → 37%.</p>
+          <div class="tb-verdict__foot"><span class="cl-badge cl-badge--success"><span class="cl-badge__dot"></span> Supported</span><span class="tb-verdict__basis">Q8→Q10 · paired t=6.30 · p&lt;.001</span></div>
+        </div>
+        <div class="cl-card tb-verdict">
+          <span class="tb-verdict__claim">Claim 3 — the #1 barrier is what the law fixed</span>
+          <div class="tb-verdict__num">34%</div>
+          <div class="tb-verdict__label">cite regulatory approval timelines — the top barrier</div>
+          <p>41% among the industry-qualified, and the #1 single dealbreaker (20%). Add ethics review and start-up time: 34% of dealbreakers are things Lei 14.874 directly addressed.</p>
+          <div class="tb-verdict__foot"><span class="cl-badge cl-badge--success"><span class="cl-badge__dot"></span> Supported</span><span class="tb-verdict__basis">Q2, Q3 · n=125</span></div>
+        </div>
+      </div>
+    </div></section>
+
+    <!-- NATURAL EXPERIMENT -->
+    <section class="tb-section"><div class="tb-container">
+      <div class="tb-head tb-head--center">
+        <span class="tb-eyebrow">The natural experiment</span>
+        <h2 class="cl-h2">One paragraph about the reform, read mid-survey</h2>
+        <p class="cl-text-secondary">Respondents rated their likelihood to include Brazil (Q8), then read a one-line description of Lei 14.874, then rated again (Q10). Same person, same sitting — the only thing that changed was what they knew.</p>
+      </div>
+      <div class="cl-card cl-card--raised">
+        <div class="cl-card__header"><h3 class="cl-card__title">Intent to include Brazil in the next 12 months</h3><span class="cl-badge cl-badge--neutral">0–10 scale · n=125</span></div>
+        <div class="tb-pad" style="height:auto">
+          <div class="tb-shift">
+            <div class="tb-shift__row">
+              <span class="tb-shift__label">Before<small>unaware baseline</small></span>
+              <div class="tb-shift__bar" role="img" aria-label="Before: 62% low, 20% mid, 18% high">
+                <span class="tb-shift__seg tb-shift__seg--low" style="width:62%">62%</span><span class="tb-shift__seg tb-shift__seg--mid" style="width:20%">20%</span><span class="tb-shift__seg tb-shift__seg--high" style="width:18%">18%</span>
+              </div>
+              <span class="tb-shift__mean">x̄ 3.18</span>
+            </div>
+            <div class="tb-shift__row">
+              <span class="tb-shift__label">After<small>one paragraph later</small></span>
+              <div class="tb-shift__bar" role="img" aria-label="After: 46% low, 25% mid, 30% high">
+                <span class="tb-shift__seg tb-shift__seg--low" style="width:46%">46%</span><span class="tb-shift__seg tb-shift__seg--mid" style="width:25%">25%</span><span class="tb-shift__seg tb-shift__seg--high" style="width:29%">30%</span>
+              </div>
+              <span class="tb-shift__mean">x̄ 4.13</span>
+            </div>
+            <div class="tb-legend">
+              <span><i style="background:var(--tb-excluded)"></i> Low intent (0–3)</span>
+              <span><i style="background:var(--tb-possible)"></i> Mid (4–6)</span>
+              <span><i style="background:var(--tb-definite)"></i> High (7–10)</span>
+              <span class="tb-mono" style="margin-left:auto">median 3 → 5</span>
+            </div>
+          </div>
+        </div>
+        <div class="tb-split">
+          <div><b>48% / 46% / 6%</b><small>raised / held / lowered their score — 8 people went down, 60 went up</small></div>
+          <div><b>3.52 → 4.63</b><small>industry-qualified only (n=71): +1.11, 56% raised, high intent 23% → 37%</small></div>
+          <div><b>+1.42 vs +0.59</b><small>lift with prior LatAm exposure vs never-considered — familiarity compounds</small></div>
+        </div>
+      </div>
+      <p class="tb-note">Brazil after the paragraph (x̄ 4.13) outscores the rest of LatAm (Q11, x̄ 3.86) — the reform is a Brazil-specific advantage, not a regional halo.</p>
+    </div></section>
+
+    <!-- BARRIERS -->
+    <section class="tb-section tb-section--muted"><div class="tb-container">
+      <div class="tb-head tb-head--center">
+        <span class="tb-eyebrow">What keeps Brazil off the list</span>
+        <h2 class="cl-h2">Barriers, ranked — and who already fixed which</h2>
+        <p class="cl-text-secondary">"Pick up to 3 biggest barriers to running a trial in Brazil / LatAm." Green tags mark the ones Lei 14.874 already addressed; the rest is what TrialBridge and its network cover.</p>
+      </div>
+      <div class="cl-card">
+        <ul class="tb-rank">
+          <li><span class="tb-rank__name">Regulatory approval timelines <span class="tb-tag tb-tag--reform">Reform fixed this</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:100%"></div></div><span class="tb-rank__val">34% <span class="tb-rank__icp">· 41% qualified</span></span></li>
+          <li><span class="tb-rank__name">Site quality &amp; consistency <span class="tb-tag tb-tag--built">We built this</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:76%"></div></div><span class="tb-rank__val">26% <span class="tb-rank__icp">· 32% qualified</span></span></li>
+          <li><span class="tb-rank__name">Language / documentation</span><div class="cl-progress"><div class="cl-progress__bar" style="width:76%"></div></div><span class="tb-rank__val">26% <span class="tb-rank__icp">· 25% qualified</span></span></li>
+          <li><span class="tb-rank__name">No local relationships or familiarity <span class="tb-tag tb-tag--built">We built this</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:76%"></div></div><span class="tb-rank__val">26% <span class="tb-rank__icp">· 27% qualified</span></span></li>
+          <li><span class="tb-rank__name">Importation / customs <span class="tb-tag tb-tag--partner">In our network</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:71%"></div></div><span class="tb-rank__val">24% <span class="tb-rank__icp">· 31% qualified</span></span></li>
+          <li><span class="tb-rank__name">Political / economic / currency risk</span><div class="cl-progress"><div class="cl-progress__bar" style="width:65%"></div></div><span class="tb-rank__val">22% <span class="tb-rank__icp">· 27% qualified</span></span></li>
+          <li><span class="tb-rank__name">Overall start-up time <span class="tb-tag tb-tag--reform">Reform fixed this</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:53%"></div></div><span class="tb-rank__val">18% <span class="tb-rank__icp">· 23% qualified</span></span></li>
+          <li><span class="tb-rank__name">Ethics committee review <span class="tb-tag tb-tag--reform">Reform fixed this</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:47%"></div></div><span class="tb-rank__val">16% <span class="tb-rank__icp">· 18% qualified</span></span></li>
+          <li><span class="tb-rank__name">Data quality &amp; monitoring</span><div class="cl-progress"><div class="cl-progress__bar" style="width:44%"></div></div><span class="tb-rank__val">15% <span class="tb-rank__icp">· 17% qualified</span></span></li>
+        </ul>
+      </div>
+      <p class="tb-note">Multi-select, so columns don't sum to 100%. "Qualified" = pharma, biotech, CRO, and clinical-research-adjacent respondents (n=71). Asked one level deeper — "which ONE kills the decision?" — regulatory timelines leads again (20%), with "no local relationships" second (15%).</p>
+    </div></section>
+
+    <!-- ENABLERS -->
+    <section class="tb-section"><div class="tb-container">
+      <div class="tb-head tb-head--center">
+        <span class="tb-eyebrow">What would change their mind</span>
+        <h2 class="cl-h2">They asked for de-risking, not discounts</h2>
+        <p class="cl-text-secondary">"What would most increase the trials you'd place in Brazil / LatAm?" The top three asks map one-to-one onto what TrialBridge ships.</p>
+      </div>
+      <div class="cl-card">
+        <ul class="tb-rank">
+          <li><span class="tb-rank__name">Local regulatory / feasibility experts <span class="tb-tag tb-tag--partner">In our network</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:100%"></div></div><span class="tb-rank__val">38% <span class="tb-rank__icp">· 48% qualified</span></span></li>
+          <li><span class="tb-rank__name">Vetted, quality-certified site network <span class="tb-tag tb-tag--built">We built this</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:89%"></div></div><span class="tb-rank__val">34% <span class="tb-rank__icp">· 41% qualified</span></span></li>
+          <li><span class="tb-rank__name">Proof: recent fast start-up case studies</span><div class="cl-progress"><div class="cl-progress__bar" style="width:74%"></div></div><span class="tb-rank__val">28% <span class="tb-rank__icp">· 34% qualified</span></span></li>
+          <li><span class="tb-rank__name">SLA-backed start-up timeline guarantees</span><div class="cl-progress"><div class="cl-progress__bar" style="width:66%"></div></div><span class="tb-rank__val">25% <span class="tb-rank__icp">· 31% qualified</span></span></li>
+          <li><span class="tb-rank__name">Importation &amp; customs support <span class="tb-tag tb-tag--partner">In our network</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:63%"></div></div><span class="tb-rank__val">24% <span class="tb-rank__icp">· 21% qualified</span></span></li>
+          <li><span class="tb-rank__name">Pre-identified investigators with patients <span class="tb-tag tb-tag--built">We built this</span></span><div class="cl-progress"><div class="cl-progress__bar" style="width:58%"></div></div><span class="tb-rank__val">22% <span class="tb-rank__icp">· 28% qualified</span></span></li>
+          <li><span class="tb-rank__name">Contracting &amp; budget templates</span><div class="cl-progress"><div class="cl-progress__bar" style="width:50%"></div></div><span class="tb-rank__val">19% <span class="tb-rank__icp">· 23% qualified</span></span></li>
+          <li><span class="tb-rank__name">Transparent site-cost benchmarks</span><div class="cl-progress"><div class="cl-progress__bar" style="width:47%"></div></div><span class="tb-rank__val">18% <span class="tb-rank__icp">· 14% qualified</span></span></li>
+        </ul>
+      </div>
+      <p class="tb-note">Pick up to 3 · N=125 · bars scaled to the top answer. Price levers (cost benchmarks) rank below trust levers (local experts, vetted sites, proof) — the objection is risk, not budget.</p>
+    </div></section>
+
+    <!-- WHO BRAZIL LOSES TO -->
+    <section class="tb-section tb-section--muted"><div class="tb-container">
+      <div class="tb-head tb-head--center">
+        <span class="tb-eyebrow">The competition</span>
+        <h2 class="cl-h2">Brazil doesn't lose to Mexico. It loses to inertia.</h2>
+        <p class="cl-text-secondary">"When Brazil competes for a trial slot, which country does it usually lose to?" — asked in wave 2. The answer isn't a rival market.</p>
+      </div>
+      <div class="tb-grid-2">
+        <div class="cl-card">
+          <div class="cl-card__header"><h3 class="cl-card__title">Where the slot goes instead</h3><span class="cl-badge cl-badge--neutral">Pick up to 2 · wave 2, n=75</span></div>
+          <ul class="tb-rank">
+            <li><span class="tb-rank__name">US — trial kept domestic</span><div class="cl-progress"><div class="cl-progress__bar" style="width:100%"></div></div><span class="tb-rank__val">48%</span></li>
+            <li><span class="tb-rank__name">"We don't consider Brazil"</span><div class="cl-progress"><div class="cl-progress__bar" style="width:44%"></div></div><span class="tb-rank__val">21%</span></li>
+            <li><span class="tb-rank__name">Mexico</span><div class="cl-progress"><div class="cl-progress__bar" style="width:35%"></div></div><span class="tb-rank__val">17%</span></li>
+            <li><span class="tb-rank__name">Argentina</span><div class="cl-progress"><div class="cl-progress__bar" style="width:27%"></div></div><span class="tb-rank__val">13%</span></li>
+            <li><span class="tb-rank__name">Spain</span><div class="cl-progress"><div class="cl-progress__bar" style="width:25%"></div></div><span class="tb-rank__val">12%</span></li>
+            <li><span class="tb-rank__name">Australia</span><div class="cl-progress"><div class="cl-progress__bar" style="width:19%"></div></div><span class="tb-rank__val">9%</span></li>
+          </ul>
+        </div>
+        <div class="cl-card tb-pad" style="display:flex;flex-direction:column;justify-content:center;gap:var(--cl-space-3)">
+          <span class="tb-verdict__claim">Brazil vs. its main alternative</span>
+          <div class="tb-verdict__num">81%</div>
+          <div class="tb-verdict__label">say Brazil is the same, worse — or they simply don't know</div>
+          <p class="cl-text-secondary" style="font-size:var(--cl-text-sm);margin:0">Don't know 33% · about the same 27% · somewhat/clearly worse 21%. Only 18% rate Brazil better. Nobody has shown them the difference — which is exactly why one paragraph moves intent.</p>
+          <span class="tb-verdict__basis" style="padding-top:var(--cl-space-3);border-top:1px solid var(--cl-border)">Q13 · wave 2, n=75</span>
+        </div>
+      </div>
+    </div></section>
+
+    <!-- DECISION MECHANICS -->
+    <section class="tb-section"><div class="tb-container">
+      <div class="tb-head tb-head--center">
+        <span class="tb-eyebrow">When the decision happens</span>
+        <h2 class="cl-h2">The country list locks before anyone calls a CRO</h2>
+      </div>
+      <div class="tb-grid-3">
+        <div class="cl-card tb-pad">
+          <div class="tb-verdict__num">60%</div>
+          <div class="tb-verdict__label">lock the country list at concept or feasibility</div>
+          <p class="tb-stat-desc cl-text-secondary" style="font-size:var(--cl-text-sm);margin:var(--cl-space-2) 0 0">Concept 30% + feasibility 30%. Only 6% wait for CRO selection — visibility has to arrive before the shortlist exists.</p>
+        </div>
+        <div class="cl-card tb-pad">
+          <div class="tb-verdict__num">82%</div>
+          <div class="tb-verdict__label">have never executed a trial in Latin America</div>
+          <p class="tb-stat-desc cl-text-secondary" style="font-size:var(--cl-text-sm);margin:var(--cl-space-2) 0 0">56% never considered it, 26% considered but didn't. Just 10% have touched Brazil — greenfield, not a knife-fight.</p>
+        </div>
+        <div class="cl-card tb-pad">
+          <div class="tb-verdict__num">58%</div>
+          <div class="tb-verdict__label">opted into a follow-up interview</div>
+          <p class="tb-stat-desc cl-text-secondary" style="font-size:var(--cl-text-sm);margin:var(--cl-space-2) 0 0">72 of 125 said yes to a 15-minute follow-up via Prolific — a warm panel for the next research round.</p>
+        </div>
+      </div>
+    </div></section>
+
+    <!-- SAMPLE & METHOD -->
+    <section class="tb-section"><div class="tb-container">
+      <div class="tb-head tb-head--center">
+        <span class="tb-eyebrow">Sample &amp; method</span>
+        <h2 class="cl-h2">Who answered, and what we won't claim</h2>
+      </div>
+      <div class="tb-grid-2">
+        <div class="cl-table-wrap">
+          <table class="cl-table">
+            <thead><tr><th>Dimension</th><th>Breakdown</th></tr></thead>
+            <tbody>
+              <tr><td>Recruitment</td><td>Prolific panel → Tally instrument (<span class="tb-mono">tally.so/r/9qyNOV</span>), two waves</td></tr>
+              <tr><td>Completes</td><td><span class="tb-mono">N=125 unique</span> (wave 1 n=50 + wave 2 n=77, 2 duplicate IDs removed) · July 10–11, 2026</td></tr>
+              <tr><td>Role</td><td>Pharma 21% · clinical-research-adjacent 18% · biotech 11% · CRO 7% · other 43%</td></tr>
+              <tr><td>Qualified subset</td><td><span class="tb-mono">n=71</span> (57%) — pharma, biotech, CRO, clinical-adjacent</td></tr>
+              <tr><td>Company HQ</td><td>US 73% · UK/EU 21% · other 6% · Brazil 1%</td></tr>
+              <tr><td>Wave 2 additions</td><td>Competitive questions: who Brazil loses to, Brazil vs alternative</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cl-card tb-pad">
+          <h3 class="cl-h3" style="font-size:var(--cl-text-lg)">Honest limits</h3>
+          <ul class="tb-caveats cl-text-secondary" style="font-size:var(--cl-text-sm);margin:0;padding-left:18px">
+            <li><b>Directional, not powered.</b> N=125 from a single panel; treat point estimates as signals, not measurements.</li>
+            <li><b>Within-subject design.</b> Before/after in one sitting can invite demand effects — though 46% held their score and 6% moved down, which argues against pure politeness.</li>
+            <li><b>Stated intent ≠ placed trials.</b> We measured willingness, not behavior.</li>
+            <li><b>43% adjacent respondents.</b> "Other" roles are kept in the headline numbers and split out in the qualified cut throughout. Wave 2 skews US (combined HQ 73% US).</li>
+          </ul>
+          <p class="tb-note" style="margin-top:var(--cl-space-4)">Full instrument, response data, and analysis available on request.</p>
+        </div>
+      </div>
+    </div></section>
+
+    <!-- CTA -->
+    <section class="tb-section tb-section--tight"><div class="tb-container">
+      <div class="cl-card cl-card--raised tb-cta">
+        <h2 class="cl-h2">The gap is real. We built the bridge.</h2>
+        <p class="cl-text-secondary">Decision-makers move the moment they can see what Brazil actually offers. TrialBridge puts that proof where the decision happens — at feasibility.</p>
+        <div class="tb-hero__ctas" style="justify-content:center;margin-top:var(--cl-space-4)"><a class="cl-btn cl-btn--primary cl-btn--lg" href="https://app.globaltrialbridge.com">Run a feasibility check</a><a class="cl-btn cl-btn--secondary cl-btn--lg" href="index.html">Back to TrialBridge</a></div>
+      </div>
+    </div></section>
+  </main>
+
+  <footer class="tb-footer"><div class="tb-container">
+    <div class="tb-footer__top">
+      <div class="tb-footer__brand"><img class="tb-footer__cap" src="assets/capy_mascot.png" alt=""><span style="font-family:var(--cl-font-display);font-size:var(--cl-text-lg)">TrialBridge</span></div>
+      <div class="tb-footer__links">
+        <div class="tb-footer__col"><h4>Product</h4><a href="index.html#pains">What we solve</a><a href="index.html#how">How it works</a><a href="index.html#sponsors">For you</a></div>
+        <div class="tb-footer__col"><h4>Research</h4><a href="research.html">The survey</a><a href="index.html#faq">FAQ</a><a href="https://app.globaltrialbridge.com">Sponsor demo</a></div>
+      </div>
+    </div>
+    <div class="tb-footer__bottom"><span>© 2026 TrialBridge.</span><span>Research: Prolific + Tally, two waves, N=125 unique · 71 industry-qualified (directional) · Built with Claude — Life Sciences hackathon 2026</span></div>
+  </div></footer>
+</div>
+</body>
+</html>

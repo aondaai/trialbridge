@@ -18,7 +18,7 @@ export function IntakePanel() {
     const form = e.currentTarget;
     const input = form.elements.namedItem("file") as HTMLInputElement;
     if (!input.files?.length) {
-      setMsg("Selecione um arquivo .docx ou .txt.");
+      setMsg("Select a .docx or .txt file.");
       return;
     }
     setBusy(true);
@@ -29,11 +29,11 @@ export function IntakePanel() {
       const res = await fetch("/api/feasibility-intake", { method: "POST", body });
       const json = (await res.json()) as { requestId?: string; fieldCount?: number; error?: string };
       if (!res.ok || json.error) throw new Error(json.error ?? `HTTP ${res.status}`);
-      setMsg(`Recebido — ${json.fieldCount} campos. Abra na caixa de entrada para preencher.`);
+      setMsg(`Received — ${json.fieldCount} fields. Open it from the inbox to autofill.`);
       form.reset();
       router.refresh();
     } catch (err) {
-      setMsg(`Falha no upload: ${(err as Error).message}`);
+      setMsg(`Upload failed: ${(err as Error).message}`);
     } finally {
       setBusy(false);
     }
@@ -43,7 +43,7 @@ export function IntakePanel() {
     <form onSubmit={onSubmit} style={{ display: "flex", gap: "var(--cl-space-3)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="file" name="file" accept=".docx,.pdf,.txt,.md" className="cl-input" style={{ maxWidth: 320 }} />
       <button className="cl-btn cl-btn--secondary cl-btn--sm" type="submit" disabled={busy}>
-        {busy ? "Enviando…" : "Enviar formulário"}
+        {busy ? "Uploading…" : "Upload form"}
       </button>
       {msg && <span className="muted" style={{ fontSize: "var(--cl-text-sm)" }}>{msg}</span>}
     </form>
